@@ -23,8 +23,25 @@ const user_reducer = (state = initialUserState, action) => {
     }
 }
 
+const initialQueryState = {
+    currentQuery: null
+}
+
+const query_reducer = (state = initialQueryState, action) => {
+    switch (action.type) {
+        case actionTypes.SET_CURRENT_QUERY:
+            return {
+                ...state,
+                currentQuery: action.payload.currentQuery
+            };
+        default:
+            return state;
+    }
+}
+
 const rootReducer = combineReducers({
-    user: user_reducer
+    user: user_reducer,
+    query: query_reducer
 })
 
 export default rootReducer;

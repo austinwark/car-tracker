@@ -1,6 +1,10 @@
 import React from 'react';
 
 import UserPanel from './UserPanel';
+import CurrentQueries from './CurrentQueries';
+import Create from './Create';
+
+import { Segment, Divider } from 'semantic-ui-react';
 
 class SidePanel extends React.Component {
 
@@ -9,9 +13,13 @@ class SidePanel extends React.Component {
         const { currentUser } = this.props;
 
         return (
-            <div className='bg-dark h-100'>
+            <Segment inverted  style={{height: "100vh"}}>
                 <UserPanel currentUser={currentUser} />
-            </div>
+                <Divider />
+                <CurrentQueries currentUser={currentUser} />
+                <Divider />
+                <Create currentUser={currentUser} />
+            </Segment>
         )
     }
 }

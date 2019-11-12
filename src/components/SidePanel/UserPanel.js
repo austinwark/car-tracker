@@ -33,9 +33,9 @@ class UserPanel extends React.Component {
     render() {
 
         return (
-            <div className='text-light text-center' style={{height: "500px"}}>
-                <div className='user__header pt-3'>
-                    <Icon name="search" size='huge' /><h1 className='d-inline text-light'>Car Tracker</h1>
+            <div>
+                <div className='user__header'>
+                    <Icon name="search" size='huge' /><h1 className=''>Car Tracker</h1>
                     <div>
                         <Dropdown
                             trigger={
@@ -44,7 +44,6 @@ class UserPanel extends React.Component {
                                 </span>
                             }
                             options={this.dropdownOptions()}
-                            className='mx-auto text-center'
                         />
                     </div>
                 </div>

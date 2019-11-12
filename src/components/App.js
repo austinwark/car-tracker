@@ -1,32 +1,25 @@
 import React from 'react';
 import './App.css';
-import '../bootstrap.css'
 
 import SidePanel from './SidePanel/SidePanel';
 import ResultsPanel from './ResultsPanel/ResultsPanel';
 import ActionsPanel from './ActionsPanel/ActionsPanel';
 import { connect } from 'react-redux';
 
+import { Grid, Segment } from 'semantic-ui-react';
+
 const App = ({ currentUser }) => (
-  <div className='container-fluid p-0 app__main'>
-    <div className="row app__main">
-
-      {/* Side Panel */}
-      <div className='col-12 col-lg-3 p-0'>
-        <SidePanel currentUser={currentUser} />
-      </div>
-
-      {/* Query Results */}
-      <div className='col-12 col-lg-6'>
-        <ResultsPanel currentUser={currentUser} />
-      </div>
-
-      {/* Query Actions */}
-      <div className='col-12 col-lg-3'>
-        <ActionsPanel />
-      </div>
-    </div>
-  </div>
+  <Grid stackable>
+      <Grid.Column width={3} textAlign="center">
+          <SidePanel currentUser={currentUser} />
+      </Grid.Column>
+      <Grid.Column width={6} textAlign="center">
+          <ResultsPanel currentUser={currentUser} />
+      </Grid.Column>
+      <Grid.Column width={3}>
+          <ActionsPanel />
+      </Grid.Column>
+  </Grid>
 )
 const mapStateToProps = state => ({
   currentUser: state.user.currentUser

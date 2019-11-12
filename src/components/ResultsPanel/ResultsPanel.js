@@ -1,7 +1,11 @@
 import React from 'react';
 
+import firebase from '../../firebase';
+
 import ResultsList from './ResultsList';
-import Create from './Create';
+//import Create from './Create';
+
+import { Header, Segment, Grid } from 'semantic-ui-react';
 
 class ResultsPanel extends React.Component {
 
@@ -10,13 +14,19 @@ class ResultsPanel extends React.Component {
         const { currentUser } = this.props;
 
         return (
-            <div className='h-100'>
-                <div className="results__header">
-                    <h1 className='text-primary text-center mt-3'>Query Results</h1>
-                </div>
-                <ResultsList />
-                <Create currentUser={currentUser} />
-            </div>
+            <Grid>
+                <Grid.Row>
+                    <Grid.Column textAlign="center">
+                        <Header as="h1" textAlign="center">Query Results</Header>
+                    </Grid.Column>
+                </Grid.Row>
+                <Grid.Row>
+                    <ResultsList />
+                </Grid.Row>
+                <Grid.Row>
+                    {/* <Create currentUser={currentUser} /> */}
+                </Grid.Row>
+            </Grid>
         )
     }
 }

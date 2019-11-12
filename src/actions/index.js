@@ -1,5 +1,6 @@
 import * as actionTypes from './types';
 
+/* User Actions */
 export const setUser = user => {
     return {
         type: actionTypes.SET_USER,
@@ -12,5 +13,15 @@ export const setUser = user => {
 export const clearUser = () => {
     return {
         type: actionTypes.CLEAR_USER
+    }
+}
+
+/* Query Actions */
+export const setCurrentQuery = query => {
+    return {
+        type: actionTypes.SET_CURRENT_QUERY,
+        payload: {
+            currentQuery: query
+        }
     }
 }
