@@ -1,5 +1,6 @@
 import axios from 'axios';
 import React from 'react';
+import moment from 'moment';
 
 import firebase from '../../firebase';
 
@@ -81,6 +82,7 @@ class Create extends React.Component {
     handleSubmit = event => {
         event.preventDefault();
         const { customer, queryName, model, price, operator, currentUser, queriesRef } = this.state;
+        const creationDate = moment().format("L");
         const key = queriesRef.child(currentUser.uid).push().key;
         const newQuery = {
             id: key,
@@ -88,7 +90,9 @@ class Create extends React.Component {
             model: model,
             price: price,
             operator: operator,
-            customer: customer
+            customer: customer,
+            creationDate: creationDate,
+            enabled: true
         };
         queriesRef
             .child(currentUser.uid)

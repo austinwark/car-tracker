@@ -3,21 +3,21 @@ import './App.css';
 
 import SidePanel from './SidePanel/SidePanel';
 import ResultsPanel from './ResultsPanel/ResultsPanel';
-import ActionsPanel from './ActionsPanel/ActionsPanel';
+import MetaPanel from './MetaPanel/MetaPanel';
 import { connect } from 'react-redux';
 
 import { Grid } from 'semantic-ui-react';
 
 const App = ({ currentUser, currentQuery }) => (
   <Grid stackable>
-      <Grid.Column width={3} textAlign="center">
+      <Grid.Column width={3} textAlign="center" className="main__cols">
           <SidePanel currentUser={currentUser} />
       </Grid.Column>
       <Grid.Column width={9} textAlign="center">
           <ResultsPanel currentUser={currentUser} />
       </Grid.Column>
       <Grid.Column width={4}>
-          <ActionsPanel />
+          <MetaPanel currentQuery={currentQuery} />
       </Grid.Column>
   </Grid>
 )

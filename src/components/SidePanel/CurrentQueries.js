@@ -4,7 +4,7 @@ import firebase from '../../firebase';
 import { connect } from 'react-redux';
 import { setCurrentQuery } from '../../actions';
 
-import { Menu, Icon } from 'semantic-ui-react';
+import { Menu, Icon, Label } from 'semantic-ui-react';
 
 class CurrentQueries extends React.Component {
 
@@ -17,32 +17,32 @@ class CurrentQueries extends React.Component {
     }
 
     componentDidMount() {
-        const { currentUser, queriesRef } = this.state;
-        const enabledQueries = [];
-        this.addValueListener();
-        queriesRef
-            .child(currentUser.uid)
-            .on('child_added', snap => {
-                enabledQueries.push(snap.val());
-                this.setState({ enabledQueries });
-                this.setFirstQuery();
-            });
+        this.addQueryListener();
     }
 
-    // WORKING ON CONVERTING CHILD_ADDED TO VALUE BECAUSE CHILD ADDED DOES NOT UPDATE
-    // STATE WHEN NEW QUERY IS CREATED
-    addValueListener = () => {
+    addQueryListener = () => {
         const { currentUser, queriesRef } = this.state;
-        let enabledQueries = [];
+        const enabledQueries = [];
+        const disabledQueries = [];
         queriesRef
             .child(currentUser.uid)
             .on('value', snap => {
-                //console.log("VALUE SNAP: ", snap.val())
                 const queriesArray = Object.entries(snap.val());
-                enabledQueries = queriesArray.reduce((acc, val) => {
-                    return val[1];
-                }, []);
-                console.log("VALUE SNAP: ", enabledQueries)
+
+                // const enabledQueries = queriesArray.reduce((acc, val) => {
+                //     acc.push(val[1]);
+                //     return acc;
+                // }, []);
+                queriesArray.forEach(set => {
+                    const query = set[1];
+                    query.enabled ? enabledQueries.push(query) : disabledQueries.push(query)
+                })
+
+                console.log("ENABLED QUERIES: ", enabledQueries);
+                console.log("DISABLED QUERIES: ", disabledQueries);
+
+                this.setState({ enabledQueries, disabledQueries })
+                this.setFirstQuery();
             })
     }
 
@@ -52,8 +52,23 @@ class CurrentQueries extends React.Component {
                 key={query.id}
                 active={query.id === this.state.activeQuery}
                 onClick={() => this.changeCurrentQuery(query)}
-                style={{cursor: "pointer", textDecoration: "none"}}>
-                # { query.name}
+                style={{cursor: "pointer", textDecoration: "none"}}
+            >
+                # { query.name} <span>({query.results.arr.length})</span>
+            </Menu.Item>
+        ))
+    )
+
+    displayDisabledQueries = queries => (
+        queries.length > 0 && queries.map(query => (
+            <Menu.Item
+                key={query.id}
+                active={query.id === this.state.activeQuery}
+                onClick={() => this.changeCurrentQuery(query)}
+                style={{cursor: "pointer", textDecoration: "none"}}
+            >
+                # {query.name}
+
             </Menu.Item>
         ))
     )
@@ -74,15 +89,20 @@ class CurrentQueries extends React.Component {
 
     render() {
 
-        const { enabledQueries } = this.state;
+        const { enabledQueries, disabledQueries } = this.state;
 
         return (
             <React.Fragment>
-                <Menu vertical secondary fluid inverted>
-                    <Menu.Item as="h3">
-                        <span><Icon name='exchange' /> QUERIES</span>{" "}
+                <Menu vertical secondary pointing fluid inverted>
+                    <Menu.Item as="h4">
+                        <span><Icon name='exchange' /> ENABLED QUERIES</span>{" "}
                     </Menu.Item>
                     {this.displayEnabledQueries(enabledQueries)}
+
+                    <Menu.Item as="h4">
+                        <span><Icon name='exchange' /> DISABLED QUERIES</span>{" "}
+                    </Menu.Item>
+                    {this.displayEnabledQueries(disabledQueries)}
                 </Menu>
             </React.Fragment>
         )

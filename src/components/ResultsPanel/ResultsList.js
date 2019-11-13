@@ -4,16 +4,16 @@ import { connect } from 'react-redux';
 
 import { Table } from 'semantic-ui-react';
 
-import Spinner from '../../Spinner';
+import Skeleton from './Skeleton';
 
 class ResultsList extends React.Component {
 
     state = {
-        currentUser: this.props.currentUser
+        currentUser: this.props.currentUser,
+        resultsLoading: !(this.props.currentQuery)    // => when query is loaded, sets loading state to false
     }
 
     displayResults = results => {
-        console.log("props: ", this.props.currentQuery);
         if (results) {
             return this.props.currentQuery.results.arr.map(result => {
                 return (
@@ -30,10 +30,20 @@ class ResultsList extends React.Component {
             })
         }
         }
+    displayResultsSkeleton = loading => (
+        loading ? (
+            <React.Fragment>
+                {[ ...Array(10)].map((_, i) => (
+                    <Skeleton key={i} />
+                ))}
+            </React.Fragment>
+        ) : null
+    );
 
     render() {
 
         const { currentQuery } = this.props;
+        const { resultsLoading } = this.state;
 
         if (currentQuery) {
             return (
@@ -57,7 +67,11 @@ class ResultsList extends React.Component {
                 </div>
             )
         } else {
-            return <Spinner />
+            return (
+                <div className="table__container">
+                    {this.displayResultsSkeleton(resultsLoading)}
+                </div>
+            )
         }
     }
 }

@@ -3,7 +3,7 @@ import React from 'react';
 import ResultsList from './ResultsList';
 //import Create from './Create';
 
-import { Header, Grid } from 'semantic-ui-react';
+import { Header, Grid, Segment, Icon } from 'semantic-ui-react';
 
 class ResultsPanel extends React.Component {
 
@@ -15,11 +15,20 @@ class ResultsPanel extends React.Component {
             <Grid>
                 <Grid.Row>
                     <Grid.Column textAlign="center">
-                        <Header as="h1" textAlign="center">Query Results</Header>
+                        <Segment raised className="top__segment">
+                            <Header as="h1" textAlign="center">
+                                <Icon name='filter' />
+                                Query Results
+                            </Header>
+                        </Segment>
                     </Grid.Column>
                 </Grid.Row>
-                <Grid.Row>
-                    <ResultsList currentUser={currentUser} />
+                <Grid.Row style={{paddingTop: 0}}>
+                    <Grid.Column>
+                        <Segment raised style={{width: "100%"}}>
+                            <ResultsList currentUser={currentUser} />
+                        </Segment>
+                    </Grid.Column>
                 </Grid.Row>
             </Grid>
         )
