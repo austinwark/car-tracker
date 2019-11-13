@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { Icon, Dropdown, Modal, Input, Button } from 'semantic-ui-react';
+import { Icon, Dropdown } from 'semantic-ui-react';
 
 import firebase from '../../firebase';
 //import { connect } from 'react-redux';

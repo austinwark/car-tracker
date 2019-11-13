@@ -13,7 +13,7 @@ class SidePanel extends React.Component {
         const { currentUser } = this.props;
 
         return (
-            <Segment inverted  style={{height: "100vh"}}>
+            <Segment inverted  style={{height: "100vh", backgroundColor: "#0B172A"}}>
                 <UserPanel currentUser={currentUser} />
                 <Divider />
                 <CurrentQueries currentUser={currentUser} />

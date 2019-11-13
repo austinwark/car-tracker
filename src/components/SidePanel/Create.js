@@ -3,7 +3,7 @@ import React from 'react';
 
 import firebase from '../../firebase';
 
-import { Form, Grid, Icon, Message, Checkbox, Input, Select, TextArea, Button, Modal, Header } from 'semantic-ui-react';
+import { Form, Icon, Checkbox, Input, Select, Button, Modal, Header } from 'semantic-ui-react';
 
 
 const modelOptions = [
@@ -80,7 +80,7 @@ class Create extends React.Component {
 
     handleSubmit = event => {
         event.preventDefault();
-        const { customer, enabled, queryName, model, price, operator, currentUser, queriesRef } = this.state;
+        const { customer, queryName, model, price, operator, currentUser, queriesRef } = this.state;
         const key = queriesRef.child(currentUser.uid).push().key;
         const newQuery = {
             id: key,
@@ -97,28 +97,37 @@ class Create extends React.Component {
             .then(() => {
                 console.log('query added')
                 this.closeModal();
+                this.getQueryResults(newQuery);
             })
             .catch(err => {
                 console.error(err);
             })
 
-        // queriesRef
-        //     .child(currentUser.uid)
-        //     .push()
-        //     .update({
-        //         queryName,
-        //         model,
-        //         price,
-        //         operator,
-        //         customer
-        //     }).then(() => {
-        //         console.log('query added')
-        //         this.closeModal();
-        //     })
-        //     .catch(err => {
-        //         console.error(err);
-        //     })
+    }
 
+    getQueryResults = async query => {
+        const { model, price, operator, id } = query;
+        const { currentUser, queriesRef } = this.state;
+
+        const url = '/api/scrape';
+        const payload = { model, price, operator };
+        const response = await axios.post(url, payload);
+        const queryResults = response.data;
+
+        const newQuery = query;
+        newQuery.results = queryResults;
+        console.log(newQuery)
+        queriesRef
+            .child(currentUser.uid)
+            .child(id)
+            .update(newQuery)
+            .then(() => {
+                console.log('database updated with query results');
+
+            })
+            .catch(err => {
+                console.error(err);
+            })
     }
 
     render() {
@@ -128,7 +137,10 @@ class Create extends React.Component {
         return (
             <div>
                 <Modal open={modal} onClose={this.closeModal} className='mx-auto'>
-                    <Modal.Header>Create a New Query</Modal.Header>
+                    <Modal.Header>
+                        Create a New Query
+                        <Button icon floated='right' onClick={this.closeModal}><Icon name='close' /></Button>
+                    </Modal.Header>
                     <Modal.Content>
                         <Form onSubmit={this.handleSubmit}>
                             <Header as="h3">Query Specs</Header>

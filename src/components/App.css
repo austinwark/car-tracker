@@ -1,3 +1,26 @@
 html, body, .app__main {
     height: 100vh;
 }
+
+/* Side Panel */
+
+
+
+/* Results List */
+
+/* .fixed__header tbody{
+    display:block;
+    overflow:auto;
+    height:80vh;
+}
+.fixed__header thead tr{
+    display: inline;
+    text-align: center;
+} */
+
+.table__container {
+    overflow: auto;
+    height: 80vh;
+    width: 100% !important;
+}
+
