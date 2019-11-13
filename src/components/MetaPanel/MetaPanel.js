@@ -1,6 +1,8 @@
 import React from 'react';
 
-import { Segment, Accordion, Grid, Icon, List, Menu, Divider, Step } from 'semantic-ui-react';
+import Settings from './Settings';
+
+import { Segment, Accordion, Grid, Icon, List, Menu, Divider, Step, Card } from 'semantic-ui-react';
 
 import firebase from '../../firebase';
 import { connect } from 'react-redux';
@@ -8,8 +10,7 @@ import { connect } from 'react-redux';
 class MetaPanel extends React.Component {
 
     state = {
-        currentUser: this.props.currentUser,
-        activeIndex: 0
+        activeIndex: 2
     }
     
     // function to control accordian
@@ -55,12 +56,26 @@ class MetaPanel extends React.Component {
             </Segment>
         )
     }
+
+    displayCustomerDetails = query => {
+        const { customer } = query;
+        const { customerName, customerPhone, customerNotes } = customer;
+        return (
+            <Card raised>
+                <Card.Content>
+                    <Card.Header style={{display: "inline-block"}}>{customerName}</Card.Header>
+                    <Icon name='user circle' size='large' style={{float: "right"}} />
+                    <Card.Meta>{customerPhone}</Card.Meta>
+                    <Card.Description>{customerNotes}</Card.Description>
+                </Card.Content>
+            </Card>
+        )
+    }
     
     render() {
 
-        const { currentUser, activeIndex } = this.state;
-        const { currentQuery } = this.props;
-        console.log(currentQuery)
+        const { activeIndex } = this.state;
+        const { currentQuery, currentUser } = this.props;
         return (
             <Segment raised className="top__segment">
                 <Accordion styled attached="true">
@@ -90,7 +105,7 @@ class MetaPanel extends React.Component {
                     <Accordion.Content
                         active={activeIndex === 1}
                     >
-                        details
+                        {currentQuery && this.displayCustomerDetails(currentQuery)}
                     </Accordion.Content>
                     <Accordion.Title
                         active={activeIndex === 2}
@@ -104,7 +119,7 @@ class MetaPanel extends React.Component {
                     <Accordion.Content
                         active={activeIndex === 2}
                     >
-                        details
+                        <Settings currentQuery={currentQuery} currentUser={currentUser} />
                     </Accordion.Content>
                 </Accordion>
             </Segment>

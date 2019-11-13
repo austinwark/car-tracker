@@ -17,7 +17,7 @@ const App = ({ currentUser, currentQuery }) => (
           <ResultsPanel currentUser={currentUser} />
       </Grid.Column>
       <Grid.Column width={4}>
-          <MetaPanel currentQuery={currentQuery} />
+          <MetaPanel currentQuery={currentQuery} currentUser={currentUser} />
       </Grid.Column>
   </Grid>
 )
