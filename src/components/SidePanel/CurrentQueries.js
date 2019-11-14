@@ -4,7 +4,7 @@ import firebase from '../../firebase';
 import { connect } from 'react-redux';
 import { setCurrentQuery } from '../../actions';
 
-import { Menu, Icon, Label } from 'semantic-ui-react';
+import { Menu, Icon } from 'semantic-ui-react';
 
 class CurrentQueries extends React.Component {
 
@@ -17,6 +17,19 @@ class CurrentQueries extends React.Component {
 
     componentDidMount() {
         this.addNewQueryListener();
+    }
+
+    // is called on changeCurrentQuery -> ensuring props && state is loaded
+    addRemovedQueryListener = () => {
+        const { currentUser, queriesRef, queries } = this.state;
+        //console.log(this.props.currentQuery)
+        queriesRef
+            .child(currentUser.uid)
+            .on("child_removed", snap => {
+                const updatedQueries = queries.filter(quer => quer.id !== snap.val().id); // -> remove deleted query from local state
+                this.setState({ queries: updatedQueries });
+                this.setFirstQuery();
+            })
     }
 
     // listens for change in enabled properties of current query, and updates local state -> which updates components
@@ -47,15 +60,13 @@ class CurrentQueries extends React.Component {
         queriesRef
             .child(currentUser.uid)
             .on('child_added', snap => {
-                const queriesArray = Object.entries(snap.val());
                 loadedQueries.push(snap.val());
                 this.setState({ queries: loadedQueries }, () => this.setFirstQuery());
-
             })
-            //this.setFirstQuery();
     }
 
     displayEnabledQueries = queries => (
+        // eslint-disable-next-line
         queries.length > 0 && queries.map(query => {
             if (query.enabled)
                 return (
@@ -72,6 +83,7 @@ class CurrentQueries extends React.Component {
     )
 
     displayDisabledQueries = queries => (
+        // eslint-disable-next-line
         queries.length > 0 && queries.map(query => {
             if (!query.enabled) 
                 return (
@@ -91,6 +103,7 @@ class CurrentQueries extends React.Component {
         this.setActiveQuery(nextQuery);
         await this.props.setCurrentQuery(nextQuery);
         this.addEnabledListener(nextQuery);
+        this.addRemovedQueryListener();
     }
 
     setActiveQuery = query => {
@@ -108,13 +121,13 @@ class CurrentQueries extends React.Component {
         //const { enabledQueries, disabledQueries } = this.state;
         return (
             <React.Fragment>
-                <Menu vertical secondary pointing fluid inverted>
-                    <Menu.Item as="h4">
+                <Menu vertical secondary pointing fluid inverted borderless className="sidePanel__menu">
+                    <Menu.Item as="h4" className="sidePanel__color">
                         <span><Icon name='exchange' /> ENABLED QUERIES</span>{" "}
                     </Menu.Item>
                     {this.state.queries.length > 0 && this.displayEnabledQueries(this.state.queries)}
 
-                    <Menu.Item as="h4">
+                    <Menu.Item as="h4" className="sidePanel__color">
                         <span><Icon name='exchange' /> DISABLED QUERIES</span>{" "}
                     </Menu.Item>
                     {this.state.queries.length > 0 && this.displayDisabledQueries(this.state.queries)}

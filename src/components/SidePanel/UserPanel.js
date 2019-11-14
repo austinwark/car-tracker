@@ -34,7 +34,7 @@ class UserPanel extends React.Component {
 
         return (
             <div>
-                <div className='user__header'>
+                <div className='sidePanel__color'>
                     <Icon name="search" size='huge' /><h1 className=''>Car Tracker</h1>
                     <div>
                         <Dropdown

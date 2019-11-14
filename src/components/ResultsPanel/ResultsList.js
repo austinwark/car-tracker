@@ -2,7 +2,7 @@ import React from 'react';
 
 import { connect } from 'react-redux';
 
-import { Table } from 'semantic-ui-react';
+import { Table, Header } from 'semantic-ui-react';
 
 import Skeleton from './Skeleton';
 
@@ -47,6 +47,9 @@ class ResultsList extends React.Component {
 
         if (currentQuery) {
             return (
+                <React.Fragment>
+
+                <Header textAlign="center" as="h3" className="table__header">{currentQuery.name}</Header>
                 <div className="table__container">
                     <Table celled>
                         <Table.Header fullWidth>
@@ -65,6 +68,7 @@ class ResultsList extends React.Component {
                         </Table.Body>
                     </Table>
                 </div>
+                </React.Fragment>
             )
         } else {
             return (

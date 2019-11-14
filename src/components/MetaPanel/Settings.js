@@ -2,12 +2,13 @@ import React from 'react';
 
 import firebase from '../../firebase';
 
-import { Checkbox, Button, Form } from 'semantic-ui-react';
+import { Button, Confirm } from 'semantic-ui-react';
 
 class Settings extends React.Component {
 	state = {
 		queriesRef: firebase.database().ref('queries'),
-		loading: false
+        loading: false,
+        open: false
 	};
 
 	handleEnableToggle = (isEnabled) => {
@@ -29,13 +30,29 @@ class Settings extends React.Component {
     };
     
      handleDelete = currentQuery => {
-         this.setState({ loading: true });
-         
+        const { queriesRef } = this.state;
+        const { currentUser } = this.props;
+        this.setState({ loading: true });
+        console.log(currentQuery)
+        queriesRef
+            .child(currentUser.uid)
+            .child(currentQuery.id)
+            .remove()
+            .then(() => {
+                console.log('done');
+                this.setState({ loading: false, open: false });
+            })
+            .catch(err => {
+                this.setState({ loading: false, open: false });
+                console.error(err);
+            })
+        
      }
 
 	render() {
 		if (this.props.currentQuery) {
 			const { currentQuery } = this.props;
+            const { open } = this.state;
 
 			return (
 				<React.Fragment>
@@ -48,12 +65,17 @@ class Settings extends React.Component {
 					</Button>
                     <Button
                         loading={this.state.loading}
-                        onClick={() => this.handleDelete(currentQuery)}
+                        onClick={() => this.setState({ open: true })}
                         color="red"
                         basic
                     >
                         Delete
                     </Button>
+                    <Confirm
+                        open={open}
+                        onCancel={() => this.setState({ open: false })}
+                        onConfirm={() => this.handleDelete(currentQuery)}
+                    />
 				</React.Fragment>
 			);
 		} else {

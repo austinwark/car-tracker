@@ -1,26 +1,59 @@
 /* App */
 html, body, .app__main {
     height: 100vh;
+    background-color: #EDEAD5 !important;
 }
 
 .main__cols {
-    background-color: #0B172A !important;
-}
-
-.top__segment {
-    margin-top: 1rem !important;
+    background-color: #026670 !important;
 }
 
 /* Side Panel */
+.sidePanel__color {
+    color: #FEF9C7 !important;
+}
 
+.sidePanel__color > * {
+    color: #FEF9C7 !important;
+}
+
+.sidePanel__menu {
+    border: none !important;
+}
+
+#sidePanel__button {
+    color: #FCE181 !important;
+    border: solid #FCE181 2px !important;
+}
+
+#sidePanel__button:hover {
+    background-color: #FCE181 !important;
+    color: #026670 !important;
+}
 
 
 /* Results List */
+.top__segment {
+    margin-top: 1rem !important;
+    background-color: #9FEDD7 !important;
+}
+
+.top__segment > h1 {
+    color: #026670 !important;
+}
+
+.table__segment {
+    background-color: #9FEDD7 !important;
+}
 
 .table__container {
     overflow: auto;
     height: 80vh;
     width: 100% !important;
+}
+
+.table__header {
+    margin-top: 1px !important;
 }
 
 /* Skeleton */

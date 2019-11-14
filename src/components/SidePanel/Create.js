@@ -44,11 +44,6 @@ class Create extends React.Component {
         modal: false
     }
 
-    async handleClick() {
-        //const result = await axios.get('/api/scrape');
-        //console.log(result)
-    }
-
     openModal = () => this.setState({ modal: true });
 
     closeModal = () => this.setState({ modal: false });
@@ -114,8 +109,7 @@ class Create extends React.Component {
     }
 
     getQueryResults = async query => {
-        const { model, price, operator, id } = query;
-        const { currentUser, queriesRef } = this.state;
+        const { model, price, operator } = query;
 
         const url = '/api/scrape';
         const payload = { model, price, operator };
@@ -125,18 +119,6 @@ class Create extends React.Component {
         const newQuery = query;
         newQuery.results = queryResults;
         return newQuery;
-        /*
-        queriesRef
-            .child(id)
-            .update(newQuery)
-            .then(() => {
-                console.log('database updated with query results');
-
-            })
-            .catch(err => {
-                console.error(err);
-            })
-            */
     }
 
     render() {
@@ -238,15 +220,22 @@ class Create extends React.Component {
                                     value={customer.customerNotes}
                                     disabled={!enabled}
                                 />
-                                <Button fluid color="violet" type="submit">Submit</Button>
+                                <Button
+                                    loading={loading}
+                                    fluid
+                                    color="violet"
+                                    type="submit"
+                                >
+                                    Submit
+                                </Button>
                         </Form>
                     </Modal.Content>
                 </Modal>
                 <Button
-                    color="orange"
+                    id="sidePanel__button"
+                    basic
                     content="Create Query"
                     onClick={this.openModal}
-                    loading={ loading }
                 />
             </div>
         )

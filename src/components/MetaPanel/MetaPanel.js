@@ -2,15 +2,13 @@ import React from 'react';
 
 import Settings from './Settings';
 
-import { Segment, Accordion, Grid, Icon, List, Menu, Divider, Step, Card } from 'semantic-ui-react';
+import { Segment, Accordion, Icon, Step, Card } from 'semantic-ui-react';
 
-import firebase from '../../firebase';
-import { connect } from 'react-redux';
 
 class MetaPanel extends React.Component {
 
     state = {
-        activeIndex: 2
+        activeIndex: 0
     }
     
     // function to control accordian
@@ -28,9 +26,7 @@ class MetaPanel extends React.Component {
             operator,
             price,
             results,
-            customer,
             creationDate,
-            enabled
         } = query;
         return (
             <Segment size='small' >

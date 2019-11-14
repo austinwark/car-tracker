@@ -25,7 +25,7 @@ class ResultsPanel extends React.Component {
                 </Grid.Row>
                 <Grid.Row style={{paddingTop: 0}}>
                     <Grid.Column>
-                        <Segment raised style={{width: "100%"}}>
+                        <Segment raised style={{width: "100%"}} className="table__segment">
                             <ResultsList currentUser={currentUser} />
                         </Segment>
                     </Grid.Column>
