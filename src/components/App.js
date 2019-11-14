@@ -11,7 +11,7 @@ import { Grid } from 'semantic-ui-react';
 const App = ({ currentUser, currentQuery }) => (
   <Grid stackable>
       <Grid.Column width={3} textAlign="center" className="main__cols">
-          <SidePanel currentUser={currentUser} />
+          <SidePanel currentQuery={currentQuery} currentUser={currentUser} />
       </Grid.Column>
       <Grid.Column width={9} textAlign="center">
           <ResultsPanel currentUser={currentUser} />

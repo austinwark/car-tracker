@@ -10,91 +10,87 @@ class CurrentQueries extends React.Component {
 
     state = {
         currentUser: this.props.currentUser,
-        queriesRef: firebase.database().ref('queries'),
+        queriesRef: firebase.database().ref(`queries`),
         activeQuery: '',
-        enabledQueries: [],
-        disabledQueries: []
+        queries: []
     }
 
     componentDidMount() {
-        this.addQueryListener();
+        this.addNewQueryListener();
     }
 
-    addQueryListener = () => {
-        const { currentUser, queriesRef } = this.state;
-        let enabledLocalQueries = [];
-        let disabledLocalQueries = [];
+    // listens for change in enabled properties of current query, and updates local state -> which updates components
+    addEnabledListener = (nextQuery) => {
+        const { queriesRef, currentUser } = this.state;
         queriesRef
             .child(currentUser.uid)
-            .on('value', snap => {
-                const queriesArray = Object.entries(snap.val());
-                //console.log(queriesArray)
-                console.log(1)
-                queriesArray.forEach(set => {
-                    const query = set[1];
-                    //console.log(query.enabled)
-                    query.enabled ? enabledLocalQueries.push(query) : disabledLocalQueries.push(query)
-                })
-                console.log(enabledLocalQueries)
-                if (enabledLocalQueries.length > 0){
-                    enabledLocalQueries = enabledLocalQueries.filter((item, index, self) => 
-                        index === self.findIndex((t) => (
-                            t.id === item.id && t.name === item.name
-                        ))
-                    )
-                    enabledLocalQueries = enabledLocalQueries.filter((item, index) => item.enabled === true)
-                }
-                if (disabledLocalQueries.length > 0) {
-                    disabledLocalQueries = disabledLocalQueries.filter((item, index, self) => 
-                        index === self.findIndex((t) => (
-                            t.id === item.id && t.name === item.name
-                        ))
-                    )
-                    disabledLocalQueries = disabledLocalQueries.filter((item, index) => item.enabled === false)
-                }
-
-                console.log(enabledLocalQueries)
-                this.setState({ enabledQueries: enabledLocalQueries, disabledQueries: disabledLocalQueries })
-                this.setFirstQuery();
+            .child(nextQuery.id)
+            .child('enabled')
+            .on("value", snap => {
+                const enabledVal = snap.val();
+                if (enabledVal !== this.props.currentQuery.enabled) {
+                    const { queries } = this.state;
+                    const updatedQuery = queries.find(quer => quer.id === nextQuery.id)
+                    const otherQueries = queries.filter(quer => quer.id !== nextQuery.id)
+                    updatedQuery.enabled = enabledVal;
+                    const updatedQueries = [updatedQuery, ...otherQueries]
+                    console.log(updatedQueries)
+                    this.setState({ queries: updatedQueries });
+                } 
             })
+    }
+
+    /* Listens for initial queries loaded in & new queries created -> then updates state */
+    addNewQueryListener = () => {
+        const { currentUser, queriesRef, queries } = this.state;
+        const loadedQueries = queries;
+        queriesRef
+            .child(currentUser.uid)
+            .on('child_added', snap => {
+                const queriesArray = Object.entries(snap.val());
+                loadedQueries.push(snap.val());
+                this.setState({ queries: loadedQueries }, () => this.setFirstQuery());
+
+            })
+            //this.setFirstQuery();
     }
 
     displayEnabledQueries = queries => (
         queries.length > 0 && queries.map(query => {
-            if (query.enabled === true) {
-                console.log('is true')
-            return (
-                <Menu.Item
-                    key={query.id}
-                    active={query.id === this.state.activeQuery}
-                    onClick={() => this.changeCurrentQuery(query)}
-                    style={{cursor: "pointer", textDecoration: "none"}}
-                >
-                    # { query.name} <span>({query.results.arr.length})</span>
-            </Menu.Item> ) }
+            if (query.enabled)
+                return (
+                    <Menu.Item
+                        key={query.id}
+                        active={query.id === this.state.activeQuery}
+                        onClick={() => this.changeCurrentQuery(query)}
+                        style={{cursor: "pointer", textDecoration: "none"}}
+                    >
+                        # { query.name} <span>({query.results.arr.length})</span>
+                </Menu.Item>
+                )
         })
     )
 
     displayDisabledQueries = queries => (
         queries.length > 0 && queries.map(query => {
-            if (query.enabled === false) {
-                console.log('is false')
-            return (
-                <Menu.Item
-                key={query.id}
-                active={query.id === this.state.activeQuery}
-                onClick={() => this.changeCurrentQuery(query)}
-                style={{cursor: "pointer", textDecoration: "none"}}
-                >
-                    # {query.name}
+            if (!query.enabled) 
+                return (
+                    <Menu.Item
+                    key={query.id}
+                    active={query.id === this.state.activeQuery}
+                    onClick={() => this.changeCurrentQuery(query)}
+                    style={{cursor: "pointer", textDecoration: "none"}}
+                    >
+                        # {query.name}
 
-            </Menu.Item> )}
+                </Menu.Item> )
         })
     )
 
-    changeCurrentQuery = query => {
-        this.setActiveQuery(query);
-        this.props.setCurrentQuery(query);
+    changeCurrentQuery = async nextQuery => {
+        this.setActiveQuery(nextQuery);
+        await this.props.setCurrentQuery(nextQuery);
+        this.addEnabledListener(nextQuery);
     }
 
     setActiveQuery = query => {
@@ -102,28 +98,27 @@ class CurrentQueries extends React.Component {
     }
 
     setFirstQuery = () => {
-        const { enabledQueries, disabledQueries } = this.state;
-        enabledQueries.length > 0 ? this.changeCurrentQuery(enabledQueries[0]) : this.changeCurrentQuery(disabledQueries[0]);
+        const { queries } = this.state;
+        //enabledQueries.length > 0 ? this.changeCurrentQuery(enabledQueries[0]) : this.changeCurrentQuery(disabledQueries[0]);
+        queries.length > 0 && this.changeCurrentQuery(queries[0]);
     }
 
     render() {
 
         //const { enabledQueries, disabledQueries } = this.state;
-
         return (
             <React.Fragment>
                 <Menu vertical secondary pointing fluid inverted>
                     <Menu.Item as="h4">
                         <span><Icon name='exchange' /> ENABLED QUERIES</span>{" "}
                     </Menu.Item>
-                    {this.displayEnabledQueries(this.state.enabledQueries)}
+                    {this.state.queries.length > 0 && this.displayEnabledQueries(this.state.queries)}
 
                     <Menu.Item as="h4">
                         <span><Icon name='exchange' /> DISABLED QUERIES</span>{" "}
                     </Menu.Item>
-                    {this.displayDisabledQueries(this.state.disabledQueries)}
+                    {this.state.queries.length > 0 && this.displayDisabledQueries(this.state.queries)}
                 </Menu>
-                {console.log('-------------------')}
             </React.Fragment>
         )
     }

@@ -30,7 +30,7 @@ class Create extends React.Component {
 
     state = {
         currentUser: this.props.currentUser,
-        queriesRef: firebase.database().ref('queries'),
+        queriesRef: firebase.database().ref(`queries/${this.props.currentUser.uid}`),
         queryName: '',
         model: '',
         operator: '',
@@ -38,6 +38,7 @@ class Create extends React.Component {
         customer: INITIAL_CUSTOMER,
         enabled: false,
         disabled: true,
+        loading: false,
         error: [],
         success: true,
         modal: false
@@ -79,12 +80,14 @@ class Create extends React.Component {
         this.setState({ customer });
     }
 
-    handleSubmit = event => {
+    /* Previous handling of new query */
+    handleSubmit = async event => {
         event.preventDefault();
+        this.setState({ loading: true });
         const { customer, queryName, model, price, operator, currentUser, queriesRef } = this.state;
         const creationDate = moment().format("L");
         const key = queriesRef.child(currentUser.uid).push().key;
-        const newQuery = {
+        let newQuery = {
             id: key,
             name: queryName,
             model: model,
@@ -94,17 +97,18 @@ class Create extends React.Component {
             creationDate: creationDate,
             enabled: true
         };
+        newQuery = await this.getQueryResults(newQuery);
         queriesRef
-            .child(currentUser.uid)
             .child(key)
             .update(newQuery)
             .then(() => {
                 console.log('query added')
                 this.closeModal();
-                this.getQueryResults(newQuery);
+                this.setState({ loading: false });
             })
             .catch(err => {
                 console.error(err);
+                this.setState({ loading: false });
             })
 
     }
@@ -120,9 +124,9 @@ class Create extends React.Component {
 
         const newQuery = query;
         newQuery.results = queryResults;
-        console.log(newQuery)
+        return newQuery;
+        /*
         queriesRef
-            .child(currentUser.uid)
             .child(id)
             .update(newQuery)
             .then(() => {
@@ -132,11 +136,12 @@ class Create extends React.Component {
             .catch(err => {
                 console.error(err);
             })
+            */
     }
 
     render() {
 
-        const { modal, queryName, model, operator, price, enabled, customer } = this.state;
+        const { modal, queryName, model, operator, price, enabled, customer, loading } = this.state;
 
         return (
             <div>
@@ -241,6 +246,7 @@ class Create extends React.Component {
                     color="orange"
                     content="Create Query"
                     onClick={this.openModal}
+                    loading={ loading }
                 />
             </div>
         )
