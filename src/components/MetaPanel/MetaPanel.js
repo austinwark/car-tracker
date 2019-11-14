@@ -8,7 +8,7 @@ import { Segment, Accordion, Icon, Step, Card } from 'semantic-ui-react';
 class MetaPanel extends React.Component {
 
     state = {
-        activeIndex: 0
+        activeIndex: 2
     }
     
     // function to control accordian
@@ -29,27 +29,27 @@ class MetaPanel extends React.Component {
             creationDate,
         } = query;
         return (
-            <Segment size='small' >
+            <React.Fragment>
                 <Step.Group widths={2} fluid unstackable size='mini'>
-                    <Step size="mini" content="Query Name" /><Step content={name} />
+                    <Step size="mini" content="Query Name" className="left__step" /><Step content={name} className="right__step"/>
                 </Step.Group>
                 <Step.Group widths={2} fluid unstackable size='mini'>
-                    <Step size="mini" content="Model" /><Step content={model} />
+                    <Step size="mini" content="Model" className="left__step" /><Step content={model} className="right__step" />
                 </Step.Group>
                 <Step.Group widths={2} fluid unstackable size='mini'>
-                    <Step size="mini" content="Operator" /><Step content={operator + " than"} />
+                    <Step size="mini" content="Operator" className="left__step" /><Step content={operator + " than"} className="right__step" />
                 </Step.Group>
                 <Step.Group widths={2} fluid unstackable size='mini'>
-                    <Step size="mini" content="Price" /><Step content={"$" + price} />
+                    <Step size="mini" content="Price" className="left__step" /><Step content={"$" + price} className="right__step" />
                 </Step.Group>
-                {results.arr.length > 0 &&
+                {results &&
                 <Step.Group widths={2} fluid unstackable size='mini'>
-                    <Step size="mini" content="Results" /><Step content={results.arr.length} />
+                    <Step size="mini" content="Results" className="left__step" /><Step content={results.arr.length} className="right__step" />
                 </Step.Group>}
                 <Step.Group widths={2} fluid unstackable size='mini'>
-                    <Step size="mini" content="Created" /><Step content={creationDate} />
+                    <Step size="mini" content="Created" className="left__step" /><Step content={creationDate} className="right__step" />
                 </Step.Group>
-            </Segment>
+            </React.Fragment>
         )
     }
 
@@ -71,55 +71,63 @@ class MetaPanel extends React.Component {
     render() {
 
         const { activeIndex } = this.state;
-        const { currentQuery, currentUser } = this.props;
-        return (
-            <Segment raised className="top__segment">
-                <Accordion styled attached="true">
-                    <Accordion.Title
-                        active={activeIndex === 0}
-                        index={0}
-                        onClick={this.setActiveIndex}
-                    >
-                        <Icon name='dropdown' />
-                        <Icon name='dna' />
-                        Query Details
-                    </Accordion.Title>
-                    <Accordion.Content
-                        active={activeIndex === 0}
-                    >
-                        {currentQuery && this.displayQueryDetails(currentQuery)}
-                    </Accordion.Content>
-                    <Accordion.Title
-                        active={activeIndex === 1}
-                        index={1}
-                        onClick={this.setActiveIndex}
-                    >
-                        <Icon name='dropdown' />
-                        <Icon name='user' />
-                        Customer Details
-                    </Accordion.Title>
-                    <Accordion.Content
-                        active={activeIndex === 1}
-                    >
-                        {currentQuery && this.displayCustomerDetails(currentQuery)}
-                    </Accordion.Content>
-                    <Accordion.Title
-                        active={activeIndex === 2}
-                        index={2}
-                        onClick={this.setActiveIndex}
-                    >
-                        <Icon name='dropdown' />
-                        <Icon name='cogs' />
-                        Settings
-                    </Accordion.Title>
-                    <Accordion.Content
-                        active={activeIndex === 2}
-                    >
-                        <Settings currentQuery={currentQuery} currentUser={currentUser} />
-                    </Accordion.Content>
-                </Accordion>
-            </Segment>
-        )
+        const { currentQuery, currentUser, isLoading } = this.props;
+        if (!isLoading && !currentQuery) {
+            return (
+                <Segment raised className='top__segment'>
+                    <p>Please create a query</p>
+                </Segment>
+            )
+        } else {
+            return (
+                <Segment raised className="top__segment">
+                    <Accordion styled attached="true">
+                        <Accordion.Title
+                            active={activeIndex === 0}
+                            index={0}
+                            onClick={this.setActiveIndex}
+                        >
+                            <Icon name='dropdown' />
+                            <Icon name='dna' />
+                            Query Details
+                        </Accordion.Title>
+                        <Accordion.Content
+                            active={activeIndex === 0}
+                        >
+                            {currentQuery && this.displayQueryDetails(currentQuery)}
+                        </Accordion.Content>
+                        <Accordion.Title
+                            active={activeIndex === 1}
+                            index={1}
+                            onClick={this.setActiveIndex}
+                        >
+                            <Icon name='dropdown' />
+                            <Icon name='user' />
+                            Customer Details
+                        </Accordion.Title>
+                        <Accordion.Content
+                            active={activeIndex === 1}
+                        >
+                            {currentQuery && this.displayCustomerDetails(currentQuery)}
+                        </Accordion.Content>
+                        <Accordion.Title
+                            active={activeIndex === 2}
+                            index={2}
+                            onClick={this.setActiveIndex}
+                        >
+                            <Icon name='dropdown' />
+                            <Icon name='cogs' />
+                            Settings
+                        </Accordion.Title>
+                        <Accordion.Content
+                            active={activeIndex === 2}
+                        >
+                            <Settings currentQuery={currentQuery} currentUser={currentUser} isLoading={isLoading} />
+                        </Accordion.Content>
+                    </Accordion>
+                </Segment>
+            )
+        }
     }
 }
 

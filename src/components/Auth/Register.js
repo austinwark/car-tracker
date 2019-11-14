@@ -64,7 +64,7 @@ class Register extends React.Component {
 						})
 						.then(() => {
 							this.saveUser(createdUser).then(() => {
-								console.log('user saved');
+								this.handleEmailVerification();
 							});
 						})
 						.catch((err) => {
@@ -83,6 +83,15 @@ class Register extends React.Component {
         return this.state.usersRef.child(createdUser.user.uid).set({
             name: createdUser.user.displayName,
             email: createdUser.user.email
+        })
+	}
+	
+	handleEmailVerification = () => {
+        const user = firebase.auth().currentUser;
+        user.sendEmailVerification().then(() => {
+            console.log('email sent')
+        }).catch(err => {
+            console.error(err)
         })
     }
 
@@ -104,6 +113,7 @@ class Register extends React.Component {
 					</Header>
 					<Form onSubmit={this.handleSubmit} size="large">
 						<Segment stacked>
+							<span id="register__message">You will be sent an email verification link upon registration</span>
 							<Form.Input
 								fluid
 								name="username"

@@ -8,7 +8,32 @@ import firebase from '../../firebase';
 class UserPanel extends React.Component {
 
     state = {
-        currentUser: this.props.currentUser
+        currentUser: this.props.currentUser,
+        isVerified: false
+    }
+
+    componentDidMount() {
+        firebase.auth().onIdTokenChanged(user => {
+            if (user) {
+                user.reload().then(() => {
+                        if (user.emailVerified) {
+                            this.setState({ isVerified: true });
+                        } else {
+                            this.setState({ isVerified: false });
+                        }
+                    }
+                )
+            }
+        })
+    }
+
+    handleEmailVerification = () => {
+        const user = firebase.auth().currentUser;
+        user.sendEmailVerification().then(() => {
+            console.log('email sent')
+        }).catch(err => {
+            console.error(err)
+        })
     }
 
     dropdownOptions = () => [
@@ -16,6 +41,13 @@ class UserPanel extends React.Component {
             key: 'user',
             text: <span>Signed in as <strong>{this.state.currentUser.displayName}</strong></span>,
             disabled: true
+        },
+        {
+            key: 'verified',
+            text: this.state.isVerified
+                ? <span>Email is verified</span>
+                : <span onClick={this.handleEmailVerification}>Resend verification link</span>,
+            disabled: this.state.isVerified
         },
         {
             key: 'signout',

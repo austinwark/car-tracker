@@ -8,13 +8,22 @@ html, body, .app__main {
     background-color: #026670 !important;
 }
 
+/* Register */
+#register__message {
+    font-style: italic;
+    font-weight: 800;
+    color: rgba(19, 22, 228, 0.548);
+}
+
 /* Side Panel */
 .sidePanel__color {
     color: #FEF9C7 !important;
+    font-weight: bold;
 }
 
 .sidePanel__color > * {
     color: #FEF9C7 !important;
+    font-weight: bold;
 }
 
 .sidePanel__menu {
@@ -31,6 +40,15 @@ html, body, .app__main {
     color: #026670 !important;
 }
 
+#submit__button {
+    color: #026670 !important;
+    border: solid 1px #026670 !important;
+}
+
+#submit__button:hover {
+    background-color: #026670 !important;
+    color: #FCE181 !important;
+}
 
 /* Results List */
 .top__segment {
@@ -43,7 +61,9 @@ html, body, .app__main {
 }
 
 .table__segment {
-    background-color: #9FEDD7 !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+    padding-top: 0 !important;
 }
 
 .table__container {
@@ -53,7 +73,50 @@ html, body, .app__main {
 }
 
 .table__header {
-    margin-top: 1px !important;
+    margin: 0 !important;
+    padding-top: 1rem !important;
+    height: 5rem;
+    background: rgba(254,249,199,1);
+    background: -moz-linear-gradient(top, rgba(254,249,199,1) 0%, rgba(249,250,251,0.44) 69%, rgba(249,250,251,0.19) 100%);
+    background: -webkit-gradient(left top, left bottom, color-stop(0%, rgba(254,249,199,1)), color-stop(69%, rgba(249,250,251,0.44)), color-stop(100%, rgba(249,250,251,0.0)));
+    background: -webkit-linear-gradient(top, rgba(254,249,199,1) 0%, rgba(249,250,251,0.44) 69%, rgba(249,250,251,0.0) 100%);
+    background: -o-linear-gradient(top, rgba(254,249,199,1) 0%, rgba(249,250,251,0.44) 69%, rgba(249,250,251,0.0) 100%);
+    background: -ms-linear-gradient(top, rgba(254,249,199,1) 0%, rgba(249,250,251,0.44) 69%, rgba(249,250,251,0.0) 100%);
+    background: linear-gradient(to bottom, rgba(254,249,199,1) 0%, rgba(249,250,251,0.44) 69%, rgba(249,250,251,0.0) 100%);
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#fef9c7', endColorstr='#f9fafb', GradientType=0 );
+}
+
+/* Meta Panel */
+.left__step {
+    font-weight: bold !important;
+    background: rgba(159,237,215,1) !important;
+    background: -moz-linear-gradient(left, rgba(159,237,215,1) 0%, rgba(254,249,231,1) 100%) !important;
+    background: -webkit-gradient(left top, right top, color-stop(0%, rgba(159,237,215,1)), color-stop(100%, rgba(254,249,231,1))) !important;
+    background: -webkit-linear-gradient(left, rgba(159,237,215,1) 0%, rgba(254,249,231,1) 100%) !important;
+    background: -o-linear-gradient(left, rgba(159,237,215,1) 0%, rgba(254,249,231,1) 100%) !important;
+    background: -ms-linear-gradient(left, rgba(159,237,215,1) 0%, rgba(254,249,231,1) 100%) !important;
+    background: linear-gradient(to right, rgba(159,237,215,1) 0%, rgba(254,249,231,1) 100%) !important;
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#9fedd7', endColorstr='#fef9e7', GradientType=1 ) !important;
+}
+
+.left__step::after {
+    background: rgba(254,249,231,1) !important;
+}
+
+.right__step {
+    font-weight: bold !important;
+    background: rgba(254,249,231,0.9) !important;
+    background: -moz-linear-gradient(left, rgba(254,249,231,0.9) 0%, rgba(159,237,215,0.9) 100%) !important;
+    background: -webkit-gradient(left top, right top, color-stop(0%, rgba(254,249,231,0.9)), color-stop(100%, rgba(159,237,215,0.9))) !important;
+    background: -webkit-linear-gradient(left, rgba(254,249,231,0.9) 0%, rgba(159,237,215,0.9) 100%) !important;
+    background: -o-linear-gradient(left, rgba(254,249,231,0.9) 0%, rgba(159,237,215,0.9) 100%) !important;
+    background: -ms-linear-gradient(left, rgba(254,249,231,0.9) 0%, rgba(159,237,215,0.9) 100%) !important;
+    background: linear-gradient(to right, rgba(254,249,231,0.9) 0%, rgba(159,237,215,0.9) 100%) !important;
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#fef9e7', endColorstr='#9fedd7', GradientType=1 ) !important;
+}
+
+.settings__button {
+    width: 7rem !important;
 }
 
 /* Skeleton */
@@ -121,5 +184,3 @@ html, body, .app__main {
     left: 40px;
     right: 20px;
 }
-
-/* Meta Panel */

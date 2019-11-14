@@ -2,7 +2,7 @@ import React from 'react';
 
 import { connect } from 'react-redux';
 
-import { Table, Header } from 'semantic-ui-react';
+import { Table, Header, Message } from 'semantic-ui-react';
 
 import Skeleton from './Skeleton';
 
@@ -23,7 +23,9 @@ class ResultsList extends React.Component {
                         <Table.Cell>{result.make}</Table.Cell>
                         <Table.Cell>{result.model}</Table.Cell>
                         <Table.Cell>{result.trim}</Table.Cell>
-                        <Table.Cell>{result.price}</Table.Cell>
+                        <Table.Cell>
+                            {Number(result.price).toLocaleString('en-US', { style: 'currency', currency: 'USD' })}  
+                        </Table.Cell>
                         <Table.Cell>{result.extColor}</Table.Cell>
                     </Table.Row>
                 )
@@ -42,16 +44,16 @@ class ResultsList extends React.Component {
 
     render() {
 
-        const { currentQuery } = this.props;
+        const { currentQuery, isLoading } = this.props;
         const { resultsLoading } = this.state;
 
-        if (currentQuery) {
+        if (!isLoading && currentQuery) {
             return (
                 <React.Fragment>
 
                 <Header textAlign="center" as="h3" className="table__header">{currentQuery.name}</Header>
-                <div className="table__container">
-                    <Table celled>
+                <div className="">
+                    <Table celled striped>
                         <Table.Header fullWidth>
                             <Table.Row>
                                 <Table.HeaderCell>Stock #</Table.HeaderCell>
@@ -70,6 +72,10 @@ class ResultsList extends React.Component {
                 </div>
                 </React.Fragment>
             )
+        } else if (!isLoading && !currentQuery) {
+            return (
+                <Message>No Queries, create one now!</Message>
+            )
         } else {
             return (
                 <div className="table__container">
@@ -81,7 +87,8 @@ class ResultsList extends React.Component {
 }
 
 const mapStateToProps = state => ({
-    currentQuery: state.query.currentQuery
+    currentQuery: state.query.currentQuery,
+    isLoading: state.query.isLoading
 });
 
 

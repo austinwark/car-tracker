@@ -30,7 +30,7 @@ class Create extends React.Component {
 
     state = {
         currentUser: this.props.currentUser,
-        queriesRef: firebase.database().ref(`queries/${this.props.currentUser.uid}`),
+        queriesRef: firebase.database().ref(`queries`),
         queryName: '',
         model: '',
         operator: '',
@@ -42,6 +42,16 @@ class Create extends React.Component {
         error: [],
         success: true,
         modal: false
+    }
+    
+    resetFields = () => {
+        this.setState({
+            queryName: "",
+            model: "",
+            operator: "",
+            price: 0,
+            customer: INITIAL_CUSTOMER,
+        });
     }
 
     openModal = () => this.setState({ modal: true });
@@ -94,15 +104,18 @@ class Create extends React.Component {
         };
         newQuery = await this.getQueryResults(newQuery);
         queriesRef
+            .child(currentUser.uid)
             .child(key)
             .update(newQuery)
             .then(() => {
                 console.log('query added')
                 this.closeModal();
+                this.resetFields();
                 this.setState({ loading: false });
             })
             .catch(err => {
                 console.error(err);
+                //this.resetFields();
                 this.setState({ loading: false });
             })
 
@@ -115,11 +128,20 @@ class Create extends React.Component {
         const payload = { model, price, operator };
         const response = await axios.post(url, payload);
         const queryResults = response.data;
+        if (queryResults.arr.length <= 0) {
+            const newQuery = query;
+            const results = {
+                arr: []
+            }
+            newQuery.results = results;
+            return newQuery
+        }
 
         const newQuery = query;
         newQuery.results = queryResults;
         return newQuery;
     }
+
 
     render() {
 
@@ -223,8 +245,9 @@ class Create extends React.Component {
                                 <Button
                                     loading={loading}
                                     fluid
-                                    color="violet"
                                     type="submit"
+                                    basic
+                                    id="submit__button"
                                 >
                                     Submit
                                 </Button>

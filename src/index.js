@@ -16,16 +16,23 @@ import { createStore } from 'redux';
 import { Provider, connect } from 'react-redux';
 import { composeWithDevTools } from 'redux-devtools-extension';
 import rootReducer from './reducers';
-import { setUser, clearUser } from './actions';
+import { setUser, clearUser, setCurrentQuery } from './actions';
 
 const store = createStore(rootReducer, composeWithDevTools());
 
 class Root extends React.Component {
 	componentDidMount() {
-        console.log(this.props.isLoading)
-		firebase.auth().onAuthStateChanged((user) => {
+		console.log(this.props.isLoading)
+		// const initialQuery = {
+		// 	isDefault: true,
+		// 	results: {
+		// 		arr: []
+		// 	}
+		// }
+		firebase.auth().onIdTokenChanged((user) => {
 			if (user) {
 				this.props.setUser(user);
+				this.props.setCurrentQuery(null)
 				this.props.history.push('/');
 			} else {
 				this.props.history.push('/login');
@@ -52,7 +59,7 @@ const mapStateToProps = state => ({
 const RootWithAuth = withRouter(
     connect(
         mapStateToProps,
-        { setUser, clearUser }
+        { setUser, clearUser, setCurrentQuery }
         )(Root)
     );
 

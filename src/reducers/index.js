@@ -24,7 +24,8 @@ const user_reducer = (state = initialUserState, action) => {
 }
 
 const initialQueryState = {
-    currentQuery: null
+    currentQuery: null,
+    isLoading: true
 }
 
 const query_reducer = (state = initialQueryState, action) => {
@@ -32,7 +33,8 @@ const query_reducer = (state = initialQueryState, action) => {
         case actionTypes.SET_CURRENT_QUERY:
             return {
                 ...state,
-                currentQuery: action.payload.currentQuery
+                currentQuery: action.payload.currentQuery,
+                isLoading: false
             };
         default:
             return state;

@@ -27,7 +27,11 @@ class CurrentQueries extends React.Component {
             .child(currentUser.uid)
             .on("child_removed", snap => {
                 const updatedQueries = queries.filter(quer => quer.id !== snap.val().id); // -> remove deleted query from local state
-                this.setState({ queries: updatedQueries });
+                console.log("UPDATED : ", updatedQueries)
+                this.setState({ queries: updatedQueries }, () => {
+
+                });
+                console.log("STATE: ", this.state.queries)
                 this.setFirstQuery();
             })
     }
@@ -48,7 +52,13 @@ class CurrentQueries extends React.Component {
                     updatedQuery.enabled = enabledVal;
                     const updatedQueries = [updatedQuery, ...otherQueries]
                     console.log(updatedQueries)
-                    this.setState({ queries: updatedQueries });
+                    /* test again incase state changed in meantime */
+                    const testRun = this.state.queries.find(quer => quer.id === nextQuery.id);
+                    if (testRun !== -1) {
+                        console.log('found', nextQuery)
+                        this.setState({ queries: updatedQueries });
+                    } else  
+                        console.log('not found')
                 } 
             })
     }
@@ -76,7 +86,7 @@ class CurrentQueries extends React.Component {
                         onClick={() => this.changeCurrentQuery(query)}
                         style={{cursor: "pointer", textDecoration: "none"}}
                     >
-                        # { query.name} <span>({query.results.arr.length})</span>
+                        # { query.name} <span>({query.results ? query.results.arr.length : 0})</span>
                 </Menu.Item>
                 )
         })
@@ -100,6 +110,7 @@ class CurrentQueries extends React.Component {
     )
 
     changeCurrentQuery = async nextQuery => {
+        console.log('changeCurrentQuery')
         this.setActiveQuery(nextQuery);
         await this.props.setCurrentQuery(nextQuery);
         this.addEnabledListener(nextQuery);
@@ -112,8 +123,9 @@ class CurrentQueries extends React.Component {
 
     setFirstQuery = () => {
         const { queries } = this.state;
+        console.log('setFirstQuery')
         //enabledQueries.length > 0 ? this.changeCurrentQuery(enabledQueries[0]) : this.changeCurrentQuery(disabledQueries[0]);
-        queries.length > 0 && this.changeCurrentQuery(queries[0]);
+        queries.length > 0 ? this.changeCurrentQuery(queries[0]) : this.props.setCurrentQuery(null);
     }
 
     render() {

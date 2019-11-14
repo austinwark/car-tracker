@@ -8,7 +8,7 @@ import { connect } from 'react-redux';
 
 import { Grid } from 'semantic-ui-react';
 
-const App = ({ currentUser, currentQuery }) => (
+const App = ({ currentUser, currentQuery, isLoading }) => (
   <Grid stackable>
       <Grid.Column width={3} textAlign="center" className="main__cols">
           <SidePanel currentQuery={currentQuery} currentUser={currentUser} />
@@ -17,13 +17,14 @@ const App = ({ currentUser, currentQuery }) => (
           <ResultsPanel currentUser={currentUser} />
       </Grid.Column>
       <Grid.Column width={4}>
-          <MetaPanel currentQuery={currentQuery} currentUser={currentUser} />
+          <MetaPanel currentQuery={currentQuery} currentUser={currentUser} isLoading={isLoading} />
       </Grid.Column>
   </Grid>
 )
 const mapStateToProps = state => ({
   currentUser: state.user.currentUser,
-  currentQuery: state.query.currentQuery
+  currentQuery: state.query.currentQuery,
+  isLoading: state.query.isLoading
 });
 
 export default connect(mapStateToProps, null)(App);

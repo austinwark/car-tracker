@@ -1,8 +1,9 @@
 import React from 'react';
 
 import firebase from '../../firebase';
+import Skeleton from '../ResultsPanel/Skeleton';
 
-import { Button, Confirm } from 'semantic-ui-react';
+import { Button, Confirm, Icon, Grid, Popup } from 'semantic-ui-react';
 
 class Settings extends React.Component {
 	state = {
@@ -50,27 +51,64 @@ class Settings extends React.Component {
      }
 
 	render() {
-		if (this.props.currentQuery) {
+        if (this.props.isLoading) {
+            return Skeleton;
+        }
+        else {
 			const { currentQuery } = this.props;
             const { open } = this.state;
 
 			return (
 				<React.Fragment>
-					<Button
-						loading={this.state.loading}
-						onClick={() => this.handleEnableToggle(currentQuery.enabled)}
-						basic
-					>
-						{currentQuery.enabled ? 'Disable' : 'Enable'}
-					</Button>
-                    <Button
-                        loading={this.state.loading}
-                        onClick={() => this.setState({ open: true })}
-                        color="red"
-                        basic
-                    >
-                        Delete
-                    </Button>
+                    <Grid>
+                        <Grid.Row>
+                            <Grid.Column>
+                                <Button
+                                    basic
+                                    color="green"
+                                >
+                                    Verify Email
+                                </Button>
+                            </Grid.Column>
+                        </Grid.Row>
+                        <Grid.Row>
+                            <Grid.Column>
+                                <Button
+                                    loading={this.state.loading}
+                                    onClick={() => this.handleEnableToggle(currentQuery.enabled)}
+                                    basic
+                                    className="settings__button"
+                                >
+                                    {currentQuery.enabled ? 'Disable' : 'Enable'}
+                                </Button>
+                                <Popup
+                                    key={0}
+                                    position="top center"
+                                    content="Stops the collection of data. Will also turn off automatic email updates if enabled"
+                                    trigger={<Icon name='question circle outline' size='large' style={{cursor: "pointer"}} />}
+                                />
+                            </Grid.Column>
+                        </Grid.Row>
+                        <Grid.Row>
+                            <Grid.Column>    
+                                <Button
+                                    loading={this.state.loading}
+                                    onClick={() => this.setState({ open: true })}
+                                    color="red"
+                                    basic
+                                    className="settings__button"
+                                >
+                                    Delete
+                                </Button>
+                                <Popup
+                                    key={1}
+                                    position="top center"
+                                    content="Permanently deletes query, and all automatic email updates"
+                                    trigger={<Icon name='question circle outline' size='large' style={{cursor: "pointer"}} />}
+                                />
+                            </Grid.Column>
+                        </Grid.Row>
+                    </Grid>
                     <Confirm
                         open={open}
                         onCancel={() => this.setState({ open: false })}
@@ -78,8 +116,6 @@ class Settings extends React.Component {
                     />
 				</React.Fragment>
 			);
-		} else {
-			return 'loading';
 		}
 	}
 }
