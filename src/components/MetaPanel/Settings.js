@@ -1,39 +1,25 @@
 import React from 'react';
-
+import axios from 'axios';
 import firebase from '../../firebase';
 import Skeleton from '../ResultsPanel/Skeleton';
+import { setCurrentNotification } from '../../actions';
+import { connect } from 'react-redux';
+import { Button, Confirm, Icon, Grid, Popup, Table } from 'semantic-ui-react';
 
-import { Button, Confirm, Icon, Grid, Popup } from 'semantic-ui-react';
 
 class Settings extends React.Component {
 	state = {
-		queriesRef: firebase.database().ref('queries'),
-        loading: false,
+        queriesRef: firebase.database().ref('queries'),
+        isVerified: firebase.auth().currentUser.emailVerified,
+        deleteLoading: false,
+        emailLoading: false,
         open: false
-	};
-
-	handleEnableToggle = (isEnabled) => {
-		this.setState({ loading: true });
-		const { currentUser, currentQuery } = this.props;
-		const { queriesRef } = this.state;
-		queriesRef
-			.child(currentUser.uid)
-			.child(currentQuery.id)
-			.update({ enabled: !isEnabled })
-			.then(() => {
-				console.log('enabled toggled');
-				this.setState({ loading: false });
-			})
-			.catch((err) => {
-				console.error(err);
-				this.setState({ loading: false });
-			});
     };
     
      handleDelete = currentQuery => {
         const { queriesRef } = this.state;
         const { currentUser } = this.props;
-        this.setState({ loading: true });
+        this.setState({ deleteLoading: true });
         console.log(currentQuery)
         queriesRef
             .child(currentUser.uid)
@@ -41,18 +27,41 @@ class Settings extends React.Component {
             .remove()
             .then(() => {
                 console.log('done');
-                this.setState({ loading: false, open: false });
+                this.setState({ deleteLoading: false, open: false });
             })
             .catch(err => {
-                this.setState({ loading: false, open: false });
+                this.setState({ deleteLoading: false, open: false });
                 console.error(err);
             })
         
      }
 
+    handleSendToEmail = async () => {
+        const { currentQuery, currentUser } = this.props;
+        const { arr } = currentQuery.results;
+
+        this.setState({ emailLoading: true });
+        const url = '/api/mailer';
+        const payload = { results: arr };
+        const response = await axios.post(url, payload);
+        if (response.status === 200) {
+            this.props.setCurrentNotification("Email successfully sent!")
+        } else {
+            this.props.setCurrentNotification("Email failed to be sent!")
+        }
+        this.setState({ emailLoading: false });
+    }
+
+    // renderDataToText = results => {
+        
+    // }
+
+
+
+
 	render() {
         if (this.props.isLoading) {
-            return Skeleton;
+            return <Skeleton />;
         }
         else {
 			const { currentQuery } = this.props;
@@ -64,27 +73,19 @@ class Settings extends React.Component {
                         <Grid.Row>
                             <Grid.Column>
                                 <Button
-                                    basic
                                     color="green"
-                                >
-                                    Verify Email
-                                </Button>
-                            </Grid.Column>
-                        </Grid.Row>
-                        <Grid.Row>
-                            <Grid.Column>
-                                <Button
-                                    loading={this.state.loading}
-                                    onClick={() => this.handleEnableToggle(currentQuery.enabled)}
                                     basic
+                                    disabled={!this.state.isVerified}
                                     className="settings__button"
+                                    onClick={this.handleSendToEmail}
+                                    loading={this.state.emailLoading}
                                 >
-                                    {currentQuery.enabled ? 'Disable' : 'Enable'}
+                                    Send to email
                                 </Button>
                                 <Popup
                                     key={0}
                                     position="top center"
-                                    content="Stops the collection of data. Will also turn off automatic email updates if enabled"
+                                    content="Sends data to your saved email address"
                                     trigger={<Icon name='question circle outline' size='large' style={{cursor: "pointer"}} />}
                                 />
                             </Grid.Column>
@@ -92,7 +93,7 @@ class Settings extends React.Component {
                         <Grid.Row>
                             <Grid.Column>    
                                 <Button
-                                    loading={this.state.loading}
+                                    loading={this.state.deleteLoading}
                                     onClick={() => this.setState({ open: true })}
                                     color="red"
                                     basic
@@ -110,9 +111,12 @@ class Settings extends React.Component {
                         </Grid.Row>
                     </Grid>
                     <Confirm
+                        size="tiny"
                         open={open}
                         onCancel={() => this.setState({ open: false })}
                         onConfirm={() => this.handleDelete(currentQuery)}
+                        confirmButton="Delete"
+                        cancelButton="Cancel"
                     />
 				</React.Fragment>
 			);
@@ -120,4 +124,4 @@ class Settings extends React.Component {
 	}
 }
 
-export default Settings;
+export default connect(null, { setCurrentNotification })(Settings);

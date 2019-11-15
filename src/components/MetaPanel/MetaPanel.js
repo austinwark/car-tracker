@@ -1,6 +1,7 @@
 import React from 'react';
 
 import Settings from './Settings';
+import Skeleton from '../ResultsPanel/Skeleton';
 
 import { Segment, Accordion, Icon, Step, Card } from 'semantic-ui-react';
 

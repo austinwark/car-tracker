@@ -41,9 +41,26 @@ const query_reducer = (state = initialQueryState, action) => {
     }
 }
 
+const initialNotificationState = {
+    notification: null
+}
+
+const notification_reducer = (state = initialNotificationState, action) => {
+    switch (action.type) {
+        case actionTypes.SET_CURRENT_NOTIFICATION:
+            return {
+                ...state,
+                currentNotification: action.payload.currentNotification
+            };
+        default:
+            return state;
+    }
+}
+
 const rootReducer = combineReducers({
     user: user_reducer,
-    query: query_reducer
+    query: query_reducer,
+    notification: notification_reducer
 })
 
 export default rootReducer;

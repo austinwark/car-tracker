@@ -1,6 +1,9 @@
 import React from 'react';
 
-import { Icon, Dropdown } from 'semantic-ui-react';
+import Reauthenticate from './Reauthenticate';
+import { setCurrentNotification } from '../../actions';
+import { connect } from 'react-redux';
+import { Icon, Dropdown, Modal, Form, Input, Button, Header, Popup } from 'semantic-ui-react';
 
 import firebase from '../../firebase';
 //import { connect } from 'react-redux';
@@ -9,7 +12,15 @@ class UserPanel extends React.Component {
 
     state = {
         currentUser: this.props.currentUser,
-        isVerified: false
+        isVerified: firebase.auth().currentUser.emailVerified,
+        email: "",
+        emailConfirmation: "",
+        error: false,
+        loading: false,
+        open: false,
+        success: false,
+        needsToReauthenticate: false,
+        popupOpen: false
     }
 
     componentDidMount() {
@@ -36,6 +47,65 @@ class UserPanel extends React.Component {
         })
     }
 
+    handleChange = event => {
+        const { name, value } = event.target;
+        this.setState({ [name]: value });
+    }
+
+    closeModal = (success = false) => {
+        if (success) {
+            this.setState({ email: "", emailConfirmation: "", open: false, error: false, success: true });
+        }
+        else {
+            this.setState({ email: "", emailConfirmation: "", open: false, error: false });
+        }
+    }
+
+    handleSubmit = event => {
+        event.preventDefault();
+        if (this.isFormValid(this.state.email, this.state.emailConfirmation)) {
+            this.setState({ loading: true, error: false });
+            const user = firebase.auth().currentUser;
+            user.updateEmail(this.state.email)
+                .then(() => {
+                    this.setState({ loading: false }, () => this.closeModal(true));
+                })
+                .catch(err => {
+                    console.log(err)
+                    if (err.code === "auth/requires-recent-login") {
+                        console.log('needs to auth!')
+                        this.setState({ needsToReauthenticate: true });
+                    }
+                    this.setState({ loading: false });
+                })
+            } else {
+                this.setState({ loading: false });
+            }
+    }
+
+    closeReauthenticateModal = () => {
+        this.setState({ needsToReauthenticate: false });
+    }
+
+    isFormValid = (email, emailConfirmation) => {
+        if (!email || !emailConfirmation) {
+            const error = { message: "One or more fields is missing"};
+            this.setState({ error: error});
+            return false;
+        } else if (email !== emailConfirmation) {
+            const error = { message: "Emails do not match"};
+            this.setState({ error: error});
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+    handleUpdateEmail = () => {
+        const user = firebase.auth().currentUser;
+
+    }
+
     dropdownOptions = () => [
         {
             key: 'user',
@@ -46,8 +116,20 @@ class UserPanel extends React.Component {
             key: 'verified',
             text: this.state.isVerified
                 ? <span>Email is verified</span>
-                : <span onClick={this.handleEmailVerification}>Resend verification link</span>,
+                : <Popup 
+                    trigger={<span onClick={this.handleEmailVerification}>Resend verification link</span>}
+                    on="click"
+                    open={this.state.popupOpen}
+                    onOpen={() => this.setState({ popupOpen: true })}
+                    onClose={() => this.setState({ popupOpen: false })}
+                    content="Verification link sent"
+                    basic
+                />,
             disabled: this.state.isVerified
+        },
+        {
+            key: 'changeEmail',
+            text: <span onClick={() => this.setState({ open: true })}>Update email</span>
         },
         {
             key: 'signout',
@@ -66,22 +148,91 @@ class UserPanel extends React.Component {
 
         return (
             <div>
+                <Reauthenticate
+                    currentUser={this.props.currentUser}
+                    open={this.state.needsToReauthenticate}
+                    closeModal={this.closeReauthenticateModal}
+                />
                 <div className='sidePanel__color'>
                     <Icon name="search" size='huge' /><h1 className=''>Car Tracker</h1>
                     <div>
                         <Dropdown
                             trigger={
-                                <span>
-                                    {this.state.currentUser.displayName}
+                                <span id="user__dropdown">
+                                    <Icon name='at' />{" "}{this.state.currentUser.displayName}{" "}
+                                    <br></br>
+                                    {this.state.currentUser.email}
                                 </span>
                             }
                             options={this.dropdownOptions()}
                         />
                     </div>
                 </div>
+                <Modal
+                    open={this.state.success}
+                    size="tiny"
+                    header="Success!"
+                    content={`Email updated to ${this.state.currentUser.email}`}
+                    actions={[<Button key={0} color="green" inverted  content="Close" onClick={() => this.setState({ success: false })} />]}
+                    onClose={() => this.setState({ success: false })}
+                />
+                <Modal
+                    open={this.state.open}
+                    onClose={() => this.closeModal()}
+                    basic
+                    size="small"
+                >
+                    {this.state.error && (
+                        <Header block color="red" inverted attached="top">
+                            <h3>Error</h3>
+                            <p>{this.state.error.message}</p>
+                        </Header>
+                    )}
+                    <Header icon="envelope" content="Update Email" />
+                    <Modal.Content>
+                        <Form>
+                            <Form.Field
+                                control={Input}
+                                name="email"
+                                label="Email"
+                                placeholder={this.state.currentUser.email}
+                                onChange={this.handleChange}
+                                value={this.state.email}
+                                type="email"
+                                className="email__form"
+                                />
+                            <Form.Field
+                                control={Input}
+                                name="emailConfirmation"
+                                label="Email Confirmation"
+                                placeholder={this.state.currentUser.email}
+                                onChange={this.handleChange}
+                                value={this.state.emailConfirmation}
+                                type="email"
+                                className="email__form"
+                            />
+                        </Form>
+                    </Modal.Content>
+                    <Modal.Actions>
+                        <Button
+                            onClick={() => this.closeModal()}
+                            color="red"
+                            inverted
+                            content="Cancel"
+                        />
+                        <Button
+                            onClick={this.handleSubmit}
+                            loading={this.state.loading}
+                            color="green"
+                            inverted
+                            content="Submit"
+                            type="submit"
+                        />
+                    </Modal.Actions>
+                </Modal>
             </div>
         )
     }
 }
 
-export default UserPanel;
+export default connect(null, { setCurrentNotification })(UserPanel);

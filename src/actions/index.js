@@ -25,3 +25,13 @@ export const setCurrentQuery = query => {
         }
     }
 }
+
+/* Notification Actions */
+export const setCurrentNotification = notification => {
+    return {
+        type: actionTypes.SET_CURRENT_NOTIFICATION,
+        payload: {
+            currentNotification: notification
+        }
+    }
+}

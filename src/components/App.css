@@ -50,14 +50,22 @@ html, body, .app__main {
     color: #FCE181 !important;
 }
 
+.email__form > label {
+    color: white !important;
+}
+
+.ui.dropdown >  #user__dropdown {
+    text-align: center !important;
+}
+
 /* Results List */
 .top__segment {
     margin-top: 1rem !important;
-    background-color: #9FEDD7 !important;
 }
 
 .top__segment > h1 {
     color: #026670 !important;
+    padding-top: .5rem !important;
 }
 
 .table__segment {
@@ -116,7 +124,7 @@ html, body, .app__main {
 }
 
 .settings__button {
-    width: 7rem !important;
+    width: 10rem !important;
 }
 
 /* Skeleton */
@@ -183,4 +191,16 @@ html, body, .app__main {
     bottom: 5px;
     left: 40px;
     right: 20px;
+}
+
+/* Notification */
+
+.notification__message {
+    position: fixed !important;
+    top: 8%;
+    left: 3%;
+}
+
+#notification__close:hover {
+    cursor: pointer !important;
 }

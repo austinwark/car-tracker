@@ -12,14 +12,44 @@ import Spinner from './Spinner';
 import 'semantic-ui-css/semantic.min.css';
 
 import firebase from './firebase';
-import { createStore } from 'redux';
+import { createStore, applyMiddleware, compose } from 'redux';
 import { Provider, connect } from 'react-redux';
 import { composeWithDevTools } from 'redux-devtools-extension';
 import rootReducer from './reducers';
 import { setUser, clearUser, setCurrentQuery } from './actions';
 
-const store = createStore(rootReducer, composeWithDevTools());
+const composeEnhancers =
+	typeof window === "object" && window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__
+		? window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__({
+			trace: true,
+			traceLimit: 20
+		})
+		: compose;
 
+const enhancer = composeEnhancers(applyMiddleware());
+
+const store = createStore(rootReducer, enhancer);
+
+/*
+import { createStore, applyMiddleware, compose } from "redux";
+import reduxThunk from "redux-thunk";
+import rootReducer from "./reducers/index";
+
+const composeEnhancers =
+  typeof window === "object" && window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__
+    ? window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__({
+        // Specify extension’s options like name, actionsBlacklist, actionsCreators, serialize...
+        trace: true,
+        traceLimit: 20
+      })
+    : compose;
+
+const enhancer = composeEnhancers(applyMiddleware(reduxThunk));
+
+const store = createStore(rootReducer, enhancer);
+
+export default store;
+*/
 class Root extends React.Component {
 	componentDidMount() {
 		console.log(this.props.isLoading)

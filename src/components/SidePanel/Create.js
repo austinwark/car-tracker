@@ -99,8 +99,7 @@ class Create extends React.Component {
             price: price,
             operator: operator,
             customer: customer,
-            creationDate: creationDate,
-            enabled: true
+            creationDate: creationDate
         };
         newQuery = await this.getQueryResults(newQuery);
         queriesRef
@@ -149,7 +148,7 @@ class Create extends React.Component {
 
         return (
             <div>
-                <Modal open={modal} onClose={this.closeModal} className='mx-auto'>
+                <Modal dimmer="blurring" open={modal} onClose={this.closeModal} className='mx-auto'>
                     <Modal.Header>
                         Create a New Query
                         <Button icon floated='right' onClick={this.closeModal}><Icon name='close' /></Button>

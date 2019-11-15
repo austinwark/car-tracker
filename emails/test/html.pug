@@ -1,0 +1,36 @@
+doctype transitional
+html(xmlns='http://www.w3.org/1999/xhtml')
+    head
+        meta(charset='utf-8')
+        link(rel='stylesheet' href='https://cdn.jsdelivr.net/npm/semantic-ui@2.3.3/dist/semantic.min.css')
+        meta(http-equiv='X-UA-Compatible', content='IE=edge')
+        meta(name='description', content='Some description')
+        meta(name='viewport', content='width=device-width, initial-scale=1')
+        style(type='text/css').
+            th: {
+                color: yellow
+            }
+            td: {
+                color: blue;
+            }
+
+
+    body
+        table(style='width:100%', border='2', border-collapse='collapse')
+            tr
+                th Stock
+                th Year
+                th Make
+                th Model
+                th Trim
+                th Price
+                th Ext. Color
+            each result in results
+                tr
+                    td= result.stock
+                    td= result.year
+                    td= result.make
+                    td= result.model
+                    td= result.trim
+                    td= result.price
+                    td= result.extColor

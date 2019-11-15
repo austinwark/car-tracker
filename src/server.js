@@ -1,4 +1,5 @@
 require('./utils/scraper')();
+require('./utils/mailer')();
 const express = require('express');
 const bodyParser = require('body-parser');
 
@@ -24,5 +25,14 @@ app.post('/api/scrape', async (req, res) => {
     }
 
 )
+
+app.post('/api/mailer', async (req, res) => {
+    const { results } = req.body;
+    const success = await sendToMail(results);
+    if (success) 
+        res.status(200).send();
+    else
+        res.status(400).send();
+})
 
 app.listen(port, () => console.log('listening'));
