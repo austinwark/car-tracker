@@ -73,13 +73,14 @@ class MetaPanel extends React.Component {
 
         const { activeIndex } = this.state;
         const { currentQuery, currentUser, isLoading } = this.props;
-        if (!isLoading && !currentQuery) {
-            return (
-                <Segment raised className='top__segment'>
-                    <p>Please create a query</p>
-                </Segment>
-            )
-        } else {
+
+        // if (!isLoading && !currentQuery) {  // --> if component is loaded and there is no query
+        //     return (
+        //         <Segment raised className='top__segment'>
+        //             <p>Please create a query</p>
+        //         </Segment>
+        //     )
+        // } else {
             return (
                 <Segment raised className="top__segment">
                     <Accordion styled attached="true">
@@ -128,7 +129,7 @@ class MetaPanel extends React.Component {
                     </Accordion>
                 </Segment>
             )
-        }
+        // }
     }
 }
 

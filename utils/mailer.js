@@ -3,7 +3,7 @@ const express = require('express');
 const Email = require('email-templates');
 
 module.exports = function() {
-    this.sendToMail = async function(results) {
+    this.sendToMail = async function(results, userEmail) {
         let testAccount = await nodemailer.createTestAccount();
     
         let transporter = nodemailer.createTransport({
@@ -26,7 +26,7 @@ module.exports = function() {
             template: 'test',
             message: {
                 from: 'Car Tracker <no-reply@car-tracker.com',
-                to: 'austinwark96@gmail.com'
+                to: userEmail
             },
             locals: {
                 results: results

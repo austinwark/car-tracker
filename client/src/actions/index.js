@@ -35,3 +35,9 @@ export const setCurrentNotification = notification => {
         }
     }
 }
+
+export const clearCurrentNotification = () => {
+    return {
+        type: actionTypes.CLEAR_CURRENT_NOTIFICATION
+    }
+}

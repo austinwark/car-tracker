@@ -29,8 +29,8 @@ app.post('/api/scrape', async (req, res) => {
 
 // for email send api
 app.post('/api/mailer', async (req, res) => {
-    const { results } = req.body;
-    const success = await sendToMail(results);
+    const { results, email } = req.body;
+    const success = await sendToMail(results, email);
     if (success) 
         res.status(200).send();
     else

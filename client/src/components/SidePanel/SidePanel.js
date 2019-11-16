@@ -16,7 +16,6 @@ class SidePanel extends React.Component {
                 <UserPanel currentUser={currentUser} />
                 <Divider />
                 <CurrentQueries currentQuery={currentQuery} currentUser={currentUser} />
-                <Divider />
                 <Create currentUser={currentUser} />
             </Segment>
         )

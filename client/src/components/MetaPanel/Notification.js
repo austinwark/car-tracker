@@ -15,7 +15,7 @@ class Notification extends React.Component {
         console.log('notification mounted!')
         const timeoutId = setTimeout(() => {
             this.clearNotification();
-        }, 20000)
+        }, 80000)
         this.setState({ timeoutId });
     }
 
@@ -33,7 +33,7 @@ class Notification extends React.Component {
                 <div ref={this.contextRef} className='notification__message'></div>
                 <Popup
                    context={this.contextRef}
-                   position='top center'
+                   position="left center"
                    basic
                    open={this.state.open} 
                    closeOnEscape

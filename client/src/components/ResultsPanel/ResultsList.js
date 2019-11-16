@@ -72,9 +72,9 @@ class ResultsList extends React.Component {
                 </div>
                 </React.Fragment>
             )
-        } else if (!isLoading && !currentQuery) {
+        } else if (!isLoading || !currentQuery) {
             return (
-                <Message>No Queries, create one now!</Message>
+                <Message >No Queries, create one now!</Message>
             )
         } else {
             return (

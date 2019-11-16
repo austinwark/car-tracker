@@ -14,7 +14,6 @@ import 'semantic-ui-css/semantic.min.css';
 import firebase from './firebase';
 import { createStore, applyMiddleware, compose } from 'redux';
 import { Provider, connect } from 'react-redux';
-import { composeWithDevTools } from 'redux-devtools-extension';
 import rootReducer from './reducers';
 import { setUser, clearUser, setCurrentQuery } from './actions';
 
@@ -52,7 +51,7 @@ export default store;
 */
 class Root extends React.Component {
 	componentDidMount() {
-		console.log(this.props.isLoading)
+		//console.log(this.props.isLoading)
 		// const initialQuery = {
 		// 	isDefault: true,
 		// 	results: {
@@ -62,7 +61,15 @@ class Root extends React.Component {
 		firebase.auth().onIdTokenChanged((user) => {
 			if (user) {
 				this.props.setUser(user);
-				this.props.setCurrentQuery(null)
+				/* Handles email update bug where index would reset currentQuery on Auth Change and CurrentQueries would not pick up on it */
+				firebase.database().ref('queries').child(user.uid).once('value', snap => {	// --> checks if user has any queries saved in database
+					if (snap.val()) {
+						const firstQuery = Object.entries(snap.val())[0][1];
+						this.props.setCurrentQuery(firstQuery);
+					} else {
+						this.props.setCurrentQuery(null);
+					}
+				})
 				this.props.history.push('/');
 			} else {
 				this.props.history.push('/login');
@@ -83,7 +90,8 @@ class Root extends React.Component {
 }
 
 const mapStateToProps = state => ({
-    isLoading: state.user.isLoading
+	isLoading: state.user.isLoading,
+	currentQuery: state.query.currentQuery
 })
 
 const RootWithAuth = withRouter(

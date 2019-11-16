@@ -42,7 +42,7 @@ const query_reducer = (state = initialQueryState, action) => {
 }
 
 const initialNotificationState = {
-    notification: null
+    currentNotification: null
 }
 
 const notification_reducer = (state = initialNotificationState, action) => {
@@ -52,6 +52,11 @@ const notification_reducer = (state = initialNotificationState, action) => {
                 ...state,
                 currentNotification: action.payload.currentNotification
             };
+        case actionTypes.CLEAR_CURRENT_NOTIFICATION:
+            return {
+                ...state,
+                currentNotification: null
+            }
         default:
             return state;
     }

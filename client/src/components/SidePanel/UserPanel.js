@@ -1,7 +1,7 @@
 import React from 'react';
 
 import Reauthenticate from './Reauthenticate';
-import { setCurrentNotification } from '../../actions';
+import { setCurrentNotification, clearCurrentNotification } from '../../actions';
 import { connect } from 'react-redux';
 import { Icon, Dropdown, Modal, Form, Input, Button, Header, Popup } from 'semantic-ui-react';
 
@@ -39,10 +39,16 @@ class UserPanel extends React.Component {
     }
 
     handleEmailVerification = () => {
+        const { currentNotification } = this.props;
         const user = firebase.auth().currentUser;
-        user.sendEmailVerification().then(() => {
-            console.log('email sent')
-        }).catch(err => {
+        user.sendEmailVerification().then(async () => {
+            // if (currentNotification)
+            //     await this.props.clearCurrentNotification();
+            // this.props.setCurrentNotification("Verification email successfully sent!");
+        }).catch(async err => {
+            // if (currentNotification)
+            //     await this.props.clearCurrentNotification();
+            // this.props.setCurrentNotification("Verification email failed to be sent!");
             console.error(err)
         })
     }
@@ -235,4 +241,8 @@ class UserPanel extends React.Component {
     }
 }
 
-export default connect(null, { setCurrentNotification })(UserPanel);
+const mapStateToProps = state => ({
+    currentNotification: state.notification.currentNotification
+})
+
+export default connect(mapStateToProps, { setCurrentNotification, clearCurrentNotification })(UserPanel);

@@ -197,8 +197,8 @@ html, body, .app__main {
 
 .notification__message {
     position: fixed !important;
-    top: 8%;
-    left: 3%;
+    top: 6%;
+    left: -6%;
 }
 
 #notification__close:hover {
