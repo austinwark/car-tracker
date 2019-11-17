@@ -1,12 +1,19 @@
 /* App */
 html, body, .app__main {
     height: 100vh;
-    background-color: #EDEAD5 !important;
+    background-color: #FFC2AA !important;
+    font-family: 'Asap', sans-serif !important;
 }
 
-.main__cols {
-    background-color: #026670 !important;
+#main__font, h1, h2, h3, h4, h5, p, span, button {
+    font-family: 'Asap', sans-serif !important;
 }
+
+.no__padding__bottom {
+    padding-bottom: 0 !important;
+}
+
+/* START ----------------------------------------------- */
 
 /* Register */
 #register__message {
@@ -16,29 +23,49 @@ html, body, .app__main {
 }
 
 /* Side Panel */
-.sidePanel__color {
-    color: #FEF9C7 !important;
-    font-weight: bold;
+
+
+.main__sidepanel__colors {
+    background-color: #042037 !important;
+    color: #FFC2AA !important;
+    font-style: bold !important;
+    border: none !important;
+    box-shadow: none !important;
+}
+.main__sidepanel__colors > * {
+    color: #FFC2AA !important;
+    font-style: bold !important;
 }
 
-.sidePanel__color > * {
-    color: #FEF9C7 !important;
-    font-weight: bold;
+#current__queries__items {
+    color: #FFC2AA !important;
+}
+
+/* current queries active item */
+.ui.secondary.pointing.menu .active.item {
+    border-color: #AA8E39 !important;
+    color: #AA8E39 !important;
+}
+/* current queries unactive item */
+.ui.secondary.menu .link.item, .ui.secondary.menu a.item {
+    color: #FFC2AA !important;
 }
 
 .sidePanel__menu {
     border: none !important;
+    font-family: 'Inconsolata', monospace !important;
+    font-size: 1.2rem !important;
 }
 
 #sidePanel__button {
-    color: #FCE181 !important;
-    border: solid #FCE181 2px !important;
+    background-color: #AA8E39 !important;
+    color: whitesmoke !important;
 }
 
 #sidePanel__button:hover {
-    background-color: #FCE181 !important;
-    color: #026670 !important;
+    background-color: rgba(170, 142, 57, 0.863) !important;
 }
+
 
 #submit__button {
     color: #026670 !important;
@@ -56,6 +83,8 @@ html, body, .app__main {
 
 .ui.dropdown >  #user__dropdown {
     text-align: center !important;
+    font-style: bold !important;
+    color: #FFC2AA !important;
 }
 
 /* Results List */
@@ -64,63 +93,35 @@ html, body, .app__main {
 }
 
 .top__segment > h1 {
-    color: #026670 !important;
+    color: #29506D !important;
     padding-top: .5rem !important;
 }
 
 .table__segment {
-    padding-left: 0 !important;
-    padding-right: 0 !important;
-    padding-top: 0 !important;
+    padding: 0 !important;
 }
 
 .table__container {
     overflow: auto;
-    height: 80vh;
+    max-height: 80vh;
     width: 100% !important;
+    font-family: 'Montserrat', sans-serif;
 }
 
 .table__header {
     margin: 0 !important;
     padding-top: 1rem !important;
     height: 5rem;
-    background: rgba(254,249,199,1);
-    background: -moz-linear-gradient(top, rgba(254,249,199,1) 0%, rgba(249,250,251,0.44) 69%, rgba(249,250,251,0.19) 100%);
-    background: -webkit-gradient(left top, left bottom, color-stop(0%, rgba(254,249,199,1)), color-stop(69%, rgba(249,250,251,0.44)), color-stop(100%, rgba(249,250,251,0.0)));
-    background: -webkit-linear-gradient(top, rgba(254,249,199,1) 0%, rgba(249,250,251,0.44) 69%, rgba(249,250,251,0.0) 100%);
-    background: -o-linear-gradient(top, rgba(254,249,199,1) 0%, rgba(249,250,251,0.44) 69%, rgba(249,250,251,0.0) 100%);
-    background: -ms-linear-gradient(top, rgba(254,249,199,1) 0%, rgba(249,250,251,0.44) 69%, rgba(249,250,251,0.0) 100%);
-    background: linear-gradient(to bottom, rgba(254,249,199,1) 0%, rgba(249,250,251,0.44) 69%, rgba(249,250,251,0.0) 100%);
-    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#fef9c7', endColorstr='#f9fafb', GradientType=0 );
 }
 
 /* Meta Panel */
 .left__step {
     font-weight: bold !important;
-    background: rgba(159,237,215,1) !important;
-    background: -moz-linear-gradient(left, rgba(159,237,215,1) 0%, rgba(254,249,231,1) 100%) !important;
-    background: -webkit-gradient(left top, right top, color-stop(0%, rgba(159,237,215,1)), color-stop(100%, rgba(254,249,231,1))) !important;
-    background: -webkit-linear-gradient(left, rgba(159,237,215,1) 0%, rgba(254,249,231,1) 100%) !important;
-    background: -o-linear-gradient(left, rgba(159,237,215,1) 0%, rgba(254,249,231,1) 100%) !important;
-    background: -ms-linear-gradient(left, rgba(159,237,215,1) 0%, rgba(254,249,231,1) 100%) !important;
-    background: linear-gradient(to right, rgba(159,237,215,1) 0%, rgba(254,249,231,1) 100%) !important;
-    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#9fedd7', endColorstr='#fef9e7', GradientType=1 ) !important;
 }
 
-.left__step::after {
-    background: rgba(254,249,231,1) !important;
-}
 
 .right__step {
     font-weight: bold !important;
-    background: rgba(254,249,231,0.9) !important;
-    background: -moz-linear-gradient(left, rgba(254,249,231,0.9) 0%, rgba(159,237,215,0.9) 100%) !important;
-    background: -webkit-gradient(left top, right top, color-stop(0%, rgba(254,249,231,0.9)), color-stop(100%, rgba(159,237,215,0.9))) !important;
-    background: -webkit-linear-gradient(left, rgba(254,249,231,0.9) 0%, rgba(159,237,215,0.9) 100%) !important;
-    background: -o-linear-gradient(left, rgba(254,249,231,0.9) 0%, rgba(159,237,215,0.9) 100%) !important;
-    background: -ms-linear-gradient(left, rgba(254,249,231,0.9) 0%, rgba(159,237,215,0.9) 100%) !important;
-    background: linear-gradient(to right, rgba(254,249,231,0.9) 0%, rgba(159,237,215,0.9) 100%) !important;
-    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#fef9e7', endColorstr='#9fedd7', GradientType=1 ) !important;
 }
 
 .settings__button {

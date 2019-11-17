@@ -6,9 +6,14 @@ import ResultsPanel from './ResultsPanel/ResultsPanel';
 import MetaPanel from './MetaPanel/MetaPanel';
 import Notification from './MetaPanel/Notification';
 import { connect } from 'react-redux';
-
+import WebFont from 'webfontloader';
 import { Grid } from 'semantic-ui-react';
 // ({ currentUser, currentQuery, isLoading, currentNotification })
+WebFont.load({
+  google: {
+    families: ['Inconsolata:400,700', 'Asap:400,700', 'Montserrat', 'sans-serif', 'monospace']
+  }
+});
 class App extends React.Component {
 
   render() {
@@ -17,13 +22,13 @@ class App extends React.Component {
     return  (
               <Grid stackable>
                   {currentNotification && <Notification currentNotification={currentNotification} />}
-                  <Grid.Column width={3} textAlign="center" className="main__cols">
+                  <Grid.Column width={3} textAlign="center" className="main__sidepanel__colors no__padding__bottom">
                       <SidePanel currentQuery={currentQuery} currentUser={currentUser} />
                   </Grid.Column>
-                  <Grid.Column width={9} textAlign="center">
+                  <Grid.Column width={9} textAlign="center" className="no__padding__bottom">
                       <ResultsPanel currentUser={currentUser} />
                   </Grid.Column>
-                  <Grid.Column width={4}>
+                  <Grid.Column width={4} className="no__padding__bottom">
                       <MetaPanel currentQuery={currentQuery} currentUser={currentUser} isLoading={isLoading} />
                   </Grid.Column>
               </Grid>

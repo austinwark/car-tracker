@@ -159,13 +159,13 @@ class UserPanel extends React.Component {
                     open={this.state.needsToReauthenticate}
                     closeModal={this.closeReauthenticateModal}
                 />
-                <div className='sidePanel__color'>
-                    <Icon name="search" size='huge' /><h1 className=''>Car Tracker</h1>
+                <div className='main__sidepanel__colors sidepanel__header'>
+                    <Icon name="search" size='huge' /><h1 id="main__font">Car Tracker</h1>
                     <div>
                         <Dropdown
                             trigger={
                                 <span id="user__dropdown">
-                                    <Icon name='at' />{" "}{this.state.currentUser.displayName}{" "}
+                                    <span style={{color: "#FFC2AA", fontSize: "1.2rem", fontStyle: "bold"}}><Icon size="small" name='at' />{this.state.currentUser.displayName}{" "}</span>
                                     <br></br>
                                     {this.state.currentUser.email}
                                 </span>

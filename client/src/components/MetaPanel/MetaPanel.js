@@ -9,7 +9,7 @@ import { Segment, Accordion, Icon, Step, Card } from 'semantic-ui-react';
 class MetaPanel extends React.Component {
 
     state = {
-        activeIndex: 2
+        activeIndex: 0
     }
     
     // function to control accordian
@@ -31,23 +31,23 @@ class MetaPanel extends React.Component {
         } = query;
         return (
             <React.Fragment>
-                <Step.Group widths={2} fluid unstackable size='mini'>
+                <Step.Group widths={2} fluid unstackable >
                     <Step size="mini" content="Query Name" className="left__step" /><Step content={name} className="right__step"/>
                 </Step.Group>
-                <Step.Group widths={2} fluid unstackable size='mini'>
-                    <Step size="mini" content="Model" className="left__step" /><Step content={model} className="right__step" />
+                <Step.Group widths={2} fluid unstackable>
+                    <Step size="mini" content="Model" className="left__step" /><Step content={model.charAt(0).toUpperCase() + model.substring(1)} className="right__step" />
                 </Step.Group>
-                <Step.Group widths={2} fluid unstackable size='mini'>
+                <Step.Group widths={2} fluid unstackable>
                     <Step size="mini" content="Operator" className="left__step" /><Step content={operator + " than"} className="right__step" />
                 </Step.Group>
-                <Step.Group widths={2} fluid unstackable size='mini'>
+                <Step.Group widths={2} fluid unstackable>
                     <Step size="mini" content="Price" className="left__step" /><Step content={"$" + price} className="right__step" />
                 </Step.Group>
                 {results &&
-                <Step.Group widths={2} fluid unstackable size='mini'>
+                <Step.Group widths={2} fluid unstackable>
                     <Step size="mini" content="Results" className="left__step" /><Step content={results.arr.length} className="right__step" />
                 </Step.Group>}
-                <Step.Group widths={2} fluid unstackable size='mini'>
+                <Step.Group widths={2} fluid unstackable>
                     <Step size="mini" content="Created" className="left__step" /><Step content={creationDate} className="right__step" />
                 </Step.Group>
             </React.Fragment>

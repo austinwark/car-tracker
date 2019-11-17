@@ -92,8 +92,8 @@ class CurrentQueries extends React.Component {
     render() {
         return (
             <React.Fragment>
-                <Menu vertical secondary pointing fluid inverted borderless className="sidePanel__menu">
-                    <Menu.Item as="h3" className="sidePanel__color">
+                <Menu vertical secondary pointing fluid borderless className="sidePanel__menu main__sidepanel__colors">
+                    <Menu.Item as="h3" className="main__sidepanel__colors">
                         <span><Icon name='exchange' />QUERIES</span>{" "}
                     </Menu.Item>
                     {this.state.queries.length > 0 && this.displayQueries(this.state.queries)}
@@ -102,9 +102,5 @@ class CurrentQueries extends React.Component {
         )
     }
 }
-
-// const mapStateToProps = state => ({
-//     currentQuery: state.query.currentQuery
-// })
 
 export default connect(null, { setCurrentQuery })(CurrentQueries);

@@ -2,7 +2,7 @@ import React from 'react';
 
 import { connect } from 'react-redux';
 
-import { Table, Header, Message } from 'semantic-ui-react';
+import { Table, Checkbox, Message } from 'semantic-ui-react';
 
 import Skeleton from './Skeleton';
 
@@ -10,12 +10,22 @@ class ResultsList extends React.Component {
 
     state = {
         currentUser: this.props.currentUser,
-        resultsLoading: !(this.props.currentQuery)    // => when query is loaded, sets loading state to false
+        resultsLoading: !(this.props.currentQuery),    // => when query is loaded, sets loading state to false
+        uncheckedRows: []
+    }
+
+    
+
+    handleCheck = (event, data) => {
+        const { rowstock } = data;
+        this.state.uncheckedRows.indexOf(String(rowstock)) === -1
+        ? this.setState({ uncheckedRows: this.state.uncheckedRows.filter(row => row != String(rowstock))})
+        : this.setState({ uncheckedRows: this.state.uncheckedRows.push(String(rowstock))})
     }
 
     displayResults = results => {
         if (results) {
-            return this.props.currentQuery.results.arr.map(result => {
+            return this.props.currentQuery.results.arr.map((result, i) => {
                 return (
                     <Table.Row key={result.stock}>
                         <Table.Cell>{result.stock}</Table.Cell>
@@ -27,6 +37,15 @@ class ResultsList extends React.Component {
                             {Number(result.price).toLocaleString('en-US', { style: 'currency', currency: 'USD' })}  
                         </Table.Cell>
                         <Table.Cell>{result.extColor}</Table.Cell>
+                        <Table.Cell>
+                            <Checkbox
+                                name={`row-${i}`}
+                                onClick={this.handleCheck}
+                                value={`row-${i}`}
+                                rowstock={result.stock}
+                                checked={this.state.uncheckedRows.indexOf(String(result.stock)) === -1}
+                            />
+                        </Table.Cell>
                     </Table.Row>
                 )
             })
@@ -51,9 +70,9 @@ class ResultsList extends React.Component {
             return (
                 <React.Fragment>
 
-                <Header textAlign="center" as="h3" className="table__header">{currentQuery.name}</Header>
+                {/* <Header textAlign="center" as="h3" className="table__header">{currentQuery.name}</Header> */}
                 <div className="">
-                    <Table celled striped>
+                    <Table striped selectable>
                         <Table.Header fullWidth>
                             <Table.Row>
                                 <Table.HeaderCell>Stock #</Table.HeaderCell>
@@ -63,6 +82,7 @@ class ResultsList extends React.Component {
                                 <Table.HeaderCell>Trim</Table.HeaderCell>
                                 <Table.HeaderCell>Price</Table.HeaderCell>
                                 <Table.HeaderCell>Ext. Color</Table.HeaderCell>
+                                <Table.HeaderCell collapsing><Checkbox toggle /></Table.HeaderCell>
                             </Table.Row>
                         </Table.Header>
                         <Table.Body>
@@ -72,7 +92,7 @@ class ResultsList extends React.Component {
                 </div>
                 </React.Fragment>
             )
-        } else if (!isLoading || !currentQuery) {
+        } else if (!isLoading && !currentQuery) {
             return (
                 <Message >No Queries, create one now!</Message>
             )

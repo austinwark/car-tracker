@@ -77,9 +77,9 @@ class Settings extends React.Component {
                             <Grid.Row>
                                 <Grid.Column>
                                     <Button
-                                        color="green"
+                                        color="blue"
                                         basic
-                                        disabled={!currentQuery.results}
+                                        disabled={!currentQuery.results || !this.state.isVerified}
                                         className="settings__button"
                                         onClick={this.handleSendToEmail}
                                         loading={this.state.emailLoading}

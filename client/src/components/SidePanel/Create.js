@@ -255,7 +255,7 @@ class Create extends React.Component {
                 </Modal>
                 <Button
                     id="sidePanel__button"
-                    basic
+                    
                     content="Create Query"
                     onClick={this.openModal}
                 />
