@@ -10,6 +10,7 @@ import Login from './components/Auth/Login';
 import Spinner from './Spinner';
 
 import 'semantic-ui-css/semantic.min.css';
+import "./components/App.css";
 
 import firebase from './firebase';
 import { createStore, applyMiddleware, compose } from 'redux';
@@ -60,6 +61,9 @@ class Root extends React.Component {
 		// }
 		firebase.auth().onIdTokenChanged((user) => {
 			if (user) {
+				const isAnonymous = user.isAnonymous;
+				
+				console.log(user)
 				this.props.setUser(user);
 				/* Handles email update bug where index would reset currentQuery on Auth Change and CurrentQueries would not pick up on it */
 				firebase.database().ref('queries').child(user.uid).once('value', snap => {	// --> checks if user has any queries saved in database
@@ -72,6 +76,7 @@ class Root extends React.Component {
 				})
 				this.props.history.push('/');
 			} else {
+				
 				this.props.history.push('/login');
 				this.props.clearUser();
 			}

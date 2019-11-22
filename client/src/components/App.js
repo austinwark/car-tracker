@@ -11,7 +11,7 @@ import { Grid } from 'semantic-ui-react';
 // ({ currentUser, currentQuery, isLoading, currentNotification })
 WebFont.load({
   google: {
-    families: ['Inconsolata:400,700', 'Asap:400,700', 'Montserrat', 'sans-serif', 'monospace']
+    families: ['Inconsolata:400,700', 'Asap:400,700', 'Montserrat:400,500,700', 'sans-serif', 'monospace']
   }
 });
 class App extends React.Component {

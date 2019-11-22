@@ -82,8 +82,8 @@ class MetaPanel extends React.Component {
         //     )
         // } else {
             return (
-                <Segment raised className="top__segment">
-                    <Accordion styled attached="true">
+                // <Segment raised className="top__segment">
+                    <Accordion styled attached="true" id="metapanel__accordian">
                         <Accordion.Title
                             active={activeIndex === 0}
                             index={0}
@@ -127,7 +127,7 @@ class MetaPanel extends React.Component {
                             <Settings currentQuery={currentQuery} currentUser={currentUser} isLoading={isLoading} />
                         </Accordion.Content>
                     </Accordion>
-                </Segment>
+                // </Segment>
             )
         // }
     }

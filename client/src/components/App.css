@@ -1,7 +1,7 @@
 /* App */
 html, body, .app__main {
     height: 100vh;
-    background-color: #FFC2AA !important;
+    background-color: #4a4a4a !important;
     font-family: 'Asap', sans-serif !important;
 }
 
@@ -13,28 +13,42 @@ html, body, .app__main {
     padding-bottom: 0 !important;
 }
 
+.ui.segment {
+    background-color: #fafafa !important;
+}
+
+.ui.steps .step {
+    border-right: none !important;
+}
+
+/* .ui.steps .step:after {
+    animation: floating 2s linear infinite !important;
+    
+} */
+
+
 /* START ----------------------------------------------- */
 
 /* Register */
 #register__message {
     font-style: italic;
     font-weight: 800;
-    color: rgba(19, 22, 228, 0.548);
+    color: #2a2a2a8a;
 }
 
 /* Side Panel */
 
 
-.main__sidepanel__colors {
+#main__sidepanel__colors {
     background-color: #042037 !important;
     color: #FFC2AA !important;
     font-style: bold !important;
     border: none !important;
     box-shadow: none !important;
 }
-.main__sidepanel__colors > * {
+#main__sidepanel__colors > * {
     color: #FFC2AA !important;
-    font-style: bold !important;
+    font-weight: bold !important;
 }
 
 #current__queries__items {
@@ -57,25 +71,42 @@ html, body, .app__main {
     font-size: 1.2rem !important;
 }
 
+.button__3d:active {
+    top: 4px !important;
+    margin-bottom: 4px !important;
+    border-bottom: none !important;
+}
 #sidePanel__button {
+    position: relative;
     background-color: #AA8E39 !important;
+    border-bottom: solid rgb(131, 111, 51) 4px;
     color: whitesmoke !important;
 }
-
-#sidePanel__button:hover {
-    background-color: rgba(170, 142, 57, 0.863) !important;
+#login__button {
+    position: relative;
+    background-color: #AA8E39 !important;
+    border-bottom: solid rgb(131, 111, 51) 4px;
+    color: whitesmoke !important;
 }
-
-
 #submit__button {
-    color: #026670 !important;
-    border: solid 1px #026670 !important;
-}
-
-#submit__button:hover {
+    position: relative;
     background-color: #026670 !important;
     color: #FCE181 !important;
+    border-bottom: solid 4px #01535a;
 }
+#register__button {
+    position: relative;
+    background-color: #026670 !important;
+    color: #FCE181 !important;
+    border-bottom: solid 4px #01535a;
+}
+
+#notes__field {
+    margin-bottom: 1rem !important;
+}
+
+
+
 
 .email__form > label {
     color: white !important;
@@ -114,14 +145,26 @@ html, body, .app__main {
     height: 5rem;
 }
 
+#no__results__message {
+    background: rgba(255, 0, 0, 0.342);
+    box-shadow: none !important;
+}
+
 /* Meta Panel */
+#metapanel__accordian {
+    background: #fafafa !important;
+    border-bottom: solid #4a4a4a 2px;
+    margin-top: 1rem;
+}
 .left__step {
-    font-weight: bold !important;
+    font-weight: 700;
+    font-family: "Montserrat", sans-serif;
 }
 
 
 .right__step {
-    font-weight: bold !important;
+    font-weight: 500;
+    font-family: "Montserrat", sans-serif;
 }
 
 .settings__button {

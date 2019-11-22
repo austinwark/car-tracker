@@ -18,6 +18,7 @@ class UserPanel extends React.Component {
         error: false,
         loading: false,
         open: false,
+        createOpen: false,
         success: false,
         needsToReauthenticate: false,
         popupOpen: false
@@ -143,6 +144,22 @@ class UserPanel extends React.Component {
         }
     ]
 
+    anonymousDropdownOptions = () => [
+        {
+            key: 'user',
+            text: <span>Signed in as <strong>anonymous</strong></span>,
+            disabled: true
+        },
+        {
+            key: "create",
+            text: <span onClick={() => this.setState({ createOpen: true })}>Create an account here</span>
+        },
+        {
+            key: "signout",
+            text: <span onClick={this.handleSignout}>Sign Out</span>
+        }
+    ]
+
     handleSignout = () => {
         firebase
             .auth()
@@ -165,12 +182,12 @@ class UserPanel extends React.Component {
                         <Dropdown
                             trigger={
                                 <span id="user__dropdown">
-                                    <span style={{color: "#FFC2AA", fontSize: "1.2rem", fontStyle: "bold"}}><Icon size="small" name='at' />{this.state.currentUser.displayName}{" "}</span>
-                                    <br></br>
+                                    <span style={{color: "#FFC2AA", fontSize: "1.2rem", fontStyle: "bold"}}><Icon size="small" name='at' />{this.state.currentUser.displayName || "Ghost"}{" "}</span>
+                                    {this.props.currentUser.email && (<br></br>)}
                                     {this.state.currentUser.email}
                                 </span>
                             }
-                            options={this.dropdownOptions()}
+                            options={this.props.currentUser.isAnonymous ? this.anonymousDropdownOptions() : this.dropdownOptions()}
                         />
                     </div>
                 </div>

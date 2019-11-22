@@ -1,6 +1,7 @@
 import React from 'react';
 
 import { connect } from 'react-redux';
+import { setCurrentQuery } from '../../actions';
 
 import { Table, Checkbox, Message } from 'semantic-ui-react';
 
@@ -10,18 +11,57 @@ class ResultsList extends React.Component {
 
     state = {
         currentUser: this.props.currentUser,
-        resultsLoading: !(this.props.currentQuery),    // => when query is loaded, sets loading state to false
-        uncheckedRows: []
+        resultsLoading: !(this.props.currentQuery)    // => when query is loaded, sets loading state to false
+        // checkedRows: []
     }
 
     
 
-    handleCheck = (event, data) => {
-        const { rowstock } = data;
-        this.state.uncheckedRows.indexOf(String(rowstock)) === -1
-        ? this.setState({ uncheckedRows: this.state.uncheckedRows.filter(row => row != String(rowstock))})
-        : this.setState({ uncheckedRows: this.state.uncheckedRows.push(String(rowstock))})
-    }
+    // checkForValue = val => {
+    //     let flag = false;
+    //     this.state.checkedRows.forEach(el => {
+    //         if (el === val) {
+    //             flag = true;
+    //         }
+    //     })
+    //     return flag;
+    // }
+
+    // handleCheck = (event, data) => {
+    //     const { rowstock } = data;
+        
+    //     const isChecked = this.checkForValue(rowstock)
+    //         if (!isChecked) {
+    //             const currentChecked = this.state.checkedRows;
+    //             currentChecked.push(rowstock)
+    //             this.setState({ checkedRows: currentChecked });
+    //             this.updateGlobalState(rowstock, false)
+    //         } else {
+    //             const currentChecked = this.state.checkedRows;
+    //             const updatedChecked = currentChecked.filter(row => row !== rowstock);
+    //             console.log(updatedChecked)
+    //             this.setState({ checkedRows: updatedChecked })
+    //             this.updateGlobalState(rowstock, true)
+    //         }
+    // }
+
+    // updateGlobalState = (stock, toDisable) => {
+    //     const { currentQuery } = this.props;
+    //     // console.log(currentQuery)
+    //     const currentResults = currentQuery.results.arr;
+    //     const updatedResults = currentResults.map(el => {
+    //         const result = el;
+    //         if (result.stock === stock) {
+    //             if (toDisable) {
+    //                 result.disabled = true;
+    //             } else {
+    //                 result.disabled = false;
+    //             }
+    //         }
+    //         return result;
+    //     })
+    //     console.log(updatedResults)
+    // }
 
     displayResults = results => {
         if (results) {
@@ -37,20 +77,21 @@ class ResultsList extends React.Component {
                             {Number(result.price).toLocaleString('en-US', { style: 'currency', currency: 'USD' })}  
                         </Table.Cell>
                         <Table.Cell>{result.extColor}</Table.Cell>
-                        <Table.Cell>
+                        {/* <Table.Cell>
                             <Checkbox
                                 name={`row-${i}`}
                                 onClick={this.handleCheck}
                                 value={`row-${i}`}
                                 rowstock={result.stock}
-                                checked={this.state.uncheckedRows.indexOf(String(result.stock)) === -1}
+                                checked={this.state.checkedRows.includes(result.stock)}  // -> starts all as checked
                             />
-                        </Table.Cell>
+                        </Table.Cell> */}
                     </Table.Row>
                 )
             })
         }
-        }
+    }
+
     displayResultsSkeleton = loading => (
         loading ? (
             <React.Fragment>
@@ -82,7 +123,12 @@ class ResultsList extends React.Component {
                                 <Table.HeaderCell>Trim</Table.HeaderCell>
                                 <Table.HeaderCell>Price</Table.HeaderCell>
                                 <Table.HeaderCell>Ext. Color</Table.HeaderCell>
-                                <Table.HeaderCell collapsing><Checkbox toggle /></Table.HeaderCell>
+                                {/* <Table.HeaderCell collapsing>
+                                    <Checkbox 
+                                        toggle
+                                        checked={this.state.checkedRows.length === currentQuery.results.arr.length} 
+                                    />
+                                </Table.HeaderCell> */}
                             </Table.Row>
                         </Table.Header>
                         <Table.Body>
@@ -94,7 +140,7 @@ class ResultsList extends React.Component {
             )
         } else if (!isLoading && !currentQuery) {
             return (
-                <Message >No Queries, create one now!</Message>
+                <Message id="no__results__message" >No Queries, create one now!</Message>
             )
         } else {
             return (
@@ -112,4 +158,4 @@ const mapStateToProps = state => ({
 });
 
 
-export default connect(mapStateToProps, null)(ResultsList);
+export default connect(mapStateToProps, { setCurrentQuery })(ResultsList);

@@ -68,7 +68,7 @@ class Settings extends React.Component {
                 <p>Create a query to access settings</p>
             )
         }   else {
-                const { currentQuery } = this.props;
+                const { currentQuery, currentUser } = this.props;
                 const { open } = this.state;
 
                 return (
@@ -89,7 +89,11 @@ class Settings extends React.Component {
                                     <Popup
                                         key={0}
                                         position="top center"
-                                        content="Sends data to your saved email address"
+                                        content={
+                                            currentUser.isAnonymous 
+                                            ? "Sends results to your saved email address, you must create an account and verify your email first!"
+                                            : "Sends data to your saved email address"
+                                        }
                                         trigger={<Icon name='question circle outline' size='large' style={{cursor: "pointer"}} />}
                                     />
                                 </Grid.Column>

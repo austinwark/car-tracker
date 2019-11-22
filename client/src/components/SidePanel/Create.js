@@ -4,8 +4,9 @@ import moment from 'moment';
 
 import firebase from '../../firebase';
 
-import { Form, Icon, Checkbox, Input, Select, Button, Modal, Header } from 'semantic-ui-react';
+import { Form, Icon, Checkbox, Input, Select, Button, Modal, Header, Message } from 'semantic-ui-react';
 
+const uuidv4 = require('uuid/v4');
 
 const modelOptions = [
     { text: "Avalon", value: "avalon"},
@@ -19,6 +20,8 @@ const modelOptions = [
     { text: "Tacoma", value: "tacoma" },
     { text: "Tundra", value: "tundra" }
 ]
+/* for validating model input */
+const modelOptionsArray = ["avalon", "camry", "corolla", "prius", "sienna", "4runner", "highlander", "rav4", "tacoma", "tundra"];
 
 const INITIAL_CUSTOMER = {
     customerName: '',
@@ -35,11 +38,13 @@ class Create extends React.Component {
         model: '',
         operator: '',
         price: 0,
-        customer: INITIAL_CUSTOMER,
+        customerName: '',
+        customerPhone: '',
+        customerNotes: '',
         enabled: false,
         disabled: true,
         loading: false,
-        error: [],
+        error: null,
         success: true,
         modal: false
     }
@@ -50,13 +55,17 @@ class Create extends React.Component {
             model: "",
             operator: "",
             price: 0,
-            customer: INITIAL_CUSTOMER,
+            enabled: false,
+            customerName: '',
+            customerPhone: '',
+            customerNotes: '',
+            modal: false
         });
     }
 
     openModal = () => this.setState({ modal: true });
 
-    closeModal = () => this.setState({ modal: false });
+    closeModal = () => this.resetFields();
 
     handleNameChange = event => {
         this.setState({ queryName: event.target.value });
@@ -76,49 +85,77 @@ class Create extends React.Component {
 
     handleEnable = () => {
         const { enabled } = this.state;
-        this.setState({ enabled: !enabled })
+        // this.setState({ enabled: !enabled })
+        enabled 
+            ? this.setState({ customerName: "", customerPhone: "", customerNotes: "", enabled: false })
+            : this.setState({ enabled: true });
     }
 
     handleCustomerChange = event => {
-        const { customer } = this.state;
-        customer[event.target.name] = event.target.value;
-        this.setState({ customer });
+        // const { customer } = this.state;
+        // customer[event.target.name] = event.target.value;
+        this.setState({ [event.target.name]: event.target.value });
     }
+
+    queryNotValid = (name, model, price, operator) => {
+        if (name.length > 20 || name.length <= 0) {
+            return { error: "Name must be greater than 0 and less than or equal to 20"}
+        } else if (price < 5000 || price > 50000) {
+            return { error: "Price must be between $5,000 and $50,000, inclusive"}
+        } else if (!modelOptionsArray.includes(model.toLowerCase())) {
+            return { error: "Model must be a chosen from list"}
+        } else if (operator !== "less" && operator !== "greater") {
+            return { error: "Must pick an operator"}
+        } else {
+            return false;
+        }
+    }
+
+
 
     /* Previous handling of new query */
     handleSubmit = async event => {
         event.preventDefault();
         this.setState({ loading: true });
-        const { customer, queryName, model, price, operator, currentUser, queriesRef } = this.state;
-        const creationDate = moment().format("L");
-        const key = queriesRef.child(currentUser.uid).push().key;
-        let newQuery = {
-            id: key,
-            name: queryName,
-            model: model,
-            price: price,
-            operator: operator,
-            customer: customer,
-            creationDate: creationDate
-        };
-        newQuery = await this.getQueryResults(newQuery);
-        queriesRef
-            .child(currentUser.uid)
-            .child(key)
-            .update(newQuery)
-            .then(() => {
-                console.log('query added')
-                this.closeModal();
-                this.resetFields();
-                this.setState({ loading: false });
-            })
-            .catch(err => {
-                console.error(err);
-                //this.resetFields();
-                this.setState({ loading: false });
-            })
+        const { customerName, customerPhone, customerNotes, queryName, model, price, operator, currentUser, queriesRef } = this.state;
+        const customer = { customerName, customerPhone, customerNotes };
+        const isNotValid = this.queryNotValid(queryName, model, price, operator );
 
+        if (isNotValid) {
+            this.setState({ error: isNotValid.error, loading: false });
+        } else {
+            const creationDate = moment().format("L");
+            const key = queriesRef.child(currentUser.uid).push().key;
+            let newQuery = {
+                id: key,
+                name: queryName,
+                model: model,
+                price: price,
+                operator: operator,
+                customer: customer,
+                creationDate: creationDate,
+                isOwnerAnonymous: currentUser.isAnonymous
+            };
+            newQuery = await this.getQueryResults(newQuery);
+            queriesRef
+                .child(currentUser.uid)
+                .child(key)
+                .update(newQuery)
+                .then(() => {
+                    console.log('query added')
+                    this.closeModal();
+                    this.resetFields();
+                    this.setState({ loading: false, error: null });
+                })
+                .catch(err => {
+                    console.error(err);
+                    //this.resetFields();
+                    this.setState({ loading: false, error: err });
+                })
+        }
     }
+
+    
 
     getQueryResults = async query => {
         const { model, price, operator } = query;
@@ -141,10 +178,12 @@ class Create extends React.Component {
         return newQuery;
     }
 
+    
+
 
     render() {
 
-        const { modal, queryName, model, operator, price, enabled, customer, loading } = this.state;
+        const { modal, queryName, model, operator, price, enabled, customerName, customerPhone, customerNotes, loading, error, currentUser } = this.state;
 
         return (
             <div>
@@ -154,7 +193,13 @@ class Create extends React.Component {
                         <Button icon floated='right' onClick={this.closeModal}><Icon name='close' /></Button>
                     </Modal.Header>
                     <Modal.Content>
-                        <Form onSubmit={this.handleSubmit}>
+                        <Form error={Boolean(error)} onSubmit={this.handleSubmit} className="create__form">
+                                <Message
+                                    error
+                                    attached="bottom"
+                                    header="Oops!"
+                                    content={error}
+                                />
                             <Header as="h3">Query Specs</Header>
                                 <Form.Field
                                     control={Input}
@@ -218,7 +263,7 @@ class Create extends React.Component {
                                     placeholder="Name"
                                     onChange={this.handleCustomerChange}
                                     type="text"
-                                    value={customer.customerName}
+                                    value={customerName}
                                     disabled={!enabled}
                                 />
                                 <Form.Field
@@ -228,7 +273,7 @@ class Create extends React.Component {
                                     placeholder="Phone"
                                     onChange={this.handleCustomerChange}
                                     type="text"
-                                    value={customer.customerPhone}
+                                    value={customerPhone}
                                     disabled={!enabled}
                                 />
                                 <Form.Field
@@ -238,24 +283,26 @@ class Create extends React.Component {
                                     placeholder="Notes"
                                     onChange={this.handleCustomerChange}
                                     type="text"
-                                    value={customer.customerNotes}
+                                    value={customerNotes}
                                     disabled={!enabled}
+                                    id="notes__field"
                                 />
                                 <Button
                                     loading={loading}
                                     fluid
                                     type="submit"
-                                    basic
+                                    className="button__3d"
                                     id="submit__button"
                                 >
                                     Submit
                                 </Button>
+                                
                         </Form>
                     </Modal.Content>
                 </Modal>
                 <Button
                     id="sidePanel__button"
-                    
+                    className="button__3d"
                     content="Create Query"
                     onClick={this.openModal}
                 />

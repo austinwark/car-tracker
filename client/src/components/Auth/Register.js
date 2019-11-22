@@ -3,6 +3,7 @@ import firebase from '../../firebase';
 
 import { Grid, Form, Segment, Button, Header, Message, Icon } from 'semantic-ui-react';
 import { Link } from 'react-router-dom';
+import "../App.css";
 
 class Register extends React.Component {
 	state = {
@@ -101,14 +102,24 @@ class Register extends React.Component {
 		return errors.some((error) => error.message.toLowerCase().includes(inputName)) ? 'error' : '';
 	};
 
+	handleAnonymous = () => {
+		firebase
+			.auth()
+			.signInAnonymously()
+			.catch(err => {
+				console.error(err.message);
+				this.setState({ errors: this.state.errors.concat(err) });
+			})
+	}
+
 	render() {
 		const { username, email, password, passwordConfirmation, errors, loading } = this.state;
 
 		return (
 			<Grid textAlign="center" verticalAlign="middle" className="signup__grid" style={{marginTop: "10%"}}>
 				<Grid.Column style={{ maxWidth: 450 }}>
-					<Header as="h1" icon color="orange" textAlign="center">
-						<Icon name="puzzle piece" color="orange" />
+					<Header as="h1" icon color="blue" textAlign="center">
+						<Icon name="puzzle piece" color="blue" />
 						Register for Car Tracker
 					</Header>
 					<Form onSubmit={this.handleSubmit} size="large">
@@ -160,7 +171,8 @@ class Register extends React.Component {
 							/>
 							<Button
 								disabled={loading}
-								className={loading ? 'loading' : ''}
+								className={loading ? 'loading button__3d' : 'button__3d'}
+								id="register__button"
 								color="orange"
 								fluid
 								size="large"
@@ -179,7 +191,9 @@ class Register extends React.Component {
 						Already a user?{' '}
 						<Link to="/login">
 							Login
-						</Link>{' '}
+						</Link>{' '}or 
+						<span onClick={() => this.handleAnonymous()}> continue </span>
+						as an anonymous user
 					</Message>
 				</Grid.Column>
 			</Grid>
