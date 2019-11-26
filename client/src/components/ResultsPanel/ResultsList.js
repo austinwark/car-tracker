@@ -48,7 +48,7 @@ class ResultsList extends React.Component {
     // updateGlobalState = (stock, toDisable) => {
     //     const { currentQuery } = this.props;
     //     // console.log(currentQuery)
-    //     const currentResults = currentQuery.results.arr;
+    //     const currentResults = currentQuery.results;
     //     const updatedResults = currentResults.map(el => {
     //         const result = el;
     //         if (result.stock === stock) {
@@ -64,8 +64,8 @@ class ResultsList extends React.Component {
     // }
 
     displayResults = results => {
-        if (results) {
-            return this.props.currentQuery.results.arr.map((result, i) => {
+        if (results.length > 0) {
+            return results.map((result, i) => {
                 return (
                     <Table.Row key={result.stock}>
                         <Table.Cell>{result.stock}</Table.Cell>

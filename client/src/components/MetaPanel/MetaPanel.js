@@ -46,7 +46,7 @@ class MetaPanel extends React.Component {
                 </Step.Group>
                 {results &&
                 <Step.Group widths={2} fluid unstackable>
-                    <Step size="mini" content="Results" className="left__step" /><Step content={results.arr.length} className="right__step" />
+                    <Step size="mini" content="Results" className="left__step" /><Step content={results.length} className="right__step" />
                 </Step.Group>}
                 <Step.Group widths={2} fluid unstackable>
                     <Step size="mini" content="Created" className="left__step" /><Step content={creationDate} className="right__step" />

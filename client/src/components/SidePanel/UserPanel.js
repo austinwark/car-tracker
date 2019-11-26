@@ -14,6 +14,7 @@ class UserPanel extends React.Component {
     state = {
         currentUser: this.props.currentUser,
         isVerified: firebase.auth().currentUser.emailVerified,
+        usersRef: firebase.database().ref('users'),
         email: "",
         emailConfirmation: "",
         error: false,
@@ -44,13 +45,9 @@ class UserPanel extends React.Component {
         const { currentNotification } = this.props;
         const user = firebase.auth().currentUser;
         user.sendEmailVerification().then(async () => {
-            // if (currentNotification)
-            //     await this.props.clearCurrentNotification();
-            // this.props.setCurrentNotification("Verification email successfully sent!");
+            
         }).catch(async err => {
-            // if (currentNotification)
-            //     await this.props.clearCurrentNotification();
-            // this.props.setCurrentNotification("Verification email failed to be sent!");
+            
             console.error(err)
         })
     }
@@ -70,13 +67,23 @@ class UserPanel extends React.Component {
     }
 
     handleSubmit = event => {
+        const { currentUser, usersRef } = this.state;
         event.preventDefault();
         if (this.isFormValid(this.state.email, this.state.emailConfirmation)) {
             this.setState({ loading: true, error: false });
             const user = firebase.auth().currentUser;
             user.updateEmail(this.state.email)
                 .then(() => {
-                    this.setState({ loading: false }, () => this.closeModal(true));
+
+                    usersRef
+                        .child(currentUser.uid)
+                        .child('email')
+                        .set(this.state.email)
+                        .then(() => {
+                            this.handleEmailVerification();
+                            this.setState({ loading: false }, () => this.closeModal(true));
+                        })
+
                 })
                 .catch(err => {
                     console.log(err)
@@ -107,11 +114,6 @@ class UserPanel extends React.Component {
         } else {
             return true;
         }
-    }
-
-    handleUpdateEmail = () => {
-        const user = firebase.auth().currentUser;
-
     }
 
     dropdownOptions = () => [

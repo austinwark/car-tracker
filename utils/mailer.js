@@ -17,11 +17,11 @@ module.exports = function() {
         // });
 
         let transporter = nodemailer.createTransport({
-            host: "smtp.mailtrap.io",
-            port: 2525,
+            host: "smtp.gmail.com",
+            port: 465,
             auth: {
-              user: "ace0e744e5363e",
-              pass: "42b900f066ab1e"
+              user: "trackerappr@gmail.com",
+              pass: "g.gaw.DEV96m"
             }
         });
     

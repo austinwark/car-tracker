@@ -164,13 +164,11 @@ class Create extends React.Component {
         const url = '/api/scrape';
         const payload = { model, price, operator };
         const response = await axios.post(url, payload);
-        const queryResults = response.data;
-        if (queryResults.arr.length <= 0) {
+        const queryResults = response.data.arr;
+        if (queryResults.length <= 0) {
             const newQuery = query;
-            const results = {
-                arr: []
-            }
-            newQuery.results = results;
+            
+            newQuery.results = [];
             return newQuery
         }
 

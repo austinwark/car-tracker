@@ -4,7 +4,7 @@ import React from 'react';
 import { Grid, Form, Segment, Button, Header, Message, Icon } from 'semantic-ui-react';
 import { Link } from 'react-router-dom';
 import "../App.css";
-
+const moment = require('moment');
 const firebase = require('../../firebase');
 class Register extends React.Component {
 	state = {
@@ -82,9 +82,11 @@ class Register extends React.Component {
     };
     
     saveUser = createdUser => {
+		const now = moment().format("L");
         return this.state.usersRef.child(createdUser.user.uid).set({
             name: createdUser.user.displayName,
-            email: createdUser.user.email
+			email: createdUser.user.email,
+			lastSignIn: now
         })
 	}
 	

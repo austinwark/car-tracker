@@ -30,7 +30,7 @@ const enhancer = composeEnhancers(applyMiddleware());
 
 const store = createStore(rootReducer, enhancer);
 const firebase = require('./firebase');
-
+const moment = require('moment');
 /*
 import { createStore, applyMiddleware, compose } from "redux";
 import reduxThunk from "redux-thunk";
@@ -53,17 +53,27 @@ export default store;
 */
 class Root extends React.Component {
 	componentDidMount() {
-		//console.log(this.props.isLoading)
-		// const initialQuery = {
-		// 	isDefault: true,
-		// 	results: {
-		// 		arr: []
-		// 	}
-		// }
+
 		firebase.auth().onIdTokenChanged((user) => {
 			if (user) {
 				const isAnonymous = user.isAnonymous;
 				
+				// if user is not anonymous, update database with verified result
+				if (!isAnonymous) {
+					if (user.emailVerified) {
+						console.log('IS VERIFIED')
+						firebase.database().ref('users').child(user.uid).update({
+							"emailVerified": true,
+							"lastSignIn": moment().format('L')
+						})
+					} else {
+						console.log('IS NOT VERIFIED')
+						firebase.database().ref('users').child(user.uid).update({
+							"emailVerified": false,
+							"lastSignIn": moment().format("L")
+						})
+					}
+				}
 				console.log(user)
 				this.props.setUser(user);
 				/* Handles email update bug where index would reset currentQuery on Auth Change and CurrentQueries would not pick up on it */
@@ -77,7 +87,6 @@ class Root extends React.Component {
 				})
 				this.props.history.push('/');
 			} else {
-				
 				this.props.history.push('/login');
 				this.props.clearUser();
 			}

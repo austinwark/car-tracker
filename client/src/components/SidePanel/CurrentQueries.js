@@ -69,7 +69,7 @@ class CurrentQueries extends React.Component {
                     onClick={() => this.changeCurrentQuery(query)}
                     style={{cursor: "pointer", textDecoration: "none"}}
                 >
-                    # { query.name} <span id="results__count">({query.results ? query.results.arr.length : 0})</span>
+                    # { query.name} <span id="results__count">({query.results ? query.results.length : 0})</span>
                 </Menu.Item>
             )
         })

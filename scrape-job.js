@@ -1,7 +1,7 @@
 // import firebase from './client/src/firebase';
 require('./utils/scraper')();
 const firebase = require('./client/src/firebase')
-
+const moment = require('moment');
 
 async function getData() {
     const usersRef = firebase.database().ref('users');
@@ -9,7 +9,7 @@ async function getData() {
     const price = 22000;
     const operator = "less";
     
-    
+    // gets user ID's
     usersRef.once('value').then(async snap => {
         const userIds = Object.keys(snap.val())
         await getQueries(userIds);
@@ -19,12 +19,14 @@ async function getData() {
 async function getQueries(users) {
     const queriesRef = firebase.database().ref('queries');
     
+    // gets queries from each user
     users.forEach(user => {
         queriesRef.child(user).once('value').then(async snap => {
             if (snap.val()) {
                 const userQueries =  Object.entries(snap.val())
                 
                 let queryArray = [];
+                // destructures queries
                 userQueries.forEach(userQuery => {
                     const queryId = userQuery[0];
                     const queryDetails = userQuery[1];
@@ -39,6 +41,7 @@ async function getQueries(users) {
     })
 }
 
+//gets results and updates firebase
 async function getScrapeResults(userId, queries) {
     const queriesRef = firebase.database().ref('queries');
     
@@ -50,9 +53,9 @@ async function getScrapeResults(userId, queries) {
         const price = queryDetails.price;
         const operator = queryDetails.operator;
         const data = await Scraper(model, price, operator);
-        const results = { arr: data };
+        // const results = data;
         let newQuery = queryDetails;
-        newQuery.results = results;
+        newQuery.results = data;
         newQuery.prevResults = queryDetails.results;
 
         await queriesRef
@@ -65,7 +68,6 @@ async function getScrapeResults(userId, queries) {
                         .catch(err => {
                             console.error(err)
                         })
-        
     })
 
 }

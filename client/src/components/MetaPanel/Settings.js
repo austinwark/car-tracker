@@ -38,11 +38,11 @@ class Settings extends React.Component {
 
     handleSendToEmail = async () => {
         const { currentQuery, currentUser, currentNotification } = this.props;
-        const { arr } = currentQuery.results;
+        const { results } = currentQuery;
 
         this.setState({ emailLoading: true });
         const url = '/api/mailer';
-        const payload = { results: arr, email: currentUser.email };
+        const payload = { results: results, email: currentUser.email };
         const response = await axios.post(url, payload);
         if (response.status === 200) {
             if (currentNotification)
