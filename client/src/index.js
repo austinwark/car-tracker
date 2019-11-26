@@ -12,23 +12,24 @@ import Spinner from './Spinner';
 import 'semantic-ui-css/semantic.min.css';
 import "./components/App.css";
 
-import firebase from './firebase';
+// import firebase from './firebase';
 import { createStore, applyMiddleware, compose } from 'redux';
 import { Provider, connect } from 'react-redux';
 import rootReducer from './reducers';
 import { setUser, clearUser, setCurrentQuery } from './actions';
 
 const composeEnhancers =
-	typeof window === "object" && window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__
-		? window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__({
-			trace: true,
-			traceLimit: 20
-		})
-		: compose;
+typeof window === "object" && window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__
+? window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__({
+	trace: true,
+	traceLimit: 20
+})
+: compose;
 
 const enhancer = composeEnhancers(applyMiddleware());
 
 const store = createStore(rootReducer, enhancer);
+const firebase = require('./firebase');
 
 /*
 import { createStore, applyMiddleware, compose } from "redux";

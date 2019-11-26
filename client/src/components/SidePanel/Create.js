@@ -2,10 +2,11 @@ import axios from 'axios';
 import React from 'react';
 import moment from 'moment';
 
-import firebase from '../../firebase';
+// import firebase from '../../firebase';
 
 import { Form, Icon, Checkbox, Input, Select, Button, Modal, Header, Message } from 'semantic-ui-react';
 
+const firebase = require('../../firebase');
 const uuidv4 = require('uuid/v4');
 
 const modelOptions = [

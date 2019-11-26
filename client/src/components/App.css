@@ -8,23 +8,40 @@ html, body, .app__main {
 #main__font, h1, h2, h3, h4, h5, p, span, button {
     font-family: 'Asap', sans-serif !important;
 }
-
-.no__padding__bottom {
-    padding-bottom: 0 !important;
-}
-
 .ui.segment {
     background-color: #fafafa !important;
 }
-
-.ui.steps .step {
+.steps {
+    border: none !important;
+}
+.step {
     border-right: none !important;
+    background: none !important;
+}
+.step:after {
+    background: none !important;
+}
+.first__column {
+    padding-bottom: 0 !important;
+}
+.first__column > .segment {
+    border-radius: 0 !important;
+}
+@media (min-width: 768px) {
+    .middle__column {
+        position: relative;
+        right: 14px;
+        padding-left: 14px !important;
+        padding-right: 14px !important;
+        padding-bottom: 0 !important;
+    }
+    .last__column {
+        position: relative;
+        right: 14px;
+        padding-bottom: 0 !important;
+    }
 }
 
-/* .ui.steps .step:after {
-    animation: floating 2s linear infinite !important;
-    
-} */
 
 
 /* START ----------------------------------------------- */
@@ -35,7 +52,11 @@ html, body, .app__main {
     font-weight: 800;
     color: #2a2a2a8a;
 }
-
+.anonymous__link {
+    color: #026670;
+    cursor: pointer;
+    font-weight: 600;
+}
 /* Side Panel */
 
 
@@ -64,13 +85,17 @@ html, body, .app__main {
 .ui.secondary.menu .link.item, .ui.secondary.menu a.item {
     color: #FFC2AA !important;
 }
-
+.item.main__sidepanel__colors > span {
+    color: #DCE9BE;
+}
 .sidePanel__menu {
     border: none !important;
     font-family: 'Inconsolata', monospace !important;
     font-size: 1.2rem !important;
 }
-
+#results__count {
+    font-family: 'Inconsolata', monospace !important;
+}
 .button__3d:active {
     top: 4px !important;
     margin-bottom: 4px !important;
@@ -133,12 +158,16 @@ html, body, .app__main {
 }
 
 .table__container {
+    margin-top: 1rem !important;
     overflow: auto;
     max-height: 80vh;
     width: 100% !important;
     font-family: 'Montserrat', sans-serif;
 }
-
+.table__container > h1 {
+    color: #99173C !important;
+    padding-top: .5rem !important;
+}
 .table__header {
     margin: 0 !important;
     padding-top: 1rem !important;
@@ -160,17 +189,13 @@ html, body, .app__main {
     font-weight: 700;
     font-family: "Montserrat", sans-serif;
 }
-
-
 .right__step {
     font-weight: 500;
     font-family: "Montserrat", sans-serif;
 }
-
 .settings__button {
     width: 10rem !important;
 }
-
 /* Skeleton */
 
 .skeleton {

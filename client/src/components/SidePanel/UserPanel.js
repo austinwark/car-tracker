@@ -5,7 +5,8 @@ import { setCurrentNotification, clearCurrentNotification } from '../../actions'
 import { connect } from 'react-redux';
 import { Icon, Dropdown, Modal, Form, Input, Button, Header, Popup } from 'semantic-ui-react';
 
-import firebase from '../../firebase';
+// import firebase from '../../firebase';
+const firebase = require('../../firebase');
 //import { connect } from 'react-redux';
 
 class UserPanel extends React.Component {

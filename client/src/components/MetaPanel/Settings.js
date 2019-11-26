@@ -1,12 +1,13 @@
 import React from 'react';
 import axios from 'axios';
-import firebase from '../../firebase';
+// import firebase from '../../firebase';
 import Skeleton from '../ResultsPanel/Skeleton';
 import { setCurrentNotification, clearCurrentNotification, setCurrentQuery } from '../../actions';
 import { connect } from 'react-redux';
 import { Button, Confirm, Icon, Grid, Popup, Table } from 'semantic-ui-react';
 
 
+const firebase = require('../../firebase');
 class Settings extends React.Component {
 	state = {
         queriesRef: firebase.database().ref('queries'),

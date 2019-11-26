@@ -1,7 +1,9 @@
-import firebase from 'firebase/app';
-import 'firebase/auth';
-import 'firebase/database';
-
+// import firebase from 'firebase/app';
+// import 'firebase/auth';
+// import 'firebase/database';
+const firebase = require('firebase/app')
+require('firebase/auth');
+require('firebase/database');
 var config = {
 	apiKey: 'AIzaSyCGYq2ZkkoxviFarec_meoPX0D-ymWZ89k',
 	authDomain: 'car-tracker-52923.firebaseapp.com',
@@ -17,4 +19,5 @@ firebase.initializeApp(config);
 
 //export default firebase;
 
-export default firebase;
+module.exports = firebase;
+// export default firebase;

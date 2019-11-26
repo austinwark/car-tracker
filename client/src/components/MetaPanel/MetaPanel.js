@@ -31,8 +31,9 @@ class MetaPanel extends React.Component {
         } = query;
         return (
             <React.Fragment>
+                {/* <h3 className="query__name__header">#{query.name}</h3> */}
                 <Step.Group widths={2} fluid unstackable >
-                    <Step size="mini" content="Query Name" className="left__step" /><Step content={name} className="right__step"/>
+                    <Step size="mini" content="Query Name" className="left__step" /><Step content={name} className="right__step" />
                 </Step.Group>
                 <Step.Group widths={2} fluid unstackable>
                     <Step size="mini" content="Model" className="left__step" /><Step content={model.charAt(0).toUpperCase() + model.substring(1)} className="right__step" />

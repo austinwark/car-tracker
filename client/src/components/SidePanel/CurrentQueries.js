@@ -1,11 +1,12 @@
 import React from 'react';
 
-import firebase from '../../firebase';
+// import firebase from '../../firebase';
 import { connect } from 'react-redux';
 import { setCurrentQuery } from '../../actions';
 
 import { Menu, Icon } from 'semantic-ui-react';
 
+const firebase = require('../../firebase');
 class CurrentQueries extends React.Component {
 
     state = {
@@ -68,7 +69,7 @@ class CurrentQueries extends React.Component {
                     onClick={() => this.changeCurrentQuery(query)}
                     style={{cursor: "pointer", textDecoration: "none"}}
                 >
-                    # { query.name} <span>({query.results ? query.results.arr.length : 0})</span>
+                    # { query.name} <span id="results__count">({query.results ? query.results.arr.length : 0})</span>
                 </Menu.Item>
             )
         })

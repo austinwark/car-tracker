@@ -1,10 +1,11 @@
 import React from 'react';
-import firebase from '../../firebase';
+// import firebase from '../../firebase';
 
 import { Grid, Form, Segment, Button, Header, Message, Icon } from 'semantic-ui-react';
 import { Link } from 'react-router-dom';
 import "../App.css";
 
+const firebase = require('../../firebase');
 class Register extends React.Component {
 	state = {
 		username: '',
@@ -190,9 +191,9 @@ class Register extends React.Component {
 					<Message>
 						Already a user?{' '}
 						<Link to="/login">
-							Login
+							<span className="anonymous__link">Login</span>
 						</Link>{' '}or 
-						<span onClick={() => this.handleAnonymous()}> continue </span>
+						<span onClick={() => this.handleAnonymous()} className="anonymous__link"> continue </span>
 						as an anonymous user
 					</Message>
 				</Grid.Column>

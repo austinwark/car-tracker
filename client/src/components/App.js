@@ -22,13 +22,13 @@ class App extends React.Component {
     return  (
               <Grid stackable>
                   {currentNotification && <Notification currentNotification={currentNotification} />}
-                  <Grid.Column width={3} textAlign="center" className="main__sidepanel__colors no__padding__bottom">
+                  <Grid.Column width={3} textAlign="center" className="main__sidepanel__colors no__padding__bottom first__column">
                       <SidePanel currentQuery={currentQuery} currentUser={currentUser} />
                   </Grid.Column>
-                  <Grid.Column width={9} textAlign="center" className="no__padding__bottom">
+                  <Grid.Column width={9} textAlign="center" className="no__padding__bottom middle__column">
                       <ResultsPanel currentUser={currentUser} />
                   </Grid.Column>
-                  <Grid.Column width={4} className="no__padding__bottom">
+                  <Grid.Column width={4} className="no__padding__bottom last__column">
                       <MetaPanel currentQuery={currentQuery} currentUser={currentUser} isLoading={isLoading} />
                   </Grid.Column>
               </Grid>

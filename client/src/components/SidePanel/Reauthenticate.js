@@ -1,9 +1,10 @@
 import React from 'react';
-import firebase from '../../firebase';
+// import firebase from '../../firebase';
 
 import { Icon, Dropdown, Modal, Form, Input, Button, Header, Confirm } from 'semantic-ui-react';
 
 
+const firebase = require('../../firebase');
 class Reauthenticate extends React.Component {
 
     state = {
