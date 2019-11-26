@@ -1,7 +1,7 @@
 /* App */
 html, body, .app__main {
     height: 100vh;
-    background-color: #4a4a4a !important;
+    background-color: #DCE9BE !important;
     font-family: 'Asap', sans-serif !important;
 }
 
@@ -40,8 +40,8 @@ html, body, .app__main {
 
 
 #main__sidepanel__colors {
-    background-color: #042037 !important;
-    color: #FFC2AA !important;
+    background-color: #2E2633 !important;
+    color: #EFFFCD !important;
     font-style: bold !important;
     border: none !important;
     box-shadow: none !important;
@@ -124,7 +124,7 @@ html, body, .app__main {
 }
 
 .top__segment > h1 {
-    color: #29506D !important;
+    color: #99173C !important;
     padding-top: .5rem !important;
 }
 
