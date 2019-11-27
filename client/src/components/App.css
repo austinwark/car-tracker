@@ -196,6 +196,11 @@ html, body, .app__main {
 .settings__button {
     width: 10rem !important;
 }
+.question__icon {
+    cursor: pointer;
+    float: right;
+    margin-right: 45% !important;
+}
 /* Skeleton */
 
 .skeleton {

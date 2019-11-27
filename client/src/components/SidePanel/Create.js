@@ -135,7 +135,11 @@ class Create extends React.Component {
                 operator: operator,
                 customer: customer,
                 creationDate: creationDate,
-                isOwnerAnonymous: currentUser.isAnonymous
+                isOwnerAnonymous: currentUser.isAnonymous,
+                settings: {
+                    autoEmails: true,
+                    onlyNew: true
+                }
             };
             newQuery = await this.getQueryResults(newQuery);
             queriesRef

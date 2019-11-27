@@ -4,7 +4,7 @@ import axios from 'axios';
 import Skeleton from '../ResultsPanel/Skeleton';
 import { setCurrentNotification, clearCurrentNotification, setCurrentQuery } from '../../actions';
 import { connect } from 'react-redux';
-import { Button, Confirm, Icon, Grid, Popup, Table } from 'semantic-ui-react';
+import { Button, Confirm, Icon, Grid, Popup, Checkbox } from 'semantic-ui-react';
 
 
 const firebase = require('../../firebase');
@@ -14,10 +14,29 @@ class Settings extends React.Component {
         isVerified: firebase.auth().currentUser.emailVerified,
         deleteLoading: false,
         emailLoading: false,
-        open: false
+        open: false,
+        autoEmails: this.props.currentQuery,
+        onlyNew: this.props.currentQuery
     };
+
+    // first renders autoEmails & onlyNew state as null while props are loading, then updates state with desired value when it loads
+    static getDerivedStateFromProps(props, state) {
+        if (props.currentQuery !== state.autoEmails && props.currentQuery !== state.onlyNew) {
+            return {
+                autoEmails: props.currentQuery.settings.autoEmails,
+                onlyNew: props.currentQuery.settings.onlyNew
+            }
+        } else if (props.currentQuery !== state.autoEmails) {
+            return { autoEmails: props.currentQuery.settings.autoEmails };
+        } else if (props.currentQuery !== state.onlyNew) {
+            return { onlyNew: props.currentQuery.settings.onlyNew };
+        }
+
+        return null;
+    }
+
     
-     handleDelete = currentQuery => {
+    handleDelete = currentQuery => {
         const { queriesRef } = this.state;
         const { currentUser } = this.props;
         this.setState({ deleteLoading: true });
@@ -56,7 +75,31 @@ class Settings extends React.Component {
         this.setState({ emailLoading: false });
     }
 
+    toggleAutoEmails = () => {
+        const { currentQuery, currentUser } = this.props;
+        
+        const autoEmails = currentQuery.settings.autoEmails;
+        this.state.queriesRef.child(currentUser.uid).child(currentQuery.id).child('settings').update({
+            "autoEmails": !autoEmails
+        })
+        const updatedQuery = currentQuery;
+        updatedQuery.settings.autoEmails = !autoEmails;
+        this.props.setCurrentQuery(updatedQuery);
+        this.setState({ autoEmails: !autoEmails })
+    }
 
+    toggleOnlyNew = () => {
+        const { currentQuery, currentUser } = this.props;
+
+        const onlyNew = currentQuery.settings.onlyNew;
+        this.state.queriesRef.child(currentUser.uid).child(currentQuery.id).child('settings').update({
+            "onlyNew": !onlyNew
+        })
+        const updatedQuery = currentQuery;
+        updatedQuery.settings.onlyNew = !onlyNew;
+        this.props.setCurrentQuery(updatedQuery);
+        this.setState({ onlyNew: !onlyNew });
+    }
 
 
 
@@ -77,6 +120,44 @@ class Settings extends React.Component {
                         <Grid>
                             <Grid.Row>
                                 <Grid.Column>
+                                    <Checkbox
+                                        label="Automatic emails"
+                                        onChange={this.toggleAutoEmails}
+                                        checked={this.state.autoEmails}
+                                    />
+                                    <Popup
+                                        key={0}
+                                        position="top center"
+                                        content={
+                                            currentUser.isAnonymous
+                                                ? "Create an account to enable daily email updates "
+                                                : "Controls automatic daily email updates "
+                                        }
+                                        trigger={<Icon name='question circle outline' size='large' className="question__icon" />}
+                                    />
+                                </Grid.Column>
+                            </Grid.Row>
+                            <Grid.Row>
+                                <Grid.Column>
+                                    <Checkbox
+                                        label="Only new results"
+                                        onChange={this.toggleOnlyNew}
+                                        checked={this.state.onlyNew}
+                                    />
+                                    <Popup
+                                        key={0}
+                                        position="top center"
+                                        content={
+                                            currentUser.isAnonymous
+                                                ? "Create an account to configure settings "
+                                                : "Send only previously unseen results or all "
+                                        }
+                                        trigger={<Icon name='question circle outline' size='large' className="question__icon" />}
+                                    />
+                                </Grid.Column>
+                            </Grid.Row>
+                            <Grid.Row>
+                                <Grid.Column>
                                     <Button
                                         color="blue"
                                         basic
@@ -88,14 +169,14 @@ class Settings extends React.Component {
                                         Send to email
                                     </Button>
                                     <Popup
-                                        key={0}
+                                        key={1}
                                         position="top center"
                                         content={
                                             currentUser.isAnonymous 
                                             ? "Sends results to your saved email address, you must create an account and verify your email first!"
                                             : "Sends data to your saved email address"
                                         }
-                                        trigger={<Icon name='question circle outline' size='large' style={{cursor: "pointer"}} />}
+                                        trigger={<Icon name='question circle outline' size='large' className="question__icon" />}
                                     />
                                 </Grid.Column>
                             </Grid.Row>
@@ -111,10 +192,10 @@ class Settings extends React.Component {
                                         Delete
                                     </Button>
                                     <Popup
-                                        key={1}
+                                        key={2}
                                         position="top center"
                                         content="Permanently deletes query, and all automatic email updates"
-                                        trigger={<Icon name='question circle outline' size='large' style={{cursor: "pointer"}} />}
+                                        trigger={<Icon name='question circle outline' size='large' className="question__icon" />}
                                     />
                                 </Grid.Column>
                             </Grid.Row>

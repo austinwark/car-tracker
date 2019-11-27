@@ -3,15 +3,24 @@ require('./utils/scraper')();
 const firebase = require('./client/src/firebase')
 const moment = require('moment');
 
-async function getData() {
+async function getUsers() {
     const usersRef = firebase.database().ref('users');
-    const model = "Corolla";
-    const price = 22000;
-    const operator = "less";
     
     // gets user ID's
     usersRef.once('value').then(async snap => {
-        const userIds = Object.keys(snap.val())
+        // const userIds = Object.keys(snap.val())
+
+        const users = Object.entries(snap.val());
+        const userIds = users.map(user => {
+            const userId = user[0];
+            const userDetails = user[1];
+            const lastSignIn = userDetails.lastSignIn;
+            const monthAgo = moment().subtract(30, 'days');
+            const daysSince = moment(lastSignIn, "MM-DD-YYYY")
+            if (!daysSince.isBefore(monthAgo)) {        // if user has signed in within last 30 days
+                return userId;
+            }
+        })
         await getQueries(userIds);
     })
 }
@@ -55,9 +64,9 @@ async function getScrapeResults(userId, queries) {
         const data = await Scraper(model, price, operator);
         // const results = data;
         let newQuery = queryDetails;
-        newQuery.results = data;
         newQuery.prevResults = queryDetails.results;
-
+        newQuery.results = data;
+        console.log(newQuery)
         await queriesRef
             .child(userId)
                 .child(queryId)
@@ -72,4 +81,4 @@ async function getScrapeResults(userId, queries) {
 
 }
 
-getData();
+getUsers();

@@ -30,10 +30,12 @@ async function getQueries(user) {
             const queries = Object.values(snap.val())
             queries.forEach(async query => {
                 const results = query.results;
-                const queryName = query.name;
-                const success = await sendToMail(results, email);
-                // console.log(email)
-                success ? console.log('success') : console.log('failure')
+                const autoEmails = query.settings.autoEmails;
+                
+                if (autoEmails) {
+                    const success = await sendToMail(results, email);
+                    success ? console.log('success') : console.log('failure')
+                }
             })
         }
 
