@@ -136,12 +136,14 @@ class Create extends React.Component {
                 customer: customer,
                 creationDate: creationDate,
                 isOwnerAnonymous: currentUser.isAnonymous,
+                sentResults: [],
                 settings: {
                     autoEmails: true,
                     onlyNew: true
                 }
             };
             newQuery = await this.getQueryResults(newQuery);
+            console.log("SUBMIT: ", newQuery.name)
             queriesRef
                 .child(currentUser.uid)
                 .child(key)
@@ -151,6 +153,7 @@ class Create extends React.Component {
                     this.closeModal();
                     this.resetFields();
                     this.setState({ loading: false, error: null });
+                    // window.location.reload(false);
                 })
                 .catch(err => {
                     console.error(err);

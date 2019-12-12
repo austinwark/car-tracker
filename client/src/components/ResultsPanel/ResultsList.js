@@ -64,7 +64,7 @@ class ResultsList extends React.Component {
     // }
 
     displayResults = results => {
-        if (results.length > 0) {
+        if (results && results.length > 0) {
             return results.map((result, i) => {
                 return (
                     <Table.Row key={result.stock}>

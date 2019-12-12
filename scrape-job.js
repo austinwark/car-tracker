@@ -63,10 +63,11 @@ async function getScrapeResults(userId, queries) {
         const operator = queryDetails.operator;
         const data = await Scraper(model, price, operator);
         // const results = data;
+        console.log(data);
         let newQuery = queryDetails;
-        newQuery.prevResults = queryDetails.results;
+        newQuery.prevResults = queryDetails.results;              
         newQuery.results = data;
-        console.log(newQuery)
+        // console.log(newQuery)
         await queriesRef
             .child(userId)
                 .child(queryId)

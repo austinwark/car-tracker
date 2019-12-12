@@ -32,28 +32,37 @@ class CurrentQueries extends React.Component {
 
     // is called on changeCurrentQuery -> ensuring props && state is loaded
     addRemovedQueryListener = () => {
-        const { currentUser, queriesRef, queries } = this.state;
+        const { currentUser, queriesRef } = this.state;
         //console.log(this.props.currentQuery)
         queriesRef
             .child(currentUser.uid)
             .on("child_removed", snap => {
+                const { queries } = this.state;
                 const updatedQueries = queries.filter(quer => quer.id !== snap.val().id); // -> remove deleted query from local state
                 console.log("UPDATEDDDDDD : ", updatedQueries)
                 this.setState({ queries: updatedQueries });
                 //console.log("STATE: ", this.state.queries)
-                this.setFirstQuery(updatedQueries)
+                updatedQueries.length > 0 ? this.changeCurrentQuery(updatedQueries[0]) : this.props.setCurrentQuery(null);
+
             })
     }
 
     /* Listens for initial queries loaded in & new queries created -> then updates state */
     addNewQueryListener = () => {
-        const { currentUser, queriesRef, queries } = this.state;
-        const loadedQueries = queries;
+        // const { currentUser, queriesRef, queries } = this.state;
+        // const loadedQueries = queries;
+        const { currentUser, queriesRef } = this.state;
+
+        // console.log("NEW QUERY LISTNER BEFORE PUSH", loadedQueries)
         queriesRef
             .child(currentUser.uid)
             .on('child_added', snap => {
+                const loadedQueries = this.state.queries;
+                // console.log("NEW QUERY LISTNER BEFORE PUSH", JSON.stringify(loadedQueries))
                 loadedQueries.push(snap.val());
+                // console.log("NEW QUERY LISTNER AFTER PUSH", JSON.stringify(loadedQueries))
                 this.setState({ queries: loadedQueries }, () => {
+                    console.log("")
                     loadedQueries.length == 1 && this.setFirstQuery(loadedQueries)  // --> if this is the first time
                 });
             })
@@ -76,18 +85,21 @@ class CurrentQueries extends React.Component {
     )
 
     changeCurrentQuery = async nextQuery => {
-        console.log('changeCurrentQuery')
+        console.log("CHANGE CURRENT QUERY: ", nextQuery)
         this.setActiveQuery(nextQuery);
         await this.props.setCurrentQuery(nextQuery);
-        this.addRemovedQueryListener();
+        // this.addRemovedQueryListener();
     }
 
     setActiveQuery = query => {
+        console.log("SET ACTIVE QUERY: ", query)
         this.setState({ activeQuery: query.id })
     }
 
     setFirstQuery = queries => {
+        console.log("SET FIRST QUERY: ", queries)
         queries.length > 0 ? this.changeCurrentQuery(queries[0]) : this.props.setCurrentQuery(null);
+        this.addRemovedQueryListener();
     }
 
     render() {

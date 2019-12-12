@@ -21,7 +21,9 @@ class Settings extends React.Component {
 
     // first renders autoEmails & onlyNew state as null while props are loading, then updates state with desired value when it loads
     static getDerivedStateFromProps(props, state) {
-        if (props.currentQuery !== state.autoEmails && props.currentQuery !== state.onlyNew) {
+        if (!props.currentQuery) {
+            return null;
+        } else if (props.currentQuery !== state.autoEmails && props.currentQuery !== state.onlyNew) {
             return {
                 autoEmails: props.currentQuery.settings.autoEmails,
                 onlyNew: props.currentQuery.settings.onlyNew
