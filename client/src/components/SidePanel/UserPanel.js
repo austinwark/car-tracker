@@ -185,7 +185,7 @@ class UserPanel extends React.Component {
                         <Dropdown
                             trigger={
                                 <span id="user__dropdown">
-                                    <span style={{color: "#FFC2AA", fontSize: "1.2rem", fontStyle: "bold"}}><Icon size="small" name='at' />{this.state.currentUser.displayName || "Ghost"}{" "}</span>
+                                    <span style={{color: "#FFC2AA", fontSize: "1.2rem", fontStyle: "bold"}}><Icon size="small" name='at' />{this.state.currentUser.displayName || this.props.currentUser.displayName || "Ghost"}{" "}</span>
                                     {this.props.currentUser.email && (<br></br>)}
                                     {this.state.currentUser.email}
                                 </span>

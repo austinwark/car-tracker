@@ -73,6 +73,7 @@ class Root extends React.Component {
 							"lastSignIn": moment().format("L")
 						})
 					}
+					user.reload();
 				}
 				console.log(user)
 				this.props.setUser(user);

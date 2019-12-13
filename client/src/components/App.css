@@ -201,6 +201,209 @@ html, body, .app__main {
     float: right;
     margin-right: 45% !important;
 }
+
+/* Create */
+#create__header {
+    position: relative;
+    display: flex;
+    justify-content: space-between;
+    padding: 0 !important;
+    border-bottom: none !important;
+}
+.create__progress {
+    content: " ";
+    position: absolute;
+    height: 2px;
+    width: 33.33%;
+    bottom: 0;
+    background-color: blue;
+    transition: all .75s cubic-bezier(.65, 0, .35, 1);
+}
+#create__header div {
+    height: 100%;
+    width: 33.3333%;
+    text-align: center;
+    padding: 15px 0;
+    border: 1px solid rgba(34,36,38,.15);
+    transition: all .5s;
+    cursor: pointer;
+    /* border-right: solid rgba(128, 128, 128, 0.4) .5px; */
+}
+#create__header div:hover {
+    background-color:rgba(34,36,38,.15) !important;
+}
+.step__container {
+    position: relative;
+    width: 100%;
+    height: 500px;
+    overflow: hidden;
+}
+.step__container > div {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+    height: 100%;
+    display: flex;
+	transition: transform 1s;
+	transform: translate(100%, 0);
+	will-change: transform, opacity;
+}
+.step__container > div section {
+    width: 50%;
+    padding: 1%;
+    display: flex;
+    flex-direction: column;
+}
+.step__container > div section:first-child {
+    justify-content: space-between;
+}
+.step__container > div section:last-child {
+    padding: 1% 2%;
+}
+.form__validation span:first-child {
+    margin: 0 0 28px 0;
+}
+.form__validation span {
+    margin: 28px 0;
+}
+.form__validation i {
+    font-size: .95em !important;
+}
+.not__valid {
+    color: red !important;
+}
+.is__valid {
+    color: green !important;
+}
+.nav__section {
+    display: flex;
+}
+.checkbox__container {
+    display: flex;
+    justify-content: space-around;
+    flex-wrap: wrap;
+}
+.checkbox__container > div {
+    text-align: center;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    height: 125px;
+    width: 125px;
+    flex-direction: column;
+    position: relative;
+    border: solid grey 1px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: all .5s;
+}
+.next__button {
+    position: relative;
+    margin-top: auto;
+    background-color: #026670 !important;
+    color: #FCE181 !important;
+    border-bottom: solid 4px #01535a !important;
+}
+.next__button:active {
+    top: 4px;
+}
+.step__container .primary {
+    transform: translate(0, 0);
+}
+.step__container .forwardsIn {
+	transform: translate(100%, 0);
+	animation: slideInForwards .75s cubic-bezier(.65, 0, .35, 1) 0s forwards;
+}
+.step__container .backIn {
+	transform: translate(-100%, 0);
+	animation: slideInBack .75s cubic-bezier(.65, 0, .35, 1) 0s forwards;
+}
+.step__container .forwardsOut {
+	transform: translate(0, 0);
+	animation: slideOutForwards .75s cubic-bezier(.65, 0, .35, 1) 0s forwards;
+}
+.step__container .backOut {
+	transform: translate(0, 0);
+	animation: slideOutBack .75s cubic-bezier(.65, 0, .35, 1) 0s forwards;
+}
+@media (max-width: 705px) {
+    .form__validation span:first-child {
+        margin: 0 0 18.5px 0;
+    }
+    .form__validation span {
+        margin: 18.5px 0;
+    }
+}
+@media (max-width: 600px) {
+    .checkbox__container {
+        justify-content: space-between !important;
+    }
+    .checkbox__container > div {
+        height: 100px !important;
+        width: 100px !important;
+    }
+    .checkbox__container > div > i {
+        font-size: 2em !important;
+    }
+    .checkbox__container > div > span {
+        font-size: .9em;
+    }
+}
+@media (max-width: 475px) {
+    .checkbox__container > div {
+        height: 70px !important;
+        width: 70px !important;
+    }
+    .checkbox__container > div > i {
+        font-size: 1.8em !important;
+    }
+    .checkbox__container > div > span {
+        font-size: .8em;
+    }                        
+}
+.checkbox__container > div:hover {
+    background-color: rgba(34,36,38,.15) !important;
+}
+.checkbox__active {
+    border: solid blue 2px !important;
+}
+.checkbox__container > div > i {
+    font-size: 3em;
+}
+@keyframes slideInForwards {
+	0% {
+		transform: translate(100%, 0);
+	}
+	100% {
+		transform: translate(0, 0);
+	}
+}
+@keyframes slideInBack {
+	0% {
+		transform: translate(-100%, 0);
+	}
+	100% {
+		transform: translate(0, 0);
+	}
+}
+@keyframes slideOutForwards {
+	0% {
+		transform: translate(0, 0);
+	}
+	100% {
+		transform: translate(-100%, 0);
+	}
+}
+@keyframes slideOutBack {
+	0% {
+		transform: translate(0, 0);
+	}
+	100% {
+		transform: translate(100%, 0);
+	}
+}
+
 /* Skeleton */
 
 .skeleton {
