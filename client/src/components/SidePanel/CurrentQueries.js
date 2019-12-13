@@ -74,10 +74,12 @@ class CurrentQueries extends React.Component {
             return (
                 <Menu.Item
                     key={query.id}
-                    active={query.id === this.state.activeQuery}
+                    // active={query.id === this.state.activeQuery}
+                    className={query.id === this.state.activeQuery ? "query__item active__item" : "query__item"}
                     onClick={() => this.changeCurrentQuery(query)}
-                    style={{cursor: "pointer", textDecoration: "none"}}
-                >
+                    style={{cursor: "pointer", textDecoration: "none", color: "#FFF"}}
+                >  
+                    <div className="query__item__overlay"></div>
                     # { query.name} <span id="results__count">({query.results ? query.results.length : 0})</span>
                 </Menu.Item>
             )
@@ -107,7 +109,7 @@ class CurrentQueries extends React.Component {
             <React.Fragment>
                 <Menu vertical secondary pointing fluid borderless className="sidePanel__menu main__sidepanel__colors">
                     <Menu.Item as="h3" className="main__sidepanel__colors">
-                        <span><Icon name='exchange' />QUERIES</span>{" "}
+                        <span><Icon name='exchange' />Queries</span>{" "}
                     </Menu.Item>
                     {this.state.queries.length > 0 && this.displayQueries(this.state.queries)}
                 </Menu>

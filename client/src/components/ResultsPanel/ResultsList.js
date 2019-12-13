@@ -112,11 +112,11 @@ class ResultsList extends React.Component {
                 <React.Fragment>
 
                 {/* <Header textAlign="center" as="h3" className="table__header">{currentQuery.name}</Header> */}
-                <div className="">
+                <div>
                     <Table striped selectable>
                         <Table.Header fullWidth>
-                            <Table.Row>
-                                <Table.HeaderCell>Stock #</Table.HeaderCell>
+                            <Table.Row className="results__row">
+                                <Table.HeaderCell className="results__row">Stock #</Table.HeaderCell>
                                 <Table.HeaderCell>Year</Table.HeaderCell>
                                 <Table.HeaderCell>Make</Table.HeaderCell>
                                 <Table.HeaderCell>Model</Table.HeaderCell>

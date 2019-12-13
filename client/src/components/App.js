@@ -11,7 +11,7 @@ import { Grid } from 'semantic-ui-react';
 // ({ currentUser, currentQuery, isLoading, currentNotification })
 WebFont.load({
   google: {
-    families: ['Inconsolata:400,700', 'Asap:400,700', 'Montserrat:400,500,700', 'sans-serif', 'monospace']
+    families: ['Inconsolata:400,700', 'Asap:400,700', 'Montserrat:400,500,700', 'Open Sans:400,500,600', 'Roboto Slab:400,500,700', 'sans-serif', 'monospace']
   }
 });
 class App extends React.Component {
@@ -22,13 +22,13 @@ class App extends React.Component {
     return  (
               <Grid stackable>
                   {currentNotification && <Notification currentNotification={currentNotification} />}
-                  <Grid.Column width={3} textAlign="center" className="main__sidepanel__colors no__padding__bottom first__column">
+                  <Grid.Column computer={5} largeScreen={3} textAlign="center" className="main__sidepanel__colors no__padding__bottom first__column">
                       <SidePanel currentQuery={currentQuery} currentUser={currentUser} />
                   </Grid.Column>
-                  <Grid.Column width={9} textAlign="center" className="no__padding__bottom middle__column">
+                  <Grid.Column computer={11} largeScreen={9} textAlign="center" className="no__padding__bottom middle__column">
                       <ResultsPanel currentUser={currentUser} />
                   </Grid.Column>
-                  <Grid.Column width={4} className="no__padding__bottom last__column">
+                  <Grid.Column width={4} className="no__padding__bottom last__column" id="last__column">
                       <MetaPanel currentQuery={currentQuery} currentUser={currentUser} isLoading={isLoading} />
                   </Grid.Column>
               </Grid>

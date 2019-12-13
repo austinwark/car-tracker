@@ -1,12 +1,13 @@
 /* App */
 html, body, .app__main {
     height: 100vh;
-    background-color: #DCE9BE !important;
-    font-family: 'Asap', sans-serif !important;
+    background-color: #d6d9d7 !important;
+    font-family: "Montserrat", sans-serif !important;
+    overflow: hidden !important;
 }
 
 #main__font, h1, h2, h3, h4, h5, p, span, button {
-    font-family: 'Asap', sans-serif !important;
+    font-family: "Montserrat", sans-serif !important;
 }
 .ui.segment {
     background-color: #fafafa !important;
@@ -61,40 +62,53 @@ html, body, .app__main {
 
 
 #main__sidepanel__colors {
-    background-color: #2E2633 !important;
-    color: #EFFFCD !important;
-    font-style: bold !important;
+    /* background-color: hsl(248, 31%, 19%) !important; */
+    background-image: linear-gradient(to right, #1F2333, rgba(31, 35, 51, .95)) !important;
+    /* color: #EFFFCD !important; */
+    font-style: normal !important;
     border: none !important;
     box-shadow: none !important;
 }
 #main__sidepanel__colors > * {
-    color: #FFC2AA !important;
-    font-weight: bold !important;
-}
-
-#current__queries__items {
-    color: #FFC2AA !important;
+    color: #FFF !important;
 }
 
 /* current queries active item */
-.ui.secondary.pointing.menu .active.item {
-    border-color: #AA8E39 !important;
-    color: #AA8E39 !important;
+.query__item {
+    position: relative;
+}
+.query__item__overlay {
+    left: -200% !important;
+    transition: left .3s;
+}
+.active__item > .query__item__overlay {
+    transition: left .3s;
+    content: " " !important;
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    height: 100% !important;
+    width: 120% !important;
+    background-color: rgba(255, 255, 255, 0.151) !important;
+}
+.active__item {
+    /* color: #EFE0A8 !important; */
 }
 /* current queries unactive item */
-.ui.secondary.menu .link.item, .ui.secondary.menu a.item {
-    color: #FFC2AA !important;
-}
+/* .ui.secondary.menu .link.item, .ui.secondary.menu a.item {
+    color: #FFF !important;
+} */
 .item.main__sidepanel__colors > span {
-    color: #DCE9BE;
+    color: #FFF;
+    font-size: 1.5rem;
 }
 .sidePanel__menu {
     border: none !important;
-    font-family: 'Inconsolata', monospace !important;
-    font-size: 1.2rem !important;
+    font-family: 'Open Sans', sans-serif !important;
+    font-size: 1.1rem !important;
 }
 #results__count {
-    font-family: 'Inconsolata', monospace !important;
+    font-family: 'Open Sans', sans-serif !important;
 }
 .button__3d:active {
     top: 4px !important;
@@ -103,9 +117,9 @@ html, body, .app__main {
 }
 #sidePanel__button {
     position: relative;
-    background-color: #AA8E39 !important;
-    border-bottom: solid rgb(131, 111, 51) 4px;
-    color: whitesmoke !important;
+    background-color: #BB8E87 !important;
+    border-bottom: solid rgb(112, 70, 69) 4px;
+    color: #1F2333 !important;
 }
 #login__button {
     position: relative;
@@ -140,7 +154,7 @@ html, body, .app__main {
 .ui.dropdown >  #user__dropdown {
     text-align: center !important;
     font-style: bold !important;
-    color: #FFC2AA !important;
+    color: #BB8E87 !important;
 }
 
 /* Results List */
@@ -162,11 +176,20 @@ html, body, .app__main {
     overflow: auto;
     max-height: 80vh;
     width: 100% !important;
-    font-family: 'Montserrat', sans-serif;
+    font-family: 'Open Sans', sans-serif;
 }
 .table__container > h1 {
-    color: #99173C !important;
-    padding-top: .5rem !important;
+    color: #1F2333 !important;
+    /* background: #7397AE; */
+    margin-bottom: 0 !important;
+    padding: .5rem 0 .5rem 0 !important;
+}
+.table__container > div > table > tbody > tr > td, .table__container > div > table > thead > tr > th {
+    color: #1F2333 !important;
+
+}
+.results__row > td {
+    color: #1F2333 !important;
 }
 .table__header {
     margin: 0 !important;
@@ -187,10 +210,12 @@ html, body, .app__main {
 }
 .left__step {
     font-weight: 700;
+    color: #1F2333 !important;
     font-family: "Montserrat", sans-serif;
 }
 .right__step {
     font-weight: 500;
+    color: #1F2333 !important;
     font-family: "Montserrat", sans-serif;
 }
 .settings__button {
@@ -480,4 +505,13 @@ html, body, .app__main {
 
 #notification__close:hover {
     cursor: pointer !important;
+}
+
+
+@media (max-width: 1199px) {
+    #last__column {
+        position: absolute;
+        right: -100%;
+        transition: all 1s;
+    }
 }

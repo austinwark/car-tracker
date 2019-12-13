@@ -22,7 +22,7 @@ class ResultsPanel extends React.Component {
             //     </Grid.Row> 
             //     <Grid.Row style={{paddingTop: 0}}>
             //         <Grid.Column>
-                        <Segment raised style={{width: "100%"}} className="table__segment table__container">
+                        <Segment tertiary style={{width: "100%", margin: 0}} className="table__segment table__container">
                             {/* <Header as="h1" textAlign="center">
                                 <Icon name='filter' />
                                 Query Results
