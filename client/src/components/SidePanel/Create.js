@@ -323,7 +323,7 @@ class Create extends React.Component {
                         <p className="create__progress" style={{width: this.getProgressWidth()}}></p>
                     </Modal.Header>
                     <Modal.Content>
-                        <Form autoComplete="off">
+                        <Form autoComplete="off" loading={loading}>
                             <div className="step__container">
                                 <div className={this.determineDirection(index, lastIndex, 0)}>
                                     <section>   

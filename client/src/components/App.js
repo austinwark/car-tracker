@@ -1,6 +1,7 @@
 import React from 'react';
 import './App.css';
-
+import metadata from "../assets/metadata.svg";
+import query from '../assets/query.svg';
 import SidePanel from './SidePanel/SidePanel';
 import ResultsPanel from './ResultsPanel/ResultsPanel';
 import MetaPanel from './MetaPanel/MetaPanel';
@@ -15,23 +16,42 @@ WebFont.load({
   }
 });
 class App extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      sidePanelOpen: false,
+      metaPanelOpen: false
+    }
 
+    this.handleMetaDataToggle = this.handleMetaDataToggle.bind(this);
+    this.handleSideToggle = this.handleSideToggle.bind(this);
+}
+  
+  handleSideToggle() {
+    this.setState({ sidePanelOpen: !this.state.sidePanelOpen})
+  }
+  handleMetaDataToggle() {
+    console.log('call')
+    this.setState({ metaPanelOpen: !this.state.metaPanelOpen });
+  }
   render() {
 
     const { currentNotification, currentQuery, currentUser, isLoading } = this.props;     
     return  (
-              <Grid stackable>
+              <div className="grid__main">
                   {currentNotification && <Notification currentNotification={currentNotification} />}
-                  <Grid.Column computer={5} largeScreen={3} textAlign="center" className="main__sidepanel__colors no__padding__bottom first__column">
+                  <section className={`main__sidepanel__colors first__column ${this.state.sidePanelOpen ? "open__column" : ""}`}>
                       <SidePanel currentQuery={currentQuery} currentUser={currentUser} />
-                  </Grid.Column>
-                  <Grid.Column computer={11} largeScreen={9} textAlign="center" className="no__padding__bottom middle__column">
+                      <img src={query} className="query__icon" onClick={this.handleSideToggle} />
+                  </section>
+                  <section className="middle__column">
                       <ResultsPanel currentUser={currentUser} />
-                  </Grid.Column>
-                  <Grid.Column width={4} className="no__padding__bottom last__column" id="last__column">
+                  </section>
+                  <section className={` last__column ${this.state.metaPanelOpen ? "open__column" : ""}`} id="last__column">
                       <MetaPanel currentQuery={currentQuery} currentUser={currentUser} isLoading={isLoading} />
-                  </Grid.Column>
-              </Grid>
+                      <img src={metadata} className="metadata__icon" onClick={this.handleMetaDataToggle} />
+                  </section>
+              </div>
             )
     }
   }

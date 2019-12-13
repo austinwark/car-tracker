@@ -3,7 +3,7 @@ html, body, .app__main {
     height: 100vh;
     background-color: #d6d9d7 !important;
     font-family: "Montserrat", sans-serif !important;
-    overflow: hidden !important;
+    /* overflow: hidden !important; */
 }
 
 #main__font, h1, h2, h3, h4, h5, p, span, button {
@@ -22,13 +22,45 @@ html, body, .app__main {
 .step:after {
     background: none !important;
 }
+.grid__main {
+    display: flex;
+    position: relative;
+    width: 100%;
+    min-height: 100vh;
+    overflow-x: hidden;
+    /* overflow-x: hidden !important; */
+}
+.grid__main > section {
+    padding: 0 10px;
+    transition: all 1s;
+}
 .first__column {
     padding-bottom: 0 !important;
+    text-align: center;
+    padding-left: 0 !important;
+    width:20%;
 }
 .first__column > .segment {
     border-radius: 0 !important;
 }
-@media (min-width: 768px) {
+.middle__column {
+    width: 55%;
+}
+.last__column {
+    width: 25%;
+}
+.metadata__icon , .query__icon {
+    display: none;
+    position: absolute;
+    height: 50px;
+    width: 50px;
+    padding: 10px;
+    background: #1F2333;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: all .4s;
+}
+/* @media (min-width: 768px) {
     .middle__column {
         position: relative;
         right: 14px;
@@ -41,9 +73,60 @@ html, body, .app__main {
         right: 14px;
         padding-bottom: 0 !important;
     }
+} */
+@media (max-width: 1299px) {
+    .first__column {
+        width: 30%;
+    }
+    .middle__column {
+        width: 70%;
+    }
+    .last__column {
+        position: absolute;
+        width: 30%;
+        right: -30%;
+    }
+    .last__column.open__column {
+        right: 0;
+    }
+    .metadata__icon {
+        display: inline-block;
+        left: -45px;
+        top: 15px;
+    }
+    .metadata__icon:hover {
+        /* width: 60px; */
+        left: -55px;
+    }
 }
-
-
+@media (max-width: 767px) {
+    .first__column {
+        position: absolute;
+        width: 60%;
+        right: -60%;
+        z-index: 9999;
+        padding: 0 !important;
+    }
+    .query__icon {
+        display: inline-block;
+        left: -45px;
+        top: 75px;
+        z-index: 9999;
+    }
+    .query__icon:hover {
+        left: -55px;
+    }
+    .first__column.open__column {
+        right: 0 !important;
+    }
+    .middle__column {
+        width: 100%;
+    }
+    .last__column {
+        width: 50%;
+        right: -50%;
+    }
+}
 
 /* START ----------------------------------------------- */
 
@@ -508,10 +591,3 @@ html, body, .app__main {
 }
 
 
-@media (max-width: 1199px) {
-    #last__column {
-        position: absolute;
-        right: -100%;
-        transition: all 1s;
-    }
-}

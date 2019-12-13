@@ -113,7 +113,7 @@ class ResultsList extends React.Component {
 
                 {/* <Header textAlign="center" as="h3" className="table__header">{currentQuery.name}</Header> */}
                 <div>
-                    <Table striped selectable>
+                    <Table unstackable striped selectable>
                         <Table.Header fullWidth>
                             <Table.Row className="results__row">
                                 <Table.HeaderCell className="results__row">Stock #</Table.HeaderCell>

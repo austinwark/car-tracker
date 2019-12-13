@@ -120,7 +120,7 @@ class MetaPanel extends React.Component {
                         >
                             <Icon name='dropdown' />
                             <Icon name='cogs' />
-                            Settings
+                            Query Settings
                         </Accordion.Title>
                         <Accordion.Content
                             active={activeIndex === 2}
