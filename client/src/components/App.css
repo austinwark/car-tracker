@@ -5,7 +5,9 @@ html, body, .app__main {
     font-family: "Montserrat", sans-serif !important;
     /* overflow: hidden !important; */
 }
-
+* {
+    outline: 0 !important;
+}
 #main__font, h1, h2, h3, h4, h5, p, span, button {
     font-family: "Montserrat", sans-serif !important;
 }
@@ -39,6 +41,7 @@ html, body, .app__main {
     text-align: center;
     padding-left: 0 !important;
     width:20%;
+    z-index: 9998;
 }
 .first__column > .segment {
     border-radius: 0 !important;
@@ -48,6 +51,8 @@ html, body, .app__main {
 }
 .last__column {
     width: 25%;
+    z-index: 9998;
+
 }
 .metadata__icon , .query__icon {
     display: none;
@@ -59,6 +64,8 @@ html, body, .app__main {
     border-radius: 5px;
     cursor: pointer;
     transition: all .4s;
+    z-index: 9998;
+
 }
 /* @media (min-width: 768px) {
     .middle__column {
@@ -74,6 +81,9 @@ html, body, .app__main {
         padding-bottom: 0 !important;
     }
 } */
+#metapanel__accordian div {
+    transition: all 1s !important;
+}
 @media (max-width: 1299px) {
     .first__column {
         width: 30%;
@@ -83,18 +93,34 @@ html, body, .app__main {
     }
     .last__column {
         position: absolute;
-        width: 30%;
-        right: -30%;
+        width: 350px;
+        right: -350px;
+        padding-bottom: 10px !important;
+        background-color: #1F2333 !important;
+    }
+    .last__column > #metapanel__accordian {
+        /* background-color: #1F2333 !important; */
+        /* color: #FFF !important; */
+        border-bottom: none;
+    }
+    .last__column > #metapanel__accordian .title {
+        /* color: #FFF !important; */
+        font-family: "Montserrat", sans-serif !important;
+
+    }
+    .ui.steps .left__step, .ui.steps .right__step {
+        /* color: #FFF !important; */
     }
     .last__column.open__column {
         right: 0;
+        z-index: 9999;
     }
     .metadata__icon {
         display: inline-block;
         left: -45px;
         top: 15px;
     }
-    .metadata__icon:hover {
+    .metadata__icon:active {
         /* width: 60px; */
         left: -55px;
     }
@@ -102,29 +128,28 @@ html, body, .app__main {
 @media (max-width: 767px) {
     .first__column {
         position: absolute;
-        width: 60%;
-        right: -60%;
-        z-index: 9999;
+        width: 350px;
+        right: -350px;
         padding: 0 !important;
     }
     .query__icon {
         display: inline-block;
         left: -45px;
         top: 75px;
-        z-index: 9999;
     }
-    .query__icon:hover {
+    .query__icon:active {
         left: -55px;
     }
     .first__column.open__column {
         right: 0 !important;
+        z-index: 9999;
     }
     .middle__column {
         width: 100%;
     }
     .last__column {
-        width: 50%;
-        right: -50%;
+        /* width: 50%;
+        right: -50%; */
     }
 }
 
@@ -171,7 +196,7 @@ html, body, .app__main {
     top: 0 !important;
     left: 0 !important;
     height: 100% !important;
-    width: 120% !important;
+    width: 105% !important;
     background-color: rgba(255, 255, 255, 0.151) !important;
 }
 .active__item {
@@ -223,11 +248,6 @@ html, body, .app__main {
     border-bottom: solid 4px #01535a;
 }
 
-#notes__field {
-    margin-bottom: 1rem !important;
-}
-
-
 
 
 .email__form > label {
@@ -265,7 +285,7 @@ html, body, .app__main {
     color: #1F2333 !important;
     /* background: #7397AE; */
     margin-bottom: 0 !important;
-    padding: .5rem 0 .5rem 0 !important;
+    padding: 1rem 0 !important;
 }
 .table__container > div > table > tbody > tr > td, .table__container > div > table > thead > tr > th {
     color: #1F2333 !important;
@@ -302,15 +322,28 @@ html, body, .app__main {
     font-family: "Montserrat", sans-serif;
 }
 .settings__button {
-    width: 10rem !important;
+    width: 9rem !important;
+    font-size: .8rem !important;
+}
+.settings__button:active {
+    margin-bottom: 4px !important;
 }
 .question__icon {
     cursor: pointer;
+    position: relative;
     float: right;
+    opacity: .6 !important;
     margin-right: 45% !important;
 }
 
 /* Create */
+.max__queries__span {
+    display: block;
+    text-align: left;
+    color: red;
+    width: 140px;
+    margin: 10px auto !important;
+}
 #create__header {
     position: relative;
     display: flex;
@@ -357,6 +390,9 @@ html, body, .app__main {
 	transform: translate(100%, 0);
 	will-change: transform, opacity;
 }
+.step__container > div:not(.activeSlide) {
+    display: none;
+}
 .step__container > div section {
     width: 50%;
     padding: 1%;
@@ -365,31 +401,126 @@ html, body, .app__main {
 }
 .step__container > div section:first-child {
     justify-content: space-between;
+    position: relative;
 }
 .step__container > div section:last-child {
     padding: 1% 2%;
 }
-.form__validation span:first-child {
-    margin: 0 0 28px 0;
+.form__section .field {
+    margin: 0 0 .25rem 0 !important;
+    display: inline-block !important;
 }
-.form__validation span {
-    margin: 28px 0;
+ .form__section .input, .form__section div[name="model"] {
+    width: 200px !important;
 }
-.form__validation i {
-    font-size: .95em !important;
+/*
+.form__section .input:after, .form__section div[name="model"]:after {
+    content: attr(data-error);
+    position: absolute;
+    right: -100%;
+    font-size: .9rem;
+    color: red;
+}
+@media (max-width: 650px) {
+    .form__section .input, .form__section div[name="model"] {
+        margin-bottom: 2rem !important;
+    }   
+
+} */
+.field__info {
+    position: relative;
+    padding-left: 2rem !important;
+    transition: all .8s;
+    opacity: 0;
+}
+.field__info.active {
+    opacity: 1;
+}
+.field__info ol {
+    list-style: circle !important;
+    padding-left: 2rem !important;
+}
+@media (max-width: 575px) {
+    .field__info {
+        /* display: none !important; */
+        opacity: 1 !important;
+        width: 100% !important;
+        position: absolute;
+        height: 100% !important;
+        background: #fff;
+        top: -100%;
+        z-index: 9998;
+    }
+    .step__container section:first-child {
+        width: 100%;
+    }
+    .field__info.active {
+        top: 0 !important;
+    }
+}
+.dropdown__label {
+    display: block;
+    margin: 0 0 .28571429rem 0;
+    color: rgba(0,0,0,.87);
+    font-size: .92857143em;
+    font-weight: 700;
+    text-transform: none;
+}
+.valid, .not__valid {
+    font-size: .8rem;
+    margin: 0 0 .4rem 0 !important;
+    visibility: hidden !important;
 }
 .not__valid {
-    color: red !important;
+    color: red;
+    visibility: visible !important;
+}
+.section__help {
+    position: absolute;
+    top: 0;
+    right: 0;
+    cursor: pointer;
+    z-index: 9999;
+}
+.help__message li {
+    margin: .5rem 0;
+}
+/* .field__info:before {
+    content: " ";
+    position: absolute;
+    height: calc(100% + 42px);
+    width: 4px;
+    left: 0;
+    top: -21px;
+    background-color: #0267703d;
+} 
+.field__info li:first-child {
+    margin: 0 0 5px 0 !important;
+}
+.field__info ol {
+    margin-top: 0;
+}
+.field__info li {
+    margin: 10px 0;
+    font-size: 1.1rem;
+    font-family: 'Open Sans', sans-serif !important;
+
+} 
+.field__info i {
+    font-size: .95em !important;
+} */
+/* .not__valid {
+    color: rgba(204, 65, 44, 0.541) !important;
 }
 .is__valid {
-    color: green !important;
-}
+    color: #2ccc40 !important;
+} */
 .nav__section {
     display: flex;
 }
 .checkbox__container {
     display: flex;
-    justify-content: space-around;
+    justify-content: flex-start;
     flex-wrap: wrap;
 }
 .checkbox__container > div {
@@ -399,53 +530,50 @@ html, body, .app__main {
     align-items: center;
     height: 125px;
     width: 125px;
+    margin: 1.5rem 1rem 0 1rem;
     flex-direction: column;
     position: relative;
     border: solid grey 1px;
     border-radius: 5px;
-    cursor: pointer;
     transition: all .5s;
+    user-select: none !important;
 }
-.next__button {
+.checkbox__container > div:first-child {
+    margin-left: 0;
+}
+.secondary__button {
     position: relative;
     margin-top: auto;
-    background-color: #026670 !important;
-    color: #FCE181 !important;
-    border-bottom: solid 4px #01535a !important;
+    background-color: #7B778A !important;
+    color: #1F2333 !important;
+    border-bottom: solid 4px rgb(103, 100, 116) !important;
 }
-.next__button:active {
+.secondary__button:active {
     top: 4px;
+    border-bottom: none !important;
 }
 .step__container .primary {
     transform: translate(0, 0);
 }
 .step__container .forwardsIn {
-	transform: translate(100%, 0);
+    transform: translate(100%, 0);
 	animation: slideInForwards .75s cubic-bezier(.65, 0, .35, 1) 0s forwards;
 }
 .step__container .backIn {
-	transform: translate(-100%, 0);
+    transform: translate(-100%, 0);
 	animation: slideInBack .75s cubic-bezier(.65, 0, .35, 1) 0s forwards;
 }
 .step__container .forwardsOut {
-	transform: translate(0, 0);
+    transform: translate(0, 0);
 	animation: slideOutForwards .75s cubic-bezier(.65, 0, .35, 1) 0s forwards;
 }
 .step__container .backOut {
-	transform: translate(0, 0);
+    transform: translate(0, 0);
 	animation: slideOutBack .75s cubic-bezier(.65, 0, .35, 1) 0s forwards;
 }
-@media (max-width: 705px) {
-    .form__validation span:first-child {
-        margin: 0 0 18.5px 0;
-    }
-    .form__validation span {
-        margin: 18.5px 0;
-    }
-}
-@media (max-width: 600px) {
+@media (max-width: 680px) {
     .checkbox__container {
-        justify-content: space-between !important;
+        /* justify-content: space-between !important; */
     }
     .checkbox__container > div {
         height: 100px !important;
@@ -458,10 +586,9 @@ html, body, .app__main {
         font-size: .9em;
     }
 }
-@media (max-width: 475px) {
-    .checkbox__container > div {
-        height: 70px !important;
-        width: 70px !important;
+@media (max-width: 575px) {
+    .checkbox__container {
+        /* justify-content: space-around !important; */
     }
     .checkbox__container > div > i {
         font-size: 1.8em !important;
@@ -470,29 +597,34 @@ html, body, .app__main {
         font-size: .8em;
     }                        
 }
-.checkbox__container > div:hover {
+/* .checkbox__container > div:active {
     background-color: rgba(34,36,38,.15) !important;
-}
+} */
 .checkbox__active {
     border: solid blue 2px !important;
+    background-color: rgba(123, 119, 138, 0.507);
+}
+.checkbox__disabled {
+    opacity: .5;
 }
 .checkbox__container > div > i {
     font-size: 3em;
+    cursor: pointer;
 }
 @keyframes slideInForwards {
-	0% {
-		transform: translate(100%, 0);
+    0% {
+        transform: translate(100%, 0);
 	}
 	100% {
-		transform: translate(0, 0);
+        transform: translate(0, 0);
 	}
 }
 @keyframes slideInBack {
-	0% {
-		transform: translate(-100%, 0);
+    0% {
+        transform: translate(-100%, 0);
 	}
 	100% {
-		transform: translate(0, 0);
+        transform: translate(0, 0);
 	}
 }
 @keyframes slideOutForwards {

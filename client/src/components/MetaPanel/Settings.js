@@ -81,9 +81,15 @@ class Settings extends React.Component {
         const { currentQuery, currentUser } = this.props;
         
         const autoEmails = currentQuery.settings.autoEmails;
-        this.state.queriesRef.child(currentUser.uid).child(currentQuery.id).child('settings').update({
-            "autoEmails": !autoEmails
-        })
+        if (autoEmails)
+            this.state.queriesRef.child(currentUser.uid).child(currentQuery.id).child('settings').update({
+                "autoEmails": !autoEmails,
+                "onlyNew": false
+            });
+        else
+            this.state.queriesRef.child(currentUser.uid).child(currentQuery.id).child('settings').update({
+                "autoEmails": !autoEmails,
+            });
         const updatedQuery = currentQuery;
         updatedQuery.settings.autoEmails = !autoEmails;
         this.props.setCurrentQuery(updatedQuery);
@@ -122,10 +128,13 @@ class Settings extends React.Component {
                         <Grid>
                             <Grid.Row>
                                 <Grid.Column>
+                                    <label style={{display: "block"}}>Automatic Emails</label>
                                     <Checkbox
-                                        label="Automatic emails"
+                                        // label="Automatic emails"
                                         onChange={this.toggleAutoEmails}
                                         checked={this.state.autoEmails}
+                                        toggle
+                                        disabled={currentUser.isAnonymous ? true : false}
                                     />
                                     <Popup
                                         key={0}
@@ -135,18 +144,34 @@ class Settings extends React.Component {
                                                 ? "Create an account to enable daily email updates "
                                                 : "Controls automatic daily email updates "
                                         }
+                                        style={{ zIndex: 9999 }}
                                         trigger={<Icon name='question circle outline' size='large' className="question__icon" />}
                                     />
                                 </Grid.Column>
                             </Grid.Row>
                             <Grid.Row>
                                 <Grid.Column>
+                                    <label style={{display: "block"}}>Send only new results</label>
                                     <Checkbox
-                                        label="Only new results"
+                                        // label="Only new results"
                                         onChange={this.toggleOnlyNew}
                                         checked={this.state.onlyNew}
+                                        toggle
+                                        disabled={currentUser.isAnonymous ? (true) : (this.state.autoEmails ? false : true)}
+
                                     />
                                     <Popup
+                                        content={
+                                            currentUser.isAnonymous
+                                                ? "Create an account to configure settings "
+                                                : "Send only unseen query results or all query results"
+                                        }
+                                        position="top center"
+                                        style={{ zIndex: 9999 }}
+                                        trigger={<Icon name='question circle outline' size='large' className="question__icon" />}
+                                    />
+                                    
+                                    {/* <Popup
                                         key={0}
                                         position="top center"
                                         content={
@@ -155,29 +180,38 @@ class Settings extends React.Component {
                                                 : "Send only previously unseen results or all "
                                         }
                                         trigger={<Icon name='question circle outline' size='large' className="question__icon" />}
-                                    />
+                                    /> */}
                                 </Grid.Column>
                             </Grid.Row>
                             <Grid.Row>
                                 <Grid.Column>
                                     <Button
+                                        className="settings__button secondary__button"
+                                        disabled={!currentQuery.results || !this.state.isVerified || currentUser.isAnonymous}
+                                        loading={this.state.emailLoading}
+                                        onClick={this.handleSendToEmail}
+                                    >
+                                        Send to email
+                                    </Button>
+                                    {/* <Button
                                         color="blue"
                                         basic
-                                        disabled={!currentQuery.results || !this.state.isVerified}
+                                        disabled={!currentQuery.results || !this.state.isVerified || currentUser.isAnonymous}
                                         className="settings__button"
                                         onClick={this.handleSendToEmail}
                                         loading={this.state.emailLoading}
                                     >
                                         Send to email
-                                    </Button>
+                                    </Button> */}
                                     <Popup
                                         key={1}
                                         position="top center"
                                         content={
                                             currentUser.isAnonymous 
                                             ? "Sends results to your saved email address, you must create an account and verify your email first!"
-                                            : "Sends data to your saved email address"
+                                            : "Sends results to your saved email address"
                                         }
+                                        style={{ zIndex: 9999 }}
                                         trigger={<Icon name='question circle outline' size='large' className="question__icon" />}
                                     />
                                 </Grid.Column>
@@ -185,6 +219,13 @@ class Settings extends React.Component {
                             <Grid.Row>
                                 <Grid.Column>    
                                     <Button
+                                        className="settings__button secondary__button"
+                                        onClick={() => this.setState({ open: true })}
+                                        loading={this.state.deleteLoading}
+                                    >
+                                        Delete
+                                    </Button>   
+                                    {/* <Button
                                         loading={this.state.deleteLoading}
                                         onClick={() => this.setState({ open: true })}
                                         color="red"
@@ -192,11 +233,12 @@ class Settings extends React.Component {
                                         className="settings__button"
                                     >
                                         Delete
-                                    </Button>
+                                    </Button> */}
                                     <Popup
                                         key={2}
                                         position="top center"
                                         content="Permanently deletes query, and all automatic email updates"
+                                        style={{ zIndex: 9999 }}
                                         trigger={<Icon name='question circle outline' size='large' className="question__icon" />}
                                     />
                                 </Grid.Column>
@@ -205,6 +247,7 @@ class Settings extends React.Component {
                         <Confirm
                             size="tiny"
                             open={open}
+                            content="Are you sure you want to delete?"
                             onCancel={() => this.setState({ open: false })}
                             onConfirm={() => this.handleDelete(currentQuery)}
                             confirmButton="Delete"

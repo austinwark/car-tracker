@@ -90,6 +90,8 @@ class CurrentQueries extends React.Component {
         console.log("CHANGE CURRENT QUERY: ", nextQuery)
         this.setActiveQuery(nextQuery);
         await this.props.setCurrentQuery(nextQuery);
+        if (this.props.sidePanelOpen)
+            this.props.handleSideToggle();
         // this.addRemovedQueryListener();
     }
 

@@ -28,11 +28,11 @@ class App extends React.Component {
 }
   
   handleSideToggle() {
-    this.setState({ sidePanelOpen: !this.state.sidePanelOpen})
+    this.setState({ sidePanelOpen: !this.state.sidePanelOpen, metaPanelOpen: false})
   }
   handleMetaDataToggle() {
     console.log('call')
-    this.setState({ metaPanelOpen: !this.state.metaPanelOpen });
+    this.setState({ metaPanelOpen: !this.state.metaPanelOpen, sidePanelOpen: false });
   }
   render() {
 
@@ -41,7 +41,7 @@ class App extends React.Component {
               <div className="grid__main">
                   {currentNotification && <Notification currentNotification={currentNotification} />}
                   <section className={`main__sidepanel__colors first__column ${this.state.sidePanelOpen ? "open__column" : ""}`}>
-                      <SidePanel currentQuery={currentQuery} currentUser={currentUser} />
+                      <SidePanel currentQuery={currentQuery} currentUser={currentUser} sidePanelOpen={this.state.sidePanelOpen} handleSideToggle={this.handleSideToggle} />
                       <img src={query} className="query__icon" onClick={this.handleSideToggle} />
                   </section>
                   <section className="middle__column">

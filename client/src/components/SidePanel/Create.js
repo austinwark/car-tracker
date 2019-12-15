@@ -4,22 +4,22 @@ import moment from 'moment';
 
 // import firebase from '../../firebase';
 
-import { Form, Icon, Checkbox, Input, Select, Button, Modal, Header, Message, Step } from 'semantic-ui-react';
+import { Form, Icon, Checkbox, Input, Select, Button, Modal, Label, Dropdown } from 'semantic-ui-react';
 
 const firebase = require('../../firebase');
 const uuidv4 = require('uuid/v4');
 
 const modelOptions = [
-    { text: "Avalon", value: "avalon"},
-    { text: "Camry", value: "camry" },
-    { text: "Corolla", value: "corolla" },
-    { text: "Prius", value: "prius" },
-    { text: "Sienna", value: "sienna" },
-    { text: "4runner", value: "4runner" },
-    { text: "Highlander", value: "highlander" },
-    { text: "Rav4", value: "rav4" },
-    { text: "Tacoma", value: "tacoma" },
-    { text: "Tundra", value: "tundra" }
+    { text: "Avalon", value: "avalon", key: 0 },
+    { text: "Camry", value: "camry", key: 1 },
+    { text: "Corolla", value: "corolla", key: 2 },
+    { text: "Prius", value: "prius", key: 3 },
+    { text: "Sienna", value: "sienna", key: 4 },
+    { text: "4runner", value: "4runner", key: 5 },
+    { text: "Highlander", value: "highlander", key: 6 },
+    { text: "Rav4", value: "rav4", key: 7 },
+    { text: "Tacoma", value: "tacoma", key: 8 },
+    { text: "Tundra", value: "tundra", key: 9 }
 ]
 /* for validating model input */
 const modelOptionsArray = ["avalon", "camry", "corolla", "prius", "sienna", "4runner", "highlander", "rav4", "tacoma", "tundra"];
@@ -43,12 +43,17 @@ const INITIAL_CUSTOMER = {
     customerPhone: '',
     customerNotes: ''
 }
-
+const INITIAL_VALIDATION = {
+    queryName: "",
+    model: "",
+    price: ""
+}
 class Create extends React.Component {
 
     state = {
         currentUser: this.props.currentUser,
         queriesRef: firebase.database().ref(`queries`),
+        numberOfQueries: 0,
         query: INITIAL_QUERY,
         vehicle: INITIAL_VEHICLE,
         customer: INITIAL_CUSTOMER,
@@ -59,8 +64,37 @@ class Create extends React.Component {
         success: true,
         modal: false,
         index: 0,
-        lastIndex: 0
+        lastIndex: 0,
+        validation: INITIAL_VALIDATION,
+        helpMessage: ""
     }
+
+    componentDidUpdate() {
+        const { currentUser } = this.props;
+        this.state.queriesRef.child(currentUser.uid).once('value', snap => {
+            if (snap.val()) {
+                const numberOfQueries = Object.keys(snap.val()).length;
+                if (numberOfQueries !== this.state.numberOfQueries)
+                    this.setState({ numberOfQueries });
+            }
+        })
+    }
+    //
+    // componentDidUpdate() {
+    //     const createModal = document.getElementById("create__modal");
+    //     if (createModal) {
+    //         const inputs = document.getElementsByTagName("input");
+    //         const buttons = document.getElementsByTagName("button");
+    //         const dropDown = document.getElementById("dropdown__field");
+    //         for (let i = 0;i < inputs.length;i++) {
+    //             inputs[i].setAttribute("tabindex", "-1");
+    //         }   
+    //         for (let i = 0;i < buttons.length;i++) {
+    //             buttons[i].setAttribute("tabindex", "-1");
+    //         }   
+    //         dropDown.setAttribute("tabindex", "-1");
+    //     }
+    // }
     
     resetFields = () => {
         this.setState({
@@ -96,24 +130,29 @@ class Create extends React.Component {
         this.setState({ operator: value });
     }
 
-    handleEnable = () => {
-        const { enabled } = this.state;
-        // this.setState({ enabled: !enabled })
-        enabled 
-            ? this.setState({ customerName: "", customerPhone: "", customerNotes: "", enabled: false })
-            : this.setState({ enabled: true });
-    }
-
     handleQueryChange = event => {
         const { name, value } = event.target;
+        const { query } = this.state;
+        let err = "";
+        if (name === "queryName" && query.queryName.length >= 20) err = "Query name must be less than 21 characters";
+
         this.setState(prevState => ({
-            query: {
-                ...prevState.query,
-                [name]: value
-            }
-        }))
+            query: { ...prevState.query, [name]: value },
+            validation: { ...prevState.validation, [name]: err }
+        }));
     }
+
+    
     handleQuerySettingsChange = (name, value) => {
+        if (name === "onlyNew" && this.state.query.settings.autoEmails === false)
+            return;
+        else if (name === "autoEmails" && this.state.query.settings.autoEmails === true)
+            this.setState(prevState => ({
+                query: {
+                    ...prevState.query,
+                    settings: { autoEmails: false, onlyNew: false }
+                }
+            }))
         this.setState(prevState => ({
             query: {
                 ...prevState.query,
@@ -143,6 +182,7 @@ class Create extends React.Component {
             }
         }))
     }
+    
     handleVehicleSettingsChange = (name, value) => {
         this.setState(prevState => ({
             vehicle: {
@@ -154,28 +194,24 @@ class Create extends React.Component {
             
         }))
     }
+
     handleCustomerChange = event => {
         const { name, value } = event.target;
+        const { customer } = this.state;
+        let err = "";
+        if (name === "customerName" && customer.customerName.length >= 16) err = "Name must be less than 16 characters";
+        if (name === "customerPhone" && customer.customerPhone.length >= 15) err = "Phone must be less than 15 characters";
+        if (name === "customerNotes" && customer.customerNotes.length >= 31) err = "Notes must be less than 31 characters";
         this.setState(prevState => ({
             customer: {
                 ...prevState.customer,
                 [name]: value
+            },
+            validation: {
+                ...prevState.validation,
+                [name]: err
             }
         }))
-    }
-
-    queryNotValid = (name, model, price, operator) => {
-        if (name.length > 20 || name.length <= 0) {
-            return { error: "Name must be greater than 0 and less than or equal to 20"}
-        } else if (price < 5000 || price > 50000) {
-            return { error: "Price must be between $5,000 and $50,000, inclusive"}
-        } else if (!modelOptionsArray.includes(model.toLowerCase())) {
-            return { error: "Model must be a chosen from list"}
-        } else if (operator !== "less" && operator !== "greater") {
-            return { error: "Must pick an operator"}
-        } else {
-            return false;
-        }
     }
 
     isQueryValid = queryName => {
@@ -207,7 +243,6 @@ class Create extends React.Component {
 
     /* Previous handling of new query */
     handleSubmit = async event => {
-        event.preventDefault();
         this.setState({ loading: true });
         const { query, vehicle, customer, currentUser, queriesRef } = this.state;
         const { queryName } = query, {autoEmails, onlyNew } = query.settings;
@@ -282,11 +317,11 @@ class Create extends React.Component {
         let direction;
         if (index === dataIndex) {  
             if (index === lastIndex)
-                direction = "primary";
+                direction = "primary activeSlide";
             else if (index > lastIndex)
-                direction = "forwardsIn";
+                direction = "forwardsIn activeSlide";
             else
-                direction = "backIn";
+                direction = "backIn activeSlide";
         } else {
             if (dataIndex === lastIndex) {
                 if (index > lastIndex)
@@ -310,12 +345,85 @@ class Create extends React.Component {
         if (index === 1) return "66.66%";
         if (index === 2) return "100%";
     }
+
+    handleQuerySubmit(queryName) {
+        let err = "";
+        if (!queryName) err = "Query name is required";
+        else if (queryName.length > 20) err = "Query name must be less than 21 characters"; 
+        this.setState(prevState =>({
+            validation: {
+                ...prevState.validation,
+                queryName: err
+            }
+        }));
+        if (!err)
+            this.handleSlide(1);
+    }
+    handleVehicleSubmit(model, price) {
+        let modelErr = "", priceErr = "";
+        if (!model) modelErr = "Model is required";
+        if (!price) priceErr = "Price is required";
+        this.setState(prevState => ({
+            validation: {
+                ...prevState.validation,
+                model: modelErr,
+                price: priceErr
+            }
+        }));
+        if (!modelErr && !priceErr) 
+            this.handleSlide(2);
+    }
+    handleCustomerSubmit(name, phone, notes) {
+        let nameErr = "", phoneErr = "", notesErr = "";
+        if (name.length > 15) nameErr = "Name must be less than 16 characters";
+        if (phone.length > 14) phoneErr = "Phone number must be less than 15 characters";
+        if (notes.length > 30) notesErr = "Notes must be less than 31 characters";
+        this.setState(prevState => ({
+            validation: {
+                ...prevState.validation,
+                customerName: nameErr,
+                customerPhone: phoneErr,
+                customerNotes: notesErr
+            }
+        }));
+        if (!nameErr && !phoneErr && !notesErr)
+            this.handleSubmit();
+    }
+
+    handleDisplayhelp = e => {
+        const sectionName = e.target.getAttribute("data-section");
+        this.state.helpMessage === sectionName
+            ? this.setState({ helpMessage: "" })
+            : this.setState({ helpMessage: sectionName });
+    }
+
+    displayHelpMessage = () => {
+        const { helpMessage } = this.state;
+        let headerMsg = "";
+        let tips = [];
+        switch (helpMessage) {
+            case "query":
+                return (
+                    <div className="help__message">
+                        <h3>Query Info</h3>
+                        <ol>
+                            <li>The query name is used to identify your query</li>
+                            <li>Disabling the automatic email updates will prevent the Trackr Appr from sending you daily query results via email</li>
+                            <li>If automatic email updates are kept enabled, you can decide whether the app will send only unseen query results, or 
+                                everything the search finds every time.
+                            </li>
+                        </ol>
+                    </div>
+                )
+        }
+    }
+
     render() {
 
-        const { modal, enabled, query, vehicle, customer, loading, error, currentUser, index, lastIndex } = this.state;
+        const { modal, enabled, query, vehicle, customer, loading, error, currentUser, index, lastIndex, validation, helpMessage } = this.state;
         return (
             <div>
-                <Modal dimmer="blurring" open={modal} onClose={this.closeModal} className='mx-auto'>
+                <Modal dimmer="blurring" open={modal} onClose={this.closeModal} className='mx-auto' id="create__modal">
                     <Modal.Header id="create__header">
                         <div onClick={() => this.setState({ lastIndex: index, index: 0 })} className={index === 0 ? "active__step" : ""}>1. Query</div>
                         <div onClick={() => this.setState({ lastIndex: index, index: 1 })} className={index === 1 ? "active__step" : ""}>2. Vehicle</div>
@@ -327,6 +435,7 @@ class Create extends React.Component {
                             <div className="step__container">
                                 <div className={this.determineDirection(index, lastIndex, 0)}>
                                     <section>   
+                                        <Icon className="section__help" name="question circle outline" size="big" data-section="query" onClick={this.handleDisplayhelp} />
                                         <div className="form__section">
                                             <Form.Field
                                                 control={Input}
@@ -338,19 +447,21 @@ class Create extends React.Component {
                                                 value={query.queryName}
                                                 id="form__field"
                                             />
+                                            <p className={validation.queryName ? "not__valid" : "valid"}>{validation.queryName || "valid"}</p>
                                             <div className="checkbox__container">
                                                 <div
                                                     className={query.settings.autoEmails && "checkbox__active"}
-                                                    onClick={() => this.handleQuerySettingsChange("autoEmails", query.settings.autoEmails)}
+                                                    
                                                 >
-                                                    <Icon name="exchange" />
+                                                    <Icon name="exchange" onClick={() => this.handleQuerySettingsChange("autoEmails", query.settings.autoEmails)} />
                                                     <span>Automatic Email Updates</span>
                                                 </div>
                                                 <div
-                                                    className={query.settings.onlyNew && "checkbox__active"} 
-                                                    onClick={() => this.handleQuerySettingsChange("onlyNew", query.settings.onlyNew)}
+                                                    className={query.settings.autoEmails ? (query.settings.onlyNew ? "checkbox__active" : "") : "checkbox__disabled"}
+                                                    // className={query.settings.onlyNew && "checkbox__active"} 
+                                                    
                                                 >
-                                                    <Icon name="eye" />
+                                                    <Icon name="eye" onClick={() => this.handleQuerySettingsChange("onlyNew", query.settings.onlyNew)}/>
                                                     <span>Send Only New Results</span>
                                                 </div>
                                             </div>
@@ -359,28 +470,44 @@ class Create extends React.Component {
                                             <Button
                                                 type="button"
                                                 fluid
-                                                className="next__button"
-                                                onClick={() => this.handleSlide(index + 1)}
+                                                className="secondary__button"
+                                                onClick={() => this.handleQuerySubmit(query.queryName)}
                                             >
                                                 Next
                                             </Button>
+                                            
                                         </div>  
                                     </section>
-                                    <section className="form__validation">
-                                        <span className={query.queryName.length < 1 ? "not__valid" : "is__valid"}>
-                                            Query name is filled{" "}
-                                            <Icon name={query.queryName.length < 1 ? "warning sign" : "check"} size="small" />
-                                        </span>
-                                        <span className={query.queryName.length > 20 ? "not__valid" : "is__valid"}>
-                                            Query name is less than 21 characters{" "} 
-                                            <Icon name={query.queryName.length > 20 ? "warning sign" : "check"} size="small" />
-                                        </span>
+                                    <section className={`field__info ${helpMessage === "query" ? "active" : ""}`}>
+                                        <div className="help__message">
+                                            <h3>Query Info</h3>
+                                            <ol>
+                                                <li>The query name is used to identify your query</li>
+                                                <li>Disabling the automatic email updates will prevent the Trackr Appr from sending you daily query results via email</li>
+                                                <li>If automatic email updates are kept enabled, you can decide whether the app will send only unseen query results, or 
+                                                    everything the search finds every time.
+                                                </li>
+                                            </ol>
+                                        </div>
                                     </section>
                                 </div>
                                 <div className={this.determineDirection(index, lastIndex, 1)}>
                                     <section>
+                                        <Icon className="section__help" name="question circle outline" size="big" data-section="vehicle" onClick={this.handleDisplayhelp} />
                                         <div className="form__section">
-                                            <Form.Field
+                                            <label className="dropdown__label" for="dropdown__field">Model</label>
+                                            <Dropdown
+                                                onChange={this.handleModelChange}
+                                                name="model"
+                                                label="Model"
+                                                labeled
+                                                placeholder="Model"
+                                                options={modelOptions}
+                                                value={vehicle.model}
+                                                selection
+                                                id="dropdown__field"
+                                            />
+                                            {/* <Form.Field
                                                 control={Select}
                                                 name='model'
                                                 label="Model"
@@ -388,8 +515,8 @@ class Create extends React.Component {
                                                 options={modelOptions}
                                                 value={vehicle.model}
                                                 onChange={this.handleModelChange}
-                                                required
-                                            />
+                                            /> */}
+                                            <p className={validation.model ? "not__valid" : "valid"}>{validation.model || "valid"}</p>
                                             <Form.Field
                                                 control={Input}
                                                 label='Price'
@@ -397,12 +524,9 @@ class Create extends React.Component {
                                                 placeholder="Price"
                                                 value={vehicle.price}
                                                 type='number'
-                                                step={100}
-                                                max={50000}
-                                                min={5000}
                                                 onChange={this.handleVehicleChange}
-                                                required
                                             />
+                                            <p className={validation.price ? "not__valid" : "valid"}>{validation.price || "valid"}</p>
                                             <div className="checkbox__container">
                                                 <div
                                                     className={vehicle.settings.operator === "less" ? "checkbox__active" : ""}
@@ -424,7 +548,7 @@ class Create extends React.Component {
                                             <Button
                                                 type="button"
                                                 icon
-                                                className="next__button"
+                                                className="secondary__button"
                                                 onClick={() => this.handleSlide(index - 1)}
                                             >
                                                 <Icon name="arrow left" />
@@ -432,68 +556,64 @@ class Create extends React.Component {
                                             <Button
                                                 type="button"
                                                 fluid
-                                                className="next__button"
-                                                onClick={() => this.handleSlide(index + 1)}
+                                                className="secondary__button"
+                                                onClick={() => this.handleVehicleSubmit(vehicle.model, vehicle.price)}
                                             >
                                                 Next
                                             </Button>
                                         </div>
                                     </section>
-                                    <section className="form__validation">
-                                        <span className={!vehicle.model ? "not__valid" : "is__valid"}>
-                                            Model is selected{" "}
-                                            <Icon name={!vehicle.model ? "warning sign" : "check"} size="small" />
-                                        </span>
-                                        <span className={!vehicle.price ? "not__valid" : "is__valid"}>
-                                            Price is filled{" "} 
-                                            <Icon name={!vehicle.price ? "warning sign" : "check"} size="small" />
-                                        </span>
-                                        <span className={vehicle.price < 5000 || vehicle.price > 50000 ? "not__valid" : "is__valid"}>
-                                            Price is between $5,000 and $50,000 - inclusive{" "} 
-                                            <Icon name={vehicle.price < 5000 || vehicle.price > 50000 ? "warning sign" : "check"} size="small" />
-                                        </span>
+                                    <section className={`field__info ${helpMessage === "vehicle" ? "active" : ""}`}>
+                                        <div className="help__message">
+                                            <h3>Vehicle Info</h3>
+                                            <ol>
+                                                <li>Select a model to search for daily</li>
+                                                <li>Input a price and select an operator to either search below or above the chosen price</li>
+                                            </ol>
+                                        </div>
                                     </section>
                                 </div>
                                 <div className={this.determineDirection(index, lastIndex, 2)}>
                                     <section>
+                                        <Icon className="section__help" name="question circle outline" size="big" data-section="customer" onClick={this.handleDisplayhelp} />
                                         <div className="form__section">
                                             <Form.Field
                                                 control={Input}
                                                 name="customerName"
-                                                label="Name (max 15 char)"
+                                                label="Name (optional)"
                                                 placeholder="e.g. John Smith"
                                                 onChange={this.handleCustomerChange}
                                                 type="text"
                                                 value={customer.customerName}
-                                                // disabled={!enabled}
                                             />
+                                            <p className={validation.customerName ? "not__valid" : "valid"}>{validation.customerName || "valid"}</p>
                                             <Form.Field
                                                 control={Input}
                                                 name="customerPhone"
-                                                label="Phone (max 14 char)"
+                                                label="Phone (optional)"
                                                 placeholder="e.g. 518 555-5555"
                                                 onChange={this.handleCustomerChange}
                                                 type="tel"
                                                 value={customer.customerPhone}
-                                                // disabled={!enabled}
                                             />
+                                            <p className={validation.customerPhone ? "not__valid" : "valid"}>{validation.customerPhone || "valid"}</p>
                                             <Form.Field
                                                 control={Input}
                                                 name="customerNotes"
-                                                label="Notes (max 30 char)"
+                                                label="Notes (optional)"
                                                 placeholder="e.g. Needs by end of month"
                                                 onChange={this.handleCustomerChange}
                                                 type="text"
                                                 value={customer.customerNotes}
-                                                // disabled={!enabled}
                                                 id="notes__field"
                                             />
+                                            <p className={validation.customerNotes ? "not__valid" : "valid"}>{validation.customerNotes || "valid"}</p>
                                         </div>
                                         <div className="nav__section">
                                             <Button
                                                 type="button"
                                                 icon
-                                                className="next__button"
+                                                className="secondary__button"
                                                 onClick={() => this.handleSlide(index - 1)}
                                             >
                                                 <Icon name="arrow left" />
@@ -501,26 +621,20 @@ class Create extends React.Component {
                                             <Button
                                                 type="submit"
                                                 fluid
-                                                className="next__button"
-                                                onClick={this.handleSubmit}
+                                                className="secondary__button"
+                                                onClick={() => this.handleCustomerSubmit(customer.customerName, customer.customerPhone, customer.customerNotes)}
                                             >
                                                 Submit
                                             </Button>
                                         </div>
                                     </section>
-                                    <section className="form__validation">
-                                        <span className={customer.customerName.length > 15 ? "not__valid" : "is__valid"}>
-                                            Customer name is less than 16 characters{" "}
-                                            <Icon name={customer.customerName.length > 15 ? "warning sign" : "check"} size="small" />
-                                        </span>
-                                        <span className={customer.customerPhone.length > 14 ? "not__valid" : "is__valid"}>
-                                            Customer Phone # is less than 15 characters{" "} 
-                                            <Icon name={customer.customerPhone.length > 14 ? "warning sign" : "check"} size="small" />
-                                        </span>
-                                        <span className={customer.customerNotes.length > 30 ? "not__valid" : "is__valid"}>
-                                            Customer notes is less than 31 characters{" "} 
-                                            <Icon name={customer.customerNotes.length > 30 ? "warning sign" : "check"} size="small" />
-                                        </span>
+                                    <section className={`field__info ${helpMessage === "customer" ? "active" : ""}`}>
+                                        <div className="help__message">
+                                            <h3>Customer Info</h3>
+                                            <ol>
+                                                <li>This section is simply for keeping track of the customer the query is designed for</li>
+                                            </ol>
+                                        </div>
                                     </section>
                                 </div>
                             </div>
@@ -643,7 +757,11 @@ class Create extends React.Component {
                     className="button__3d"
                     content="Create Query"
                     onClick={this.openModal}
+                    disabled={this.state.numberOfQueries >= 5}
                 />
+                {this.state.numberOfQueries >= 5 &&
+                    ( <span className="max__queries__span">Maximum number of queries reached</span> )
+                }
             </div>
         )
     }
