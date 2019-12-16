@@ -11,7 +11,7 @@ const cheerio = require('cheerio')
 
 
 module.exports = function() {
-    this.Scraper = async function(model, price, operator) {
+    this.Scraper = async function(model, price, operator, allStores) {
 
         model = model.charAt(0).toUpperCase() + model.substring(1)
     
@@ -21,7 +21,10 @@ module.exports = function() {
             for (let i=1;i < 5;i++) {
                 //console.log(model)
                 //const siteUrl = "https://www.liatoyotaofcolonie.com/searchused.aspx?Dealership=Lia%20Toyota%20of%20Colonie&Make=Toyota&pt=" + i;
-                const siteUrl = `https://www.liatoyotaofcolonie.com/searchused.aspx?Dealership=Lia%20Toyota%20of%20Colonie&Make=Toyota&Model=${model}&pt=${i}`
+                const siteUrl = allStores
+                    ? `https://www.liatoyotaofcolonie.com/searchused.aspx?Make=Toyota&Model=${model}&pt=${i}`
+                    : `https://www.liatoyotaofcolonie.com/searchused.aspx?Dealership=Lia%20Toyota%20of%20Colonie&Make=Toyota&Model=${model}&pt=${i}`;
+
                 
                 const pageData = await axios.get(siteUrl);
                 const $ = cheerio.load(pageData.data);
@@ -33,23 +36,47 @@ module.exports = function() {
                         // console.log(sections.length)
                     }
                 })
+                console.log(sections.length)
     
                 //console.log(sections[0])
     
-                const stocks = []
+                const stocks = [];
                 $('.stockDisplay').each((i, el) => {
                     if (i % 2 === 0 || i === 0) {
                         let stock = $(el).text().substring(8).trim();
                         stocks.push(stock)
-    
                     }
                 })
-                    
+                const miles = [];
+                $('.mileageDisplay').each((i, el) => {
+                    if (i % 2 === 0 || i === 0) {
+                        let mile = $(el).text().substring(8).trim();
+                        miles.push(mile);
+                    }
+                })
+                const dealers = [];
+                $('.dealershipDisplay').each((i, el) => {
+                    if (i % 2 === 0 || i === 0) {
+                        let dealer = $(el).text().substring(11).trim();
+                        dealers.push(dealer);
+                    }
+                })
+                const links = [];
+                $('.vehicleDetailsLink').each((i, el) => {
+                    let link = $(el).attr('href');
+                    links.push(link)
+                })
+                const carfaxLinks = [];
+                $('.carhistory').each((i, el) => {
+                    let carfax = $(el).children('a').first().attr('href');
+                    carfaxLinks.push(carfax);
+                })
+                console.log(carfaxLinks)
+    
                 let vehicleData = []
     
                 vehicleData = sections.map((el, i) => {
                     const newVehicle = {
-                        vin: el.vin,
                         stock: stocks[i],
                         make: el.make,
                         model: el.model,
@@ -57,11 +84,20 @@ module.exports = function() {
                         trim: el.trim,
                         extColor: el.extcolor,
                         price: el.price,
+                        metadata: {
+                            vin: el.vin,
+                            intColor: el.intcolor,
+                            transmission: el.trans,
+                            engine: el.engine,
+                            miles: miles[i],
+                            dealer: dealers[i],
+                            link: links[i],
+                            carfaxLink: carfaxLinks[i]
+                        }
                     }
     
                     return newVehicle;
                 })
-    
                 //console.log(vehicleData)
     
                 let modelsMatch = vehicleData.filter((item, index) => {
@@ -87,8 +123,8 @@ module.exports = function() {
                 //console.log("Prices match: " + pricesMatch)
                 pricesMatch.map(item => {
                     totalResults.push(item)
-                })
-    
+                }) 
+
             }
         } catch (error) {
             console.log("Page scraping done")
