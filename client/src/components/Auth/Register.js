@@ -24,8 +24,11 @@ class Register extends React.Component {
 			error = { message: 'Fill in all fields' };
 			this.setState({ errors: errors.concat(error) });
 			return false;
+		} else if (this.isUsernameValid(this.state)) {
+			error = { message: 'Username must be less than 15 characters'};
+			this.setState({ errors: errors.concat(error) })
 		} else if (!this.isPasswordValid(this.state)) {
-			error = { message: 'Password is invalid' };
+			error = { message: 'Password must be greater than 6 characters' };
 			this.setState({ errors: errors.concat(error) });
 			return false;
 		} else {
@@ -46,6 +49,14 @@ class Register extends React.Component {
 			return true;
 		}
 	};
+
+	isUsernameValid = ({ username }) => {
+		if (username.length > 15) {
+			return false;
+		} else {
+			return true;
+		}
+	}
 
 	handleChange = (event) => {
 		this.setState({ [event.target.name]: event.target.value });

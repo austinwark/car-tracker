@@ -16,23 +16,26 @@ class Settings extends React.Component {
         emailLoading: false,
         open: false,
         autoEmails: this.props.currentQuery,
-        onlyNew: this.props.currentQuery
+        onlyNew: this.props.currentQuery,
+        allStores: this.props.currentQuery
     };
 
     // first renders autoEmails & onlyNew state as null while props are loading, then updates state with desired value when it loads
     static getDerivedStateFromProps(props, state) {
         if (!props.currentQuery) {
             return null;
-        } else if (props.currentQuery !== state.autoEmails && props.currentQuery !== state.onlyNew) {
+        } else if (props.currentQuery !== state.autoEmails && props.currentQuery !== state.onlyNew && props.currentQuery !== state.allStores) {
             return {
                 autoEmails: props.currentQuery.settings.autoEmails,
-                onlyNew: props.currentQuery.settings.onlyNew
+                onlyNew: props.currentQuery.settings.onlyNew,
+                allStores: props.currentQuery.settings.allStores
             }
-        } else if (props.currentQuery !== state.autoEmails) {
+        } else if (props.currentQuery !== state.autoEmails)
             return { autoEmails: props.currentQuery.settings.autoEmails };
-        } else if (props.currentQuery !== state.onlyNew) {
+        else if (props.currentQuery !== state.onlyNew)
             return { onlyNew: props.currentQuery.settings.onlyNew };
-        }
+        else if (props.currentQuery !== state.allStores)
+            return { allStores: props.currentQuery.settings.allStores };
 
         return null;
     }
@@ -109,6 +112,19 @@ class Settings extends React.Component {
         this.setState({ onlyNew: !onlyNew });
     }
 
+    toggleAllStores = () => {
+        const { currentQuery, currentUser } = this.props;
+
+        const allStores = currentQuery.settings.allStores;
+        this.state.queriesRef.child(currentUser.uid).child(currentQuery.id).child('settings').update({
+            "allStores": !allStores
+        })
+        const updatedQuery = currentQuery;
+        updatedQuery.settings.allStores = !allStores;
+        this.props.setCurrentQuery(updatedQuery);
+        this.setState({ allStores: !allStores });
+    }
+
 
 
 
@@ -170,17 +186,27 @@ class Settings extends React.Component {
                                         style={{ zIndex: 9999 }}
                                         trigger={<Icon name='question circle outline' size='large' className="question__icon" />}
                                     />
-                                    
-                                    {/* <Popup
-                                        key={0}
-                                        position="top center"
+                                </Grid.Column>
+                            </Grid.Row>
+                            <Grid.Row>
+                                <Grid.Column>
+                                    <label style={{display: "block"}}>Search all stores</label>
+                                    <Checkbox
+                                        onChange={this.toggleAllStores}
+                                        checked={this.state.allStores}
+                                        toggle
+                                        disabled={currentUser.isAnonymous ? (true) : (false)}
+                                    />
+                                    <Popup
                                         content={
                                             currentUser.isAnonymous
-                                                ? "Create an account to configure settings "
-                                                : "Send only previously unseen results or all "
+                                                ? "Create an account to configure settings"
+                                                : "Search all Lia stores or just Lia Toyota of Colonie"
                                         }
+                                        position="top center"
+                                        style={{ zIndex: 9999 }}
                                         trigger={<Icon name='question circle outline' size='large' className="question__icon" />}
-                                    /> */}
+                                    />
                                 </Grid.Column>
                             </Grid.Row>
                             <Grid.Row>
@@ -209,7 +235,10 @@ class Settings extends React.Component {
                                         content={
                                             currentUser.isAnonymous 
                                             ? "Sends results to your saved email address, you must create an account and verify your email first!"
-                                            : "Sends results to your saved email address"
+                                            : currentUser.isVerified
+                                                ? "Sends results to your saved email address"
+                                                : "Sends results to your saved email address, you must verify your email first!"
+                                            
                                         }
                                         style={{ zIndex: 9999 }}
                                         trigger={<Icon name='question circle outline' size='large' className="question__icon" />}

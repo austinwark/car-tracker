@@ -4,19 +4,27 @@ import Reauthenticate from './Reauthenticate';
 import { setCurrentNotification, clearCurrentNotification } from '../../actions';
 import { connect } from 'react-redux';
 import { Icon, Dropdown, Modal, Form, Input, Button, Header, Popup } from 'semantic-ui-react';
+const moment = require('moment');
 
 // import firebase from '../../firebase';
 const firebase = require('../../firebase');
 //import { connect } from 'react-redux';
-
+const INITIAL_NEW_ACCOUNT = {
+    username: "",
+    email: "",
+    password: "",
+    passwordConfirm: ""
+}
 class UserPanel extends React.Component {
 
     state = {
         currentUser: this.props.currentUser,
         isVerified: firebase.auth().currentUser.emailVerified,
         usersRef: firebase.database().ref('users'),
+        queriesRef: firebase.database().ref('queries'),
         email: "",
         emailConfirmation: "",
+        newAccount: INITIAL_NEW_ACCOUNT,
         error: false,
         loading: false,
         open: false,
@@ -30,11 +38,10 @@ class UserPanel extends React.Component {
         firebase.auth().onIdTokenChanged(user => {
             if (user) {
                 user.reload().then(() => {
-                        if (user.emailVerified) {
+                        if (user.emailVerified)
                             this.setState({ isVerified: true });
-                        } else {
+                        else
                             this.setState({ isVerified: false });
-                        }
                     }
                 )
             }
@@ -45,9 +52,8 @@ class UserPanel extends React.Component {
         const { currentNotification } = this.props;
         const user = firebase.auth().currentUser;
         user.sendEmailVerification().then(async () => {
-            
+
         }).catch(async err => {
-            
             console.error(err)
         })
     }
@@ -58,12 +64,10 @@ class UserPanel extends React.Component {
     }
 
     closeModal = (success = false) => {
-        if (success) {
-            this.setState({ email: "", emailConfirmation: "", open: false, error: false, success: true });
-        }
-        else {
-            this.setState({ email: "", emailConfirmation: "", open: false, error: false });
-        }
+        if (success)
+            this.setState({ email: "", emailConfirmation: "", open: false, error: false, success: true, loading: false });
+        else
+            this.setState({ email: "", emailConfirmation: "", newAccount: INITIAL_NEW_ACCOUNT, createOpen: false, open: false, error: false, loading: false });
     }
 
     handleSubmit = event => {
@@ -74,7 +78,6 @@ class UserPanel extends React.Component {
             const user = firebase.auth().currentUser;
             user.updateEmail(this.state.email)
                 .then(() => {
-
                     usersRef
                         .child(currentUser.uid)
                         .child('email')
@@ -83,7 +86,6 @@ class UserPanel extends React.Component {
                             this.handleEmailVerification();
                             this.setState({ loading: false }, () => this.closeModal(true));
                         })
-
                 })
                 .catch(err => {
                     console.log(err)
@@ -115,6 +117,111 @@ class UserPanel extends React.Component {
             return true;
         }
     }
+
+    handleNewAccountChange = event => {
+        const { name, value } = event.target;
+        this.setState(prevState => ({
+            newAccount: {
+                ...prevState.newAccount,
+                [name]: value
+            }
+        }));
+    }
+
+    handleCreateSubmit = event => {
+        event.preventDefault();
+        const { currentUser, queriesRef, newAccount } = this.state;
+        const { username, email, password, passwordConfirm } = newAccount;
+        if (this.isCreateFormValid(newAccount)) {
+            const credential = firebase.auth.EmailAuthProvider.credential(email, password);
+            firebase.auth().currentUser.linkWithCredential(credential)
+                .then(createdUser => {
+                    createdUser.user
+                        .updateProfile({
+                            displayName: username
+                        })
+                        .then(() => {
+                            this.saveUser(createdUser).then(() => {
+                                this.handleEmailVerification();
+                                this.updateQueries();
+                                this.closeModal();
+                            })     
+                        })
+                        .catch(err => {
+                            console.log(err)
+                            this.setState({ error: err })
+                        })
+                })
+                .catch(err => {
+                    console.log('error', err)
+                    this.setState({ error: err })
+                })
+        }
+    }
+
+    updateQueries = () => {
+        const { queriesRef, currentUser } = this.state;
+        queriesRef.child(currentUser.uid).once('value', snap => {
+            if (snap.val()) {
+                const queries = Object.keys(snap.val())
+                queries.forEach(query => {
+                    queriesRef.child(currentUser.uid).child(query).update({
+                        "isOwnerAnonymous": false
+                    })                
+                })
+            }
+        })
+    }
+
+    saveUser = createdUser => {
+		const now = moment().format("L");
+        return this.state.usersRef.child(createdUser.user.uid).set({
+            name: createdUser.user.displayName,
+			email: createdUser.user.email,
+			lastSignIn: now
+        })
+	}
+
+    isCreateFormValid = newAccount => {
+        let error;
+        if (this.isCreateFormEmpty(newAccount)) {
+            error = { message: "Fill in all fields"};
+            this.setState({ error });
+            return false;
+        } else if (!this.isPasswordValid(newAccount)) {
+            error = { message: "Passwords must be greater than 6 characters and matching" }; 
+            this.setState({ error });
+            return false;
+        } else if (!this.isUsernameValid(newAccount)) {
+            error = { message: "Username must be less than 15 characters" };
+            this.setState({ error });
+            return false;
+        } else
+            return true;
+    }
+
+    isCreateFormEmpty = ({ username, email, password, passwordConfirm }) => {
+		return !username.length || !email.length || !password.length || !passwordConfirm.length;
+	};
+
+	isPasswordValid = ({ password, passwordConfirm }) => {
+        console.log(password, passwordConfirm)
+		if (password.length < 6 || passwordConfirm.length < 6) {
+			return false;
+		} else if (password !== passwordConfirm) {
+			return false;
+		} else {
+			return true;
+		}
+	};
+
+	isUsernameValid = ({ username }) => {
+		if (username.length > 15) {
+			return false;
+		} else {
+			return true;
+		}
+	}
 
     dropdownOptions = () => [
         {
@@ -249,6 +356,84 @@ class UserPanel extends React.Component {
                         />
                         <Button
                             onClick={this.handleSubmit}
+                            loading={this.state.loading}
+                            color="green"
+                            inverted
+                            content="Submit"
+                            type="submit"
+                        />
+                    </Modal.Actions>
+                </Modal>
+                <Modal
+                    open={this.state.createOpen}
+                    onClose={() => this.closeModal()}
+                    basic
+                    size="small"
+                >
+                    {this.state.error && (
+                        <Header block color="red" inverted attached="top">
+                            <h3>Error</h3>
+                            <p>{this.state.error.message}</p>
+                        </Header>
+                    )}
+                    <Header icon="puzzle piece" content="Create an account" />
+                    <Modal.Content>
+                        <Form>
+                            <Form.Field
+                                control={Input}
+                                name="username"
+                                label="Username"
+                                placeholder="Username"
+                                onChange={this.handleNewAccountChange}
+                                value={this.state.newAccount.username}
+                                type="text"
+                                icon="user"
+								iconPosition="left"
+                            />
+                            <Form.Field
+                                control={Input}
+                                name="email"
+                                label="Email Address"
+                                placeholder="Email address"
+                                onChange={this.handleNewAccountChange}
+                                value={this.state.newAccount.email}
+                                type="email"
+                                icon="mail"
+								iconPosition="left"
+                            />
+                            <Form.Field
+                                control={Input}
+                                name="password"
+                                label="Password"
+                                placeholder="Password"
+                                onChange={this.handleNewAccountChange}
+                                value={this.state.newAccount.password}
+                                type="password"
+                                icon="lock"
+								iconPosition="left"
+                            />
+                            <Form.Field
+                                control={Input}
+                                name="passwordConfirm"
+                                label="Password Confirmation"
+                                placeholder="Password Confirmation"
+                                onChange={this.handleNewAccountChange}
+                                value={this.state.newAccount.passwordConfirm}
+                                type="password"
+                                icon="repeat"
+								iconPosition="left"
+                            />
+                        </Form>
+                    </Modal.Content>
+                    <Modal.Actions>
+                        <Button
+                            onClick={() => this.closeModal()}
+                            color="red"
+                            inverted
+                            content="Cancel"
+                        />
+                        <Button
+                            onClick={this.handleCreateSubmit}
                             loading={this.state.loading}
                             color="green"
                             inverted

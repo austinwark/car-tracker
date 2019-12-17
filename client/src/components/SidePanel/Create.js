@@ -501,7 +501,7 @@ class Create extends React.Component {
                                     <section>
                                         <Icon className="section__help" name="question circle outline" size="big" data-section="vehicle" onClick={this.handleDisplayhelp} />
                                         <div className="form__section">
-                                            <label className="dropdown__label" for="dropdown__field">Model</label>
+                                            <label className="dropdown__label" htmlFor="dropdown__field">Model</label>
                                             <Dropdown
                                                 onChange={this.handleModelChange}
                                                 name="model"

@@ -41,7 +41,7 @@ html, body, .app__main {
     text-align: center;
     padding-left: 0 !important;
     width:20%;
-    z-index: 9998;
+    z-index: 998;
 }
 .first__column > .segment {
     border-radius: 0 !important;
@@ -51,7 +51,7 @@ html, body, .app__main {
 }
 .last__column {
     width: 25%;
-    z-index: 9998;
+    z-index: 998;
 
 }
 .metadata__icon , .query__icon {
@@ -64,7 +64,7 @@ html, body, .app__main {
     border-radius: 5px;
     cursor: pointer;
     transition: all .4s;
-    z-index: 9998;
+    z-index: 998;
 
 }
 /* @media (min-width: 768px) {
@@ -113,7 +113,7 @@ html, body, .app__main {
     }
     .last__column.open__column {
         right: 0;
-        z-index: 9999;
+        z-index: 999;
     }
     .metadata__icon {
         display: inline-block;
@@ -142,7 +142,7 @@ html, body, .app__main {
     }
     .first__column.open__column {
         right: 0 !important;
-        z-index: 9999;
+        z-index: 999;
     }
     .middle__column {
         width: 100%;
@@ -363,6 +363,8 @@ html, body, .app__main {
 }
 .mobile__results__container {
     height: 50%;
+    padding-top: 3% !important;
+    padding-bottom: 5% !important;
     overflow-x: scroll !important;
     overflow-y: hidden;
     white-space: nowrap;
@@ -386,6 +388,24 @@ html, body, .app__main {
 .results__card .content p {
     font-family: 'Open Sans', sans-serif !important;
 
+}
+.mobile__links__container {
+    padding: 0 !important;
+    /* background-color: #026670 !important; */
+}
+.mobile__links__container > a:first-child {
+    float: left;
+    /* color: #FFF !important; */
+    padding: 1rem;
+    
+    /* background-color: #026670; */
+    border-radius: 0 0 0 .28571429rem !important;
+}
+.mobile__links__container > a:last-child {
+    float: right;
+    /* color: #FFF !important; */
+    padding: 1rem;
+    border-radius:  0 0 .28571429rem 0 !important;
 }
 .results__card:first-child {
     /* margin-left: 0 !important; */
@@ -565,7 +585,7 @@ html, body, .app__main {
         height: 100% !important;
         background: #fff;
         top: -100%;
-        z-index: 9998;
+        z-index: 998;
     }
     .step__container section:first-child {
         width: 100%;
@@ -596,7 +616,7 @@ html, body, .app__main {
     top: 0;
     right: 0;
     cursor: pointer;
-    z-index: 9999;
+    z-index: 999;
 }
 .help__message li {
     margin: .5rem 0;

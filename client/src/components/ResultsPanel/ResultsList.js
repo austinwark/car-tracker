@@ -73,7 +73,7 @@ class ResultsList extends React.Component {
                         >
                                     <h3>{result.year} {result.make} {result.model} {result.trim}</h3>
                             <div className="vehicle__details">
-                                     <Icon name="car" size="big" />
+                                     {/* <Icon name="car" size="big" /> */}
                                 <div className="vehicle__details__primary">
                                     <span>Stock #: {result.stock}</span>
                                     <span>Engine: {result.metadata.engine}</span>
@@ -103,7 +103,7 @@ class ResultsList extends React.Component {
                 // <div className="results__card">
                 //     <h4>{result.year} {result.make} {result.model} {result.trim}</h4>
                 // </div>
-                <Card className="results__card">
+                <Card className="results__card" key={i}>
                     <Card.Content>
                         <Card.Header>{result.year} {result.make} {result.model} {result.trim}</Card.Header>
                         <Card.Description>
@@ -118,7 +118,8 @@ class ResultsList extends React.Component {
                             <p>Vin #: {result.metadata.vin}</p>
                         </Card.Description>
                     </Card.Content>
-                    <Card.Content extra>
+                    <Card.Content extra style={{padding: 0}} className="mobile__links__container">
+                        <a href={result.metadata.link} target="_blank">See more</a>
                         <a href={result.metadata.carfaxLink} target="_blank">See Carfax</a>
                     </Card.Content>
                 </Card>
