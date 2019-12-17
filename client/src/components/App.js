@@ -8,7 +8,6 @@ import MetaPanel from './MetaPanel/MetaPanel';
 import Notification from './MetaPanel/Notification';
 import { connect } from 'react-redux';
 import WebFont from 'webfontloader';
-import { Grid } from 'semantic-ui-react';
 // ({ currentUser, currentQuery, isLoading, currentNotification })
 WebFont.load({
   google: {

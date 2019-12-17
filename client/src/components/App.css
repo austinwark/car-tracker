@@ -12,7 +12,7 @@ html, body, .app__main {
     font-family: "Montserrat", sans-serif !important;
 }
 .ui.segment {
-    background-color: #fafafa !important;
+    background-color: #FFF !important;
 }
 .steps {
     border: none !important;
@@ -118,7 +118,7 @@ html, body, .app__main {
     .metadata__icon {
         display: inline-block;
         left: -45px;
-        top: 15px;
+        top: 75px;
     }
     .metadata__icon:active {
         /* width: 60px; */
@@ -135,7 +135,7 @@ html, body, .app__main {
     .query__icon {
         display: inline-block;
         left: -45px;
-        top: 75px;
+        top: 15px;
     }
     .query__icon:active {
         left: -55px;
@@ -153,13 +153,24 @@ html, body, .app__main {
     }
 }
 
-/* START ----------------------------------------------- */
 
+/* Signup */
+.signup__grid form {
+    max-width: 90% !important;
+    margin-left: auto;
+    margin-right: auto;
+}
+.signup__grid div.ui.message {
+    max-width: 90%;
+    margin-right: auto;
+    margin-left: auto;
+}
 /* Register */
-#register__message {
+.register__message {
     font-style: italic;
     font-weight: 800;
     color: #2a2a2a8a;
+    margin-bottom: 1rem !important;
 }
 .anonymous__link {
     color: #026670;
@@ -179,6 +190,11 @@ html, body, .app__main {
 }
 #main__sidepanel__colors > * {
     color: #FFF !important;
+}
+
+/* User Panel */
+.main__icon {
+    height: 100px;
 }
 
 /* current queries active item */
@@ -274,20 +290,20 @@ html, body, .app__main {
     padding: 0 !important;
 }
 
-.table__container {
+.results__container {
     margin-top: 1rem !important;
     overflow: auto;
     max-height: 80vh;
     width: 100% !important;
     font-family: 'Open Sans', sans-serif;
 }
-.table__container > h1 {
+.results__container > h1 {
     color: #1F2333 !important;
     /* background: #7397AE; */
     margin-bottom: 0 !important;
     padding: 1rem 0 !important;
 }
-.table__container > div > table > tbody > tr > td, .table__container > div > table > thead > tr > th {
+.results__table > tbody > tr > td, .results__table > thead > tr > th {
     color: #1F2333 !important;
 
 }
@@ -299,11 +315,111 @@ html, body, .app__main {
     padding-top: 1rem !important;
     height: 5rem;
 }
+.seemore__container {
+    position: relative;
+}
+.seemore__icon {
+    position: absolute;
+    right: 0;
+    top: calc(50% - 14px);
+    background: #FFF !important;
+    color: rgb(136, 136, 136) !important;
+    border-radius: 50%;
+    cursor: pointer;
+}
+.vehicle__details {
+    display: flex;
 
+}
+.vehicle__details__primary {
+    display: flex;
+    flex-direction: column;
+    margin-right: 2rem;
+}
+.vehicle__details__secondary {
+    display: flex;
+    flex-direction: column;
+    margin-left: 2rem;
+}
 #no__results__message {
     background: rgba(255, 0, 0, 0.342);
     box-shadow: none !important;
 }
+.oops__container {
+    text-align: center;
+}
+.oops__container > img {
+    max-width: 500px !important;
+}
+@media (max-width: 767px) {
+    .results__container {
+        width: 80% !important;
+        margin-left: auto !important;
+        margin-right: auto !important;
+    }
+    /* .ui.table:not(.unstackable) {
+        width: 80% !important;
+    } */
+}
+.mobile__results__container {
+    height: 50%;
+    overflow-x: scroll !important;
+    overflow-y: hidden;
+    white-space: nowrap;
+    background: #fafafa;
+    /* overflow-x: scroll; */
+}
+.results__card {
+    border: solid black 2px;
+    /* width: 45% !important; */
+    /* height: 200px !important; */
+    margin: 2% 2.5% !important;
+    display: inline-block !important;
+}
+.results__card .content .header {
+    font-family: "Montserrat", sans-serif !important;
+}
+.results__card .content p:nth-child(-n + 2) {
+    font-family: "Montserrat", sans-serif !important;
+    font-weight: 600 !important;
+}
+.results__card .content p {
+    font-family: 'Open Sans', sans-serif !important;
+
+}
+.results__card:first-child {
+    /* margin-left: 0 !important; */
+}
+.results__card:last-child {
+    /* margin-right: 0 !important; */
+}
+@media (max-width: 505px) {
+    .results__card {
+        width: 90% !important;
+        margin: 2% 5% !important;
+    }
+}
+/* 
+@media (max-width: 550px) {
+    .results__table > thead > tr {
+        display: flex !important;
+        width: 90vw;
+    }
+    .results__table > tbody > tr {
+        display: flex !important;
+        flex-direction: column;
+        flex-wrap: wrap;
+        width: 80vw;
+    }
+    .results__table > tbody > tr > td {
+        border: none !important;
+    }
+    .results__table > tbody > tr > td:nth-child(-n + 4) {
+        display: inline;
+    }
+} */
+
+
 
 /* Meta Panel */
 #metapanel__accordian {
@@ -520,7 +636,7 @@ html, body, .app__main {
 }
 .checkbox__container {
     display: flex;
-    justify-content: flex-start;
+    justify-content: space-between;
     flex-wrap: wrap;
 }
 .checkbox__container > div {
@@ -530,7 +646,8 @@ html, body, .app__main {
     align-items: center;
     height: 125px;
     width: 125px;
-    margin: 1.5rem 1rem 0 1rem;
+    margin: .5rem 0;
+    /* margin: 1.5rem 1rem 0 1rem; */
     flex-direction: column;
     position: relative;
     border: solid grey 1px;
@@ -539,7 +656,7 @@ html, body, .app__main {
     user-select: none !important;
 }
 .checkbox__container > div:first-child {
-    margin-left: 0;
+    /* margin-left: 0; */
 }
 .secondary__button {
     position: relative;

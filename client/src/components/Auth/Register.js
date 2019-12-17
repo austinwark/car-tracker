@@ -127,7 +127,7 @@ class Register extends React.Component {
 					</Header>
 					<Form onSubmit={this.handleSubmit} size="large">
 						<Segment stacked>
-							<span id="register__message">You will be sent an email verification link upon registration</span>
+							<p className="register__message">You will be sent an email verification link upon registration</p>
 							<Form.Input
 								fluid
 								name="username"

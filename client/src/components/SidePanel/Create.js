@@ -28,7 +28,8 @@ const INITIAL_QUERY = {
     queryName: "",
     settings: {
         autoEmails: true,
-        onlyNew: true
+        onlyNew: true,
+        allStores: false
     }
 }
 const INITIAL_VEHICLE = {
@@ -153,15 +154,16 @@ class Create extends React.Component {
                     settings: { autoEmails: false, onlyNew: false }
                 }
             }))
-        this.setState(prevState => ({
-            query: {
-                ...prevState.query,
-                settings: {
-                    ...prevState.query.settings,
-                    [name]: !value
+        else
+            this.setState(prevState => ({
+                query: {
+                    ...prevState.query,
+                    settings: {
+                        ...prevState.query.settings,
+                        [name]: !value
+                    }
                 }
-            }
-        }))
+            }))
     }
     handleModelChange = (event, { value }) => {
         // this.setState({ model: value });
@@ -245,7 +247,7 @@ class Create extends React.Component {
     handleSubmit = async event => {
         this.setState({ loading: true });
         const { query, vehicle, customer, currentUser, queriesRef } = this.state;
-        const { queryName } = query, {autoEmails, onlyNew } = query.settings;
+        const { queryName } = query;
         const { model, price } = vehicle, { operator } = vehicle.settings; 
         const isValid = this.isValid(query, vehicle, customer);
 
@@ -288,10 +290,10 @@ class Create extends React.Component {
     
 
     getQueryResults = async query => {
-        const { model, price, operator } = query;
-
+        const { model, price, operator, settings } = query;
+        const { allStores } = settings;
         const url = '/api/scrape';
-        const payload = { model, price, operator };
+        const payload = { model, price, operator, allStores };
         const response = await axios.post(url, payload);
         const queryResults = response.data.arr;
         if (queryResults.length <= 0) {
@@ -450,19 +452,22 @@ class Create extends React.Component {
                                             <p className={validation.queryName ? "not__valid" : "valid"}>{validation.queryName || "valid"}</p>
                                             <div className="checkbox__container">
                                                 <div
-                                                    className={query.settings.autoEmails && "checkbox__active"}
-                                                    
+                                                    className={query.settings.autoEmails ? "checkbox__active" : ""}
                                                 >
                                                     <Icon name="exchange" onClick={() => this.handleQuerySettingsChange("autoEmails", query.settings.autoEmails)} />
                                                     <span>Automatic Email Updates</span>
                                                 </div>
                                                 <div
                                                     className={query.settings.autoEmails ? (query.settings.onlyNew ? "checkbox__active" : "") : "checkbox__disabled"}
-                                                    // className={query.settings.onlyNew && "checkbox__active"} 
-                                                    
                                                 >
                                                     <Icon name="eye" onClick={() => this.handleQuerySettingsChange("onlyNew", query.settings.onlyNew)}/>
                                                     <span>Send Only New Results</span>
+                                                </div>
+                                                <div
+                                                    className={query.settings.allStores ? "checkbox__active" : ""}
+                                                >
+                                                    <Icon name="eye" onClick={() => this.handleQuerySettingsChange("allStores", query.settings.allStores)}/>
+                                                    <span>Search all stores</span>
                                                 </div>
                                             </div>
                                         </div>
@@ -487,6 +492,7 @@ class Create extends React.Component {
                                                 <li>If automatic email updates are kept enabled, you can decide whether the app will send only unseen query results, or 
                                                     everything the search finds every time.
                                                 </li>
+                                                <li>You can choose to search every Lia Toyota Dealer, or just Toyota of Colonie. Default is just Toyota of Colonie.</li>
                                             </ol>
                                         </div>
                                     </section>

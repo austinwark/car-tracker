@@ -57,11 +57,12 @@ async function getScrapeResults(userId, queries) {
     queries.forEach(async query => {
         const queryId = Object.keys(query)[0];
         const queryDetails = Object.values(query)[0]
+        const allStores = queryDetails.settings.allStores || false;
 
         const model = queryDetails.model;
         const price = queryDetails.price;
         const operator = queryDetails.operator;
-        const data = await Scraper(model, price, operator);
+        const data = await Scraper(model, price, operator, allStores);
         // const results = data;
         console.log(data);
 

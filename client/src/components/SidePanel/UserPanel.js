@@ -1,5 +1,5 @@
 import React from 'react';
-
+import query from '../../assets/queryMain.svg';
 import Reauthenticate from './Reauthenticate';
 import { setCurrentNotification, clearCurrentNotification } from '../../actions';
 import { connect } from 'react-redux';
@@ -180,7 +180,8 @@ class UserPanel extends React.Component {
                     closeModal={this.closeReauthenticateModal}
                 />
                 <div className='main__sidepanel__colors sidepanel__header'>
-                    <Icon name="search" size='huge' /><h1 id="main__font">Car Tracker</h1>
+                    {/* <Icon name="search" size='huge' /><h1 id="main__font">Car Tracker</h1> */}
+                    <img src={query} className="main__icon" />
                     <div>
                         <Dropdown
                             trigger={
