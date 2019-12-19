@@ -4,6 +4,7 @@ import Reauthenticate from './Reauthenticate';
 import { setCurrentNotification, clearCurrentNotification } from '../../actions';
 import { connect } from 'react-redux';
 import { Icon, Dropdown, Modal, Form, Input, Button, Header, Popup } from 'semantic-ui-react';
+import puzzlePiece from '../../assets/puzzlePiece.png';
 const moment = require('moment');
 
 // import firebase from '../../firebase';
@@ -93,7 +94,7 @@ class UserPanel extends React.Component {
                         console.log('needs to auth!')
                         this.setState({ needsToReauthenticate: true });
                     }
-                    this.setState({ loading: false });
+                    this.setState({ loading: false, error: err });
                 })
             } else {
                 this.setState({ loading: false });
@@ -145,6 +146,7 @@ class UserPanel extends React.Component {
                                 this.handleEmailVerification();
                                 this.updateQueries();
                                 this.closeModal();
+                                window.location.reload();
                             })     
                         })
                         .catch(err => {
@@ -369,6 +371,7 @@ class UserPanel extends React.Component {
                     onClose={() => this.closeModal()}
                     basic
                     size="small"
+                    className="new__account__modal"
                 >
                     {this.state.error && (
                         <Header block color="red" inverted attached="top">
@@ -377,7 +380,7 @@ class UserPanel extends React.Component {
                         </Header>
                     )}
                     <Header icon="puzzle piece" content="Create an account" />
-                    <Modal.Content>
+                    <Modal.Content className="new__account__content">
                         <Form>
                             <Form.Field
                                 control={Input}
@@ -424,6 +427,7 @@ class UserPanel extends React.Component {
 								iconPosition="left"
                             />
                         </Form>
+                                {/* <img src={puzzlePiece} className="new__account__puzzle" /> */}
                     </Modal.Content>
                     <Modal.Actions>
                         <Button
@@ -442,6 +446,7 @@ class UserPanel extends React.Component {
                         />
                     </Modal.Actions>
                 </Modal>
+                
             </div>
         )
     }

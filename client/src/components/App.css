@@ -275,7 +275,22 @@ html, body, .app__main {
     font-style: bold !important;
     color: #BB8E87 !important;
 }
+.new__account__modal {
+    /* max-width: 300px !important; */
+}
+.new__account__content {
+    /* max-width: 300px !important; */
 
+
+}
+.new__account__content .form .field label {
+    /* color: whitesmoke !important; */
+}
+.new__account__puzzle {
+    /* width: 20%;
+    height: 100%; */
+    max-height: 250px;
+}
 /* Results List */
 .top__segment {
     margin-top: 1rem !important;
@@ -659,6 +674,18 @@ html, body, .app__main {
     justify-content: space-between;
     flex-wrap: wrap;
 }
+.checkbox__container > img {
+    height: 125px;
+    width: 125px;
+    margin: .5rem 0;
+    position: relative;
+    transition: all .5s;
+    user-select: none;
+    opacity: .5;
+}
+.checkbox__active {
+    opacity: 1 !important;
+}
 .checkbox__container > div {
     text-align: center;
     display: flex;
@@ -738,8 +765,8 @@ html, body, .app__main {
     background-color: rgba(34,36,38,.15) !important;
 } */
 .checkbox__active {
-    border: solid blue 2px !important;
-    background-color: rgba(123, 119, 138, 0.507);
+    /* border: solid blue 2px !important; */
+    /* background-color: rgba(123, 119, 138, 0.507); */
 }
 .checkbox__disabled {
     opacity: .5;

@@ -71,7 +71,7 @@ class ResultsList extends React.Component {
                             position="top right"
                             style={{border: "solid blue 2px"}}
                         >
-                                    <h3>{result.year} {result.make} {result.model} {result.trim}</h3>
+                            <h3>{result.year} {result.make} {result.model} {result.trim}</h3>
                             <div className="vehicle__details">
                                      {/* <Icon name="car" size="big" /> */}
                                 <div className="vehicle__details__primary">
@@ -81,7 +81,7 @@ class ResultsList extends React.Component {
                                     <span>Ext. Color: {result.extColor}</span>
                                     <span>Int. Color: {result.metadata.intColor}</span>
                                     <span>Mileage: {result.metadata.miles}</span>
-                                    <span>Vin #: {result.vin}</span>
+                                    <span>Vin #: {result.metadata.vin}</span>
                                 </div>
                                 <div className="vehicle__details__secondary">
                                     <h5>Price: ${result.price}</h5>
@@ -89,6 +89,7 @@ class ResultsList extends React.Component {
                                     <a href={result.metadata.carfaxLink} target="_blank">See Carfax</a>
                                 </div>
                             </div>
+                            <h4><Icon name="point" />{result.metadata.dealer}</h4>
                         </Popup>
                         </Table.Cell>
                     </Table.Row>
@@ -110,6 +111,7 @@ class ResultsList extends React.Component {
                             <p>Price: {Number(result.price).toLocaleString('en-US', { style: 'currency', currency: 'USD' })}</p>
                             <p>Stock #: {result.stock}</p>
                             <hr></hr>
+                            <p><Icon name="point" />{result.metadata.dealer}</p>
                             <p>Engine: {result.metadata.engine}</p>
                             <p>Transmission: {result.metadata.transmission}</p>
                             <p>Ext. Color: {result.extColor}</p>

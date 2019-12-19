@@ -1,7 +1,7 @@
 import axios from 'axios';
 import React from 'react';
 import moment from 'moment';
-
+import autoEmailsImg from "../../assets/create_buttons/autoEmails.svg";
 // import firebase from '../../firebase';
 
 import { Form, Icon, Checkbox, Input, Select, Button, Modal, Label, Dropdown } from 'semantic-ui-react';
@@ -451,12 +451,13 @@ class Create extends React.Component {
                                             />
                                             <p className={validation.queryName ? "not__valid" : "valid"}>{validation.queryName || "valid"}</p>
                                             <div className="checkbox__container">
-                                                <div
+                                                <img src={autoEmailsImg} onClick={() => this.handleQuerySettingsChange("autoEmails", query.settings.autoEmails)} className={query.settings.autoEmails ? "checkbox__active" : ""} />
+                                                {/* <div
                                                     className={query.settings.autoEmails ? "checkbox__active" : ""}
                                                 >
                                                     <Icon name="exchange" onClick={() => this.handleQuerySettingsChange("autoEmails", query.settings.autoEmails)} />
                                                     <span>Automatic Email Updates</span>
-                                                </div>
+                                                </div> */}
                                                 <div
                                                     className={query.settings.autoEmails ? (query.settings.onlyNew ? "checkbox__active" : "") : "checkbox__disabled"}
                                                 >
