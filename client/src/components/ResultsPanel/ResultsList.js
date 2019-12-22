@@ -12,7 +12,8 @@ class ResultsList extends React.Component {
     this.state = {
       currentUser: this.props.currentUser,
       resultsLoading: !this.props.currentQuery, // => when query is loaded, sets loading state to false
-      windowDimensions: this.getWindowDimensions()
+      windowDimensions: this.getWindowDimensions(),
+      activeResult: null
     };
     this.getWindowDimensions = this.getWindowDimensions.bind(this);
     this.handleResize = this.handleResize.bind(this);
@@ -109,56 +110,86 @@ class ResultsList extends React.Component {
     }
   };
 
-  /* Mobile version of query results list, more mobile-friendly */
   displayMobileResults = results => {
     if (results && results.length > 0) {
       return results.map((result, i) => (
-        // <div className="results__card">
-        //     <h4>{result.year} {result.make} {result.model} {result.trim}</h4>
-        // </div>
-        <Card className="results__card" key={result.stock}>
-          <Card.Content>
-            <Card.Header>
-              {result.year} {result.make} {result.model} {result.trim}
-            </Card.Header>
-            <Card.Description>
-              <p>
-                Price:{" "}
-                {Number(result.price).toLocaleString("en-US", {
+        <div>
+          <div className="mobile__results__primary">
+            <span>{result.year} {result.make} {result.model} {result.trim}</span>
+            <small>
+              {Number(result.price).toLocaleString("en-US", {
                   style: "currency",
                   currency: "USD"
-                })}
-              </p>
-              <p>Stock #: {result.stock}</p>
-              <hr></hr>
-              <p>
-                <Icon name="point" />
-                {result.metadata.dealer}
-              </p>
-              <p>Engine: {result.metadata.engine}</p>
-              <p>Transmission: {result.metadata.transmission}</p>
-              <p>Ext. Color: {result.extColor}</p>
-              <p>Int. Color: {result.metadata.intColor}</p>
-              <p>Mileage: {result.metadata.miles}</p>
-              <p>Vin #: {result.metadata.vin}</p>
-            </Card.Description>
-          </Card.Content>
-          <Card.Content
-            extra
-            style={{ padding: 0 }}
-            className="mobile__links__container"
-          >
-            <a href={result.metadata.link} target="_blank">
-              See more
-            </a>
-            <a href={result.metadata.carfaxLink} target="_blank">
-              See Carfax
-            </a>
-          </Card.Content>
-        </Card>
-      ));
+              })}
+            </small>
+          </div>
+          <div className="mobile__results__secondary" onClick={() => this.showDetails(result)}>
+                <span className="stock__badge">
+                  #{result.stock}
+                </span>
+                <Icon name="angle right" onClick={this.closeDetails} />
+          </div>
+        </div>
+      ))
     }
-  };
+  }
+
+  showDetails = result => {
+    this.setState({ activeResult: result });
+  }
+  closeDetails = () => {
+    this.setState({ activeResult: null });
+  }
+  // /* Mobile version of query results list, more mobile-friendly */
+  // displayMobileResults = results => {
+  //   if (results && results.length > 0) {
+  //     return results.map((result, i) => (
+  //       // <div className="results__card">
+  //       //     <h4>{result.year} {result.make} {result.model} {result.trim}</h4>
+  //       // </div>
+  //       <Card className="results__card" key={result.stock}>
+  //         <Card.Content>
+  //           <Card.Header>
+  //             {result.year} {result.make} {result.model} {result.trim}
+  //           </Card.Header>
+  //           <Card.Description>
+  //             <p>
+  //               Price:{" "}
+  //               {Number(result.price).toLocaleString("en-US", {
+  //                 style: "currency",
+  //                 currency: "USD"
+  //               })}
+  //             </p>
+  //             <p>Stock #: {result.stock}</p>
+  //             <hr></hr>
+  //             <p>
+  //               <Icon name="point" />
+  //               {result.metadata.dealer}
+  //             </p>
+  //             <p>Engine: {result.metadata.engine}</p>
+  //             <p>Transmission: {result.metadata.transmission}</p>
+  //             <p>Ext. Color: {result.extColor}</p>
+  //             <p>Int. Color: {result.metadata.intColor}</p>
+  //             <p>Mileage: {result.metadata.miles}</p>
+  //             <p>Vin #: {result.metadata.vin}</p>
+  //           </Card.Description>
+  //         </Card.Content>
+  //         <Card.Content
+  //           extra
+  //           style={{ padding: 0 }}
+  //           className="mobile__links__container"
+  //         >
+  //           <a href={result.metadata.link} target="_blank">
+  //             See more
+  //           </a>
+  //           <a href={result.metadata.carfaxLink} target="_blank">
+  //             See Carfax
+  //           </a>
+  //         </Card.Content>
+  //       </Card>
+  //     ));
+  //   }
+  // };
 
   /* UI effect to show results are loading */
   displayResultsSkeleton = loading =>
@@ -172,7 +203,7 @@ class ResultsList extends React.Component {
 
   render() {
     const { currentQuery, isLoading } = this.props;
-    const { resultsLoading } = this.state;
+    const { resultsLoading, activeResult } = this.state;
 
     if (!isLoading && currentQuery) { // --if props are done loading and there is a current query
 
@@ -182,8 +213,42 @@ class ResultsList extends React.Component {
             <h1 style={{ textAlign: "center" }}>
               <Icon name="filter" /> Query Results
             </h1>
-            <div className="mobile__results__container">
+            <div className={`mobile__results__container ${activeResult && "active__detail"}`}>
               {this.displayMobileResults(currentQuery.results)}
+            </div>
+            <div className={`mobile__result__details ${activeResult && "active__detail"}`}>
+              <div className="details__header">
+                <div onClick={this.closeDetails}>
+                  <Icon name="angle left" />
+                </div>
+                <h3>Details</h3>
+              </div>
+              <div className="details__body">
+                {activeResult && (
+                  <>
+                    <div className="details__body__header">
+                      <h3>{activeResult.year} {activeResult.make} {activeResult.model} {activeResult.trim}</h3>
+                      <p style={{fontWeight: 600}}>{Number(activeResult.price).toLocaleString("en-US", {
+                          style: "currency",
+                          currency: "USD"
+                        })}</p>
+                    </div>
+                    <div className="details__body__data">
+                      <div>
+                        <p>Stock #: <span>{activeResult.stock}</span></p>
+                        <p>Miles: <span>{activeResult.metadata.miles}</span></p>
+                        <p>Engine: <span>{activeResult.metadata.engine}</span></p>
+                      </div>
+                      <div>
+                        <p>Transmission: <span>{activeResult.metadata.transmission}</span></p>
+                        <p>Ext. Color: <span>{activeResult.extColor}</span></p>
+                        <p>Int. Color: <span>{activeResult.metadata.intColor}</span></p>
+                        <p>Vin #: <span>{activeResult.metadata.vin}</span></p>
+                      </div>
+                    </div>
+                  </>
+                )}
+              </div>
             </div>
           </React.Fragment>
         );
