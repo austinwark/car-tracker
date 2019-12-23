@@ -31,19 +31,21 @@ async function getQueries(user) {
             const queries = Object.values(snap.val())
             queries.forEach(async query => {
                 const { results, id } = query;
-                const sentResults = query.sentResults ? query.sentResults : [];
-                const { autoEmails, onlyNew } = query.settings;
-                if (autoEmails) {
-                    if (!onlyNew) {
-                        const unseenResults = await filterForNewResults(results, sentResults, userId, id);
-                        if (unseenResults.length > 0) {
-                            const success = await sendToMail(unseenResults, email);
+                if (results.length > 0) {
+                    const sentResults = query.sentResults ? query.sentResults : [];
+                    const { autoEmails, onlyNew } = query.settings;
+                    if (autoEmails) {
+                        if (!onlyNew) {
+                            const unseenResults = await filterForNewResults(results, sentResults, userId, id);
+                            if (unseenResults.length > 0) {
+                                const success = await sendToMail(unseenResults, email);
+                                success ? console.log('success') : console.log('failure')
+                            }
+                        } else {
+                            await filterForNewResults(results, sentResults, userId, id);  // still updates sent results in firebase
+                            const success = await sendToMail(results, email);
                             success ? console.log('success') : console.log('failure')
                         }
-                    } else {
-                        await filterForNewResults(results, sentResults, userId, id);  // still updates sent results in firebase
-                        const success = await sendToMail(results, email);
-                        success ? console.log('success') : console.log('failure')
                     }
                 }
             })

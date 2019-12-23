@@ -41,3 +41,28 @@ export const clearCurrentNotification = () => {
         type: actionTypes.CLEAR_CURRENT_NOTIFICATION
     }
 }
+
+/* Side Panel & MetaPanel Control */
+
+export const toggleSidePanel = () => {
+    return {
+        type: actionTypes.TOGGLE_SIDE_PANEL
+    }
+}
+
+export const toggleMetaPanel = () => {
+    return {
+        type: actionTypes.TOGGLE_META_PANEL
+    }
+}
+
+/* Window Size */
+
+export const setWindowSize = windowDimensions => {
+    return {
+        type: actionTypes.SET_WINDOW_SIZE,
+        payload: {
+            windowDimensions
+        }
+    }
+}

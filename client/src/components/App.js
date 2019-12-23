@@ -1,11 +1,12 @@
 import React from 'react';
+import { Icon } from 'semantic-ui-react';
 import './App.css';
-import metadata from "../assets/metadata.svg";
 import query from '../assets/query.svg';
 import SidePanel from './SidePanel/SidePanel';
 import ResultsPanel from './ResultsPanel/ResultsPanel';
 import MetaPanel from './MetaPanel/MetaPanel';
 import Notification from './MetaPanel/Notification';
+import { toggleMetaPanel, setWindowSize } from '../actions';
 import { connect } from 'react-redux';
 import WebFont from 'webfontloader';
 // ({ currentUser, currentQuery, isLoading, currentNotification })
@@ -19,12 +20,38 @@ class App extends React.Component {
     super(props);
     this.state = {
       sidePanelOpen: false,
-      metaPanelOpen: false
+      metaPanelOpen: false,
+      windowDimensions: this.getWindowDimensions()
     }
-
     this.handleMetaDataToggle = this.handleMetaDataToggle.bind(this);
     this.handleSideToggle = this.handleSideToggle.bind(this);
 }
+  /* Adds listener to watch for window resize */
+  componentDidMount() {
+    window.addEventListener("resize", this.handleResize);
+    // this.props.setWindowSize(this.getWindowDimensions());
+    const dimensions = this.getWindowDimensions();
+    this.props.setWindowSize(dimensions)
+  }
+  /* Removes window resize listener */
+  componentWillUnmount() {
+    window.removeEventListener("resize", this.handleResize);
+  }
+
+  /* Retrieves window dimensions from the window API */
+  getWindowDimensions = () => {
+    const { innerWidth: width, innerHeight: height } = window;
+    return {
+      width,
+      height
+    };
+  };
+
+  /* Updates local state on window resize */
+  handleResize = () => {
+    const dimensions = this.getWindowDimensions();
+    this.props.setWindowSize(dimensions);
+  };
   
   handleSideToggle() {
     this.setState({ sidePanelOpen: !this.state.sidePanelOpen, metaPanelOpen: false})
@@ -35,20 +62,19 @@ class App extends React.Component {
   }
   render() {
 
-    const { currentNotification, currentQuery, currentUser, isLoading } = this.props;     
+    const { currentNotification, currentQuery, currentUser, isLoading, metaPanelOpen, sidePanelOpen } = this.props;     
     return  (
               <div className="grid__main">
                   {currentNotification && <Notification currentNotification={currentNotification} />}
-                  <section className={`main__sidepanel__colors first__column ${this.state.sidePanelOpen ? "open__column" : ""}`}>
-                      <SidePanel currentQuery={currentQuery} currentUser={currentUser} sidePanelOpen={this.state.sidePanelOpen} handleSideToggle={this.handleSideToggle} />
-                      <img src={query} className="query__icon" onClick={this.handleSideToggle} />
+                  <section className={`main__sidepanel__colors first__column ${sidePanelOpen ? "open__column" : ""}`}>
+                      <SidePanel currentQuery={currentQuery} currentUser={currentUser} sidePanelOpen={sidePanelOpen} handleSideToggle={this.handleSideToggle} />
                   </section>
                   <section className="middle__column">
                       <ResultsPanel currentUser={currentUser} />
                   </section>
-                  <section className={` last__column ${this.state.metaPanelOpen ? "open__column" : ""}`} id="last__column">
+                  <section className={` last__column ${metaPanelOpen ? "open__column" : ""}`} id="last__column">
                       <MetaPanel currentQuery={currentQuery} currentUser={currentUser} isLoading={isLoading} />
-                      <img src={metadata} className="metadata__icon" onClick={this.handleMetaDataToggle} />
+                      <Icon name="window close" className="metapanel__close" onClick={this.props.toggleMetaPanel} />
                   </section>
               </div>
             )
@@ -58,7 +84,9 @@ const mapStateToProps = state => ({
   currentUser: state.user.currentUser,
   currentQuery: state.query.currentQuery,
   isLoading: state.query.isLoading,
-  currentNotification: state.notification.currentNotification
+  currentNotification: state.notification.currentNotification,
+  sidePanelOpen: state.panel.sidePanelOpen,
+  metaPanelOpen: state.panel.metaPanelOpen
 });
 
-export default connect(mapStateToProps, null)(App);
+export default connect(mapStateToProps, { toggleMetaPanel, setWindowSize })(App);

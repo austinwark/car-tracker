@@ -1,5 +1,6 @@
 import React from "react";
 import { Accordion, Icon, Step, Card } from "semantic-ui-react";
+import { connect } from 'react-redux';
 import Settings from "./Settings";
 
 /* Side column containing query info and settings */
@@ -17,43 +18,104 @@ class MetaPanel extends React.Component {
   };
 
   /* Uses passed in query data and displays formatted info */
-  displayQueryDetails = query => {
-    const { name, model, operator, price, results, creationDate } = query;
+  // displayQueryDetails = query => {
+  //   const { name, model, operator, price, results, creationDate } = query;
+  //   return (
+  //     <React.Fragment>
+  //       {/* <h3 className="query__name__header">#{query.name}</h3> */}
+  //       <Step.Group widths={2} fluid unstackable>
+  //         <Step size="mini" content="Query Name" className="left__step" />
+  //         <Step content={name} className="right__step" />
+  //       </Step.Group>
+  //       <Step.Group widths={2} fluid unstackable>
+  //         <Step size="mini" content="Model" className="left__step" />
+  //         <Step
+  //           content={model.charAt(0).toUpperCase() + model.substring(1)}
+  //           className="right__step"
+  //         />
+  //       </Step.Group>
+  //       <Step.Group widths={2} fluid unstackable>
+  //         <Step size="mini" content="Operator" className="left__step" />
+  //         <Step content={operator + " than"} className="right__step" />
+  //       </Step.Group>
+  //       <Step.Group widths={2} fluid unstackable>
+  //         <Step size="mini" content="Price" className="left__step" />
+  //         <Step content={"$" + price} className="right__step" />
+  //       </Step.Group>
+  //       {results && (
+  //         <Step.Group widths={2} fluid unstackable>
+  //           <Step size="mini" content="Results" className="left__step" />
+  //           <Step content={results.length} className="right__step" />
+  //         </Step.Group>
+  //       )}
+  //       <Step.Group widths={2} fluid unstackable>
+  //         <Step size="mini" content="Created" className="left__step" />
+  //         <Step content={creationDate} className="right__step" />
+  //       </Step.Group>
+  //     </React.Fragment>
+  //   );
+  // };
+
+  displayQueryDetails = (query, isMobile = false) => {
+    const { name, model, operator, price, results, creationDate, customer } = query;
     return (
-      <React.Fragment>
-        {/* <h3 className="query__name__header">#{query.name}</h3> */}
-        <Step.Group widths={2} fluid unstackable>
-          <Step size="mini" content="Query Name" className="left__step" />
-          <Step content={name} className="right__step" />
-        </Step.Group>
-        <Step.Group widths={2} fluid unstackable>
-          <Step size="mini" content="Model" className="left__step" />
-          <Step
-            content={model.charAt(0).toUpperCase() + model.substring(1)}
-            className="right__step"
-          />
-        </Step.Group>
-        <Step.Group widths={2} fluid unstackable>
-          <Step size="mini" content="Operator" className="left__step" />
-          <Step content={operator + " than"} className="right__step" />
-        </Step.Group>
-        <Step.Group widths={2} fluid unstackable>
-          <Step size="mini" content="Price" className="left__step" />
-          <Step content={"$" + price} className="right__step" />
-        </Step.Group>
-        {results && (
-          <Step.Group widths={2} fluid unstackable>
-            <Step size="mini" content="Results" className="left__step" />
-            <Step content={results.length} className="right__step" />
-          </Step.Group>
+      <div className="large__query__details">
+        <div>
+          <div className="large__details__row">
+            <span>Query Name</span>
+            <span>{name}</span>
+          </div>
+          <div className="large__details__row">
+            <span>Model</span>
+            <span>{model}</span>
+          </div>
+          <div className="large__details__row">
+            <span>Operator</span>
+            <span>{operator} than</span>
+          </div>
+        </div>
+        <div>
+          <div className="large__details__row">
+            <span>Price</span>
+            <span>${price}</span>
+          </div>
+          <div className="large__details__row">
+            <span>Results</span>
+            <span>{results ? results.length : 0}</span>
+          </div>
+          <div className="large__details__row">
+            <span>Created</span>
+            <span>{creationDate}</span>
+          </div>
+        </div>
+        {isMobile && (
+          <>
+          <div>
+            {customer.customerName && 
+              <div className="large__details__row">
+                <span>Customer Name</span><span>{customer.customerName}</span>
+              </div>
+            }
+          </div>
+          <div>
+            {customer.customerPhone && 
+              <div className="large__details__row">
+                <span>Customer Phone</span><span>{customer.customerPhone}</span>
+              </div>
+            }
+          </div>
+          <div>
+            {customer.customerNotes && 
+              <div className="large__details__row">
+                <span>Customer Notes</span><span>{customer.customerNotes}</span>
+              </div>
+            }
+          </div>
+          </>
         )}
-        <Step.Group widths={2} fluid unstackable>
-          <Step size="mini" content="Created" className="left__step" />
-          <Step content={creationDate} className="right__step" />
-        </Step.Group>
-      </React.Fragment>
-    );
-  };
+      </div>
+    )
+  }
 
   /* Uses passed in customer data and displays formatted info */
   displayCustomerDetails = query => {
@@ -76,53 +138,78 @@ class MetaPanel extends React.Component {
   render() {
     const { activeIndex } = this.state;
     const { currentQuery, currentUser, isLoading } = this.props;
-
-    return (
-      <Accordion styled attached="true" id="metapanel__accordian">
-        <Accordion.Title
-          active={activeIndex === 0}
-          index={0}
-          onClick={this.setActiveIndex}
-        >
-          <Icon name="dropdown" />
-          <Icon name="dna" />
-          Query Details
-        </Accordion.Title>
-        <Accordion.Content active={activeIndex === 0}>
-          {currentQuery && this.displayQueryDetails(currentQuery)}
-        </Accordion.Content>
-        <Accordion.Title
-          active={activeIndex === 1}
-          index={1}
-          onClick={this.setActiveIndex}
-        >
-          <Icon name="dropdown" />
-          <Icon name="user" />
-          Customer Details
-        </Accordion.Title>
-        <Accordion.Content active={activeIndex === 1}>
-          {currentQuery && this.displayCustomerDetails(currentQuery)}
-        </Accordion.Content>
-        <Accordion.Title
-          active={activeIndex === 2}
-          index={2}
-          onClick={this.setActiveIndex}
-        >
-          <Icon name="dropdown" />
-          <Icon name="cogs" />
-          Query Settings
-        </Accordion.Title>
-        <Accordion.Content active={activeIndex === 2}>
-          <Settings
-            currentQuery={currentQuery}
-            currentUser={currentUser}
-            isLoading={isLoading}
-          />
-        </Accordion.Content>
-      </Accordion>
-    );
+    if (this.props.windowDimensions.width < 768)
+      return (
+        <div className="mobile__metapanel">
+          <div className="mobile__query__details">
+            {currentQuery && this.displayQueryDetails(currentQuery, true)}
+          </div>
+          <div className="mobile__customer__details">
+            {/* {currentQuery && this.displayCustomerDetails(currentQuery)} */}
+            {/* {Object.values(customer).some(el => el) && (
+              
+            )} */}
+          </div>
+          <div className="mobile__settings">
+            <Settings
+                currentQuery={currentQuery}
+                currentUser={currentUser}
+                isLoading={isLoading}
+              />
+          </div>
+        </div>
+      )
+    else
+      return (
+        <Accordion styled attached="true" id="metapanel__accordian">
+          <Accordion.Title
+            active={activeIndex === 0}
+            index={0}
+            onClick={this.setActiveIndex}
+          >
+            <Icon name="dropdown" />
+            <Icon name="dna" />
+            Query Details
+          </Accordion.Title>
+          <Accordion.Content active={activeIndex === 0}>
+            {currentQuery && this.displayQueryDetails(currentQuery)}
+          </Accordion.Content>
+          <Accordion.Title
+            active={activeIndex === 1}
+            index={1}
+            onClick={this.setActiveIndex}
+          >
+            <Icon name="dropdown" />
+            <Icon name="user" />
+            Customer Details
+          </Accordion.Title>
+          <Accordion.Content active={activeIndex === 1}>
+            {currentQuery && this.displayCustomerDetails(currentQuery)}
+          </Accordion.Content>
+          <Accordion.Title
+            active={activeIndex === 2}
+            index={2}
+            onClick={this.setActiveIndex}
+          >
+            <Icon name="dropdown" />
+            <Icon name="cogs" />
+            Query Settings
+          </Accordion.Title>
+          <Accordion.Content active={activeIndex === 2}>
+            <Settings
+              currentQuery={currentQuery}
+              currentUser={currentUser}
+              isLoading={isLoading}
+            />
+          </Accordion.Content>
+        </Accordion>
+      );
     // }
   }
 }
 
-export default MetaPanel;
+const mapStateToProps = state => ({
+  windowDimensions: state.window.windowDimensions
+})
+
+export default connect(mapStateToProps, null)(MetaPanel);

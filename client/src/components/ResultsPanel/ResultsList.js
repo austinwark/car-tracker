@@ -1,47 +1,34 @@
 import React from "react";
 import { connect } from "react-redux";
-import { Table, Popup, Icon, Card } from "semantic-ui-react";
-import { setCurrentQuery } from "../../actions";
+import axios from 'axios';
+import { Table, Popup, Icon, Button } from "semantic-ui-react";
+import { setCurrentQuery, toggleMetaPanel, toggleSidePanel } from "../../actions";
 import oopsImage from "../../assets/oopsImage.png";
 import Skeleton from "./Skeleton";
+const firebase = require("../../firebase");
 
 /* List of query results */
 class ResultsList extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
+      queriesRef: firebase.database().ref('queries'),
       currentUser: this.props.currentUser,
+      sortDirection: "asc",
       resultsLoading: !this.props.currentQuery, // => when query is loaded, sets loading state to false
-      windowDimensions: this.getWindowDimensions(),
       activeResult: null
     };
-    this.getWindowDimensions = this.getWindowDimensions.bind(this);
-    this.handleResize = this.handleResize.bind(this);
   }
 
-  /* Adds listener to watch for window resize */
-  componentDidMount() {
-    window.addEventListener("resize", this.handleResize);
-  }
-  /* Removes window resize listener */
-  componentWillUnmount() {
-    window.removeEventListener("resize", this.handleResize);
-  }
-
-  /* Retrieves window dimensions from the window API */
-  getWindowDimensions = () => {
-    const { innerWidth: width, innerHeight: height } = window;
-    return {
-      width,
-      height
-    };
-  };
-
-  /* Updates local state on window resize */
-  handleResize = () => {
-    const dimensions = this.getWindowDimensions();
-    this.setState({ windowDimensions: dimensions });
-  };
+  // componentDidUpdate(prevProps, prevState) {
+  //   if (this.props.currentQuery)
+  //     if (this.props.currentQuery.results)
+  //       if (this.props.currentQuery.results.length !== prevState.sortedResults.length) {
+  //         this.setState({ sortedResults: this.props.currentQuery.results })
+  //       }
+  //     else if (prevState.sortedResults.length > 0)
+  //       this.setState({ sortedResults: [] })
+  // }
 
   /* Iterates through passed in query results to format and display list of data. */
   displayResults = results => {
@@ -140,56 +127,6 @@ class ResultsList extends React.Component {
   closeDetails = () => {
     this.setState({ activeResult: null });
   }
-  // /* Mobile version of query results list, more mobile-friendly */
-  // displayMobileResults = results => {
-  //   if (results && results.length > 0) {
-  //     return results.map((result, i) => (
-  //       // <div className="results__card">
-  //       //     <h4>{result.year} {result.make} {result.model} {result.trim}</h4>
-  //       // </div>
-  //       <Card className="results__card" key={result.stock}>
-  //         <Card.Content>
-  //           <Card.Header>
-  //             {result.year} {result.make} {result.model} {result.trim}
-  //           </Card.Header>
-  //           <Card.Description>
-  //             <p>
-  //               Price:{" "}
-  //               {Number(result.price).toLocaleString("en-US", {
-  //                 style: "currency",
-  //                 currency: "USD"
-  //               })}
-  //             </p>
-  //             <p>Stock #: {result.stock}</p>
-  //             <hr></hr>
-  //             <p>
-  //               <Icon name="point" />
-  //               {result.metadata.dealer}
-  //             </p>
-  //             <p>Engine: {result.metadata.engine}</p>
-  //             <p>Transmission: {result.metadata.transmission}</p>
-  //             <p>Ext. Color: {result.extColor}</p>
-  //             <p>Int. Color: {result.metadata.intColor}</p>
-  //             <p>Mileage: {result.metadata.miles}</p>
-  //             <p>Vin #: {result.metadata.vin}</p>
-  //           </Card.Description>
-  //         </Card.Content>
-  //         <Card.Content
-  //           extra
-  //           style={{ padding: 0 }}
-  //           className="mobile__links__container"
-  //         >
-  //           <a href={result.metadata.link} target="_blank">
-  //             See more
-  //           </a>
-  //           <a href={result.metadata.carfaxLink} target="_blank">
-  //             See Carfax
-  //           </a>
-  //         </Card.Content>
-  //       </Card>
-  //     ));
-  //   }
-  // };
 
   /* UI effect to show results are loading */
   displayResultsSkeleton = loading =>
@@ -201,25 +138,82 @@ class ResultsList extends React.Component {
       </React.Fragment>
     ) : null;
 
+    toggleSortDirection = () => {
+      const { sortDirection } = this.state;
+      sortDirection === "asc"
+        ? this.setState({ sortDirection: "desc" })
+        : this.setState({ sortDirection: "asc"})
+    }
+
+    refreshResults = async (query, currentUser) => {
+      const { model, price, operator, settings } = query;
+      const { allStores } = settings;
+      const url = "/api/scrape";
+      const payload = { model, price, operator, allStores };
+      const response = await axios.post(url, payload);
+      const queryResults = response.data.arr;
+      if (queryResults.length <= 0) {
+        const newQuery = query;
+        newQuery.results = [];
+        return newQuery;
+      }
+      const newQuery = query;
+      newQuery.results = queryResults;
+      console.log(newQuery)
+      await this.state.queriesRef
+        .child(currentUser.uid)
+        .child(query.id)
+        .update(newQuery)
+        .then(() => {
+          this.props.setCurrentQuery(newQuery);
+        })
+        .catch(err => {
+          console.log(err)
+        })
+    };
+
   render() {
-    const { currentQuery, isLoading } = this.props;
-    const { resultsLoading, activeResult } = this.state;
+    const { currentQuery, currentUser, isLoading, sidePanelOpen, metaPanelOpen } = this.props;
+    const { resultsLoading, activeResult, sortDirection } = this.state;
 
     if (!isLoading && currentQuery) { // --if props are done loading and there is a current query
+      
+      // let sortedResults = currentQuery.results
+      //   ? currentQuery.results.sort((a, b) => (a.price > b.price ? 1 : -1))
+      //   : []
+      
+      let sortedResults = currentQuery.results
+        ? ( sortDirection === "asc"
+            ? currentQuery.results.sort((a, b) => (a.price > b.price ? 1 : -1))
+            : currentQuery.results.sort((a, b) => (a.price < b.price ? 1 : -1)) )
+        : []
 
-      if (this.state.windowDimensions.width < 768) // --if mobile device size
+      if (this.props.windowDimensions.width < 768) // --if mobile device size
         return (
           <React.Fragment>
             <h1 style={{ textAlign: "center" }}>
-              <Icon name="filter" /> Query Results
+              <Icon name="filter" />{" "}
+              Query Results
             </h1>
+            <div className="mobile__results__actions">
+              <Icon name="arrow alternate circle down outline" size="large" onClick={this.toggleSortDirection} className={sortDirection} />
+              <Icon name="refresh" size="large" onClick={() => this.refreshResults(currentQuery, currentUser)} />
+            </div>
             <div className={`mobile__results__container ${activeResult && "active__detail"}`}>
-              {this.displayMobileResults(currentQuery.results)}
+              {this.displayMobileResults(sortedResults)}
+            </div>
+            <div className="mobile__actions">
+              <div onClick={this.props.toggleSidePanel} className={sidePanelOpen ? "open" : ""}>
+                <Icon name="magnify" size="big" />
+              </div>
+              <div onClick={this.props.toggleMetaPanel} className={metaPanelOpen ? "open" : ""}>
+                <Icon name="settings" size="big" />
+              </div>
             </div>
             <div className={`mobile__result__details ${activeResult && "active__detail"}`}>
               <div className="details__header">
                 <div onClick={this.closeDetails}>
-                  <Icon name="angle left" />
+                  <Icon name="angle right" />
                 </div>
                 <h3>Details</h3>
               </div>
@@ -238,17 +232,27 @@ class ResultsList extends React.Component {
                         <p>Stock #: <span>{activeResult.stock}</span></p>
                         <p>Miles: <span>{activeResult.metadata.miles}</span></p>
                         <p>Engine: <span>{activeResult.metadata.engine}</span></p>
+                        <p>Transmission: <span>{activeResult.metadata.transmission}</span></p>
                       </div>
                       <div>
-                        <p>Transmission: <span>{activeResult.metadata.transmission}</span></p>
                         <p>Ext. Color: <span>{activeResult.extColor}</span></p>
                         <p>Int. Color: <span>{activeResult.metadata.intColor}</span></p>
                         <p>Vin #: <span>{activeResult.metadata.vin}</span></p>
+                        <p>Dealer: <span>{activeResult.metadata.dealer}</span></p>
                       </div>
+                    </div>
+                    <div className="details__body__footer">
+                      <Button className="button__3d"><a href={activeResult.metadata.link} target="_blank">See More</a></Button>
+                      <Button className="button__3d"><a href={activeResult.metadata.carfaxLink} target="_blank">CarFax</a></Button>
+                      {/* <button className="button__3d">See More</button>
+                      <button className="button__3d">CarFax</button> */}
+                      {/* <a href={activeResult.metadata.link}>See More</a>
+                      <a href={activeResult.metadata.carfaxLink}>CarFax</a> */}
                     </div>
                   </>
                 )}
               </div>
+              
             </div>
           </React.Fragment>
         );
@@ -256,7 +260,10 @@ class ResultsList extends React.Component {
         return (
           <React.Fragment>
             <h1 style={{ textAlign: "center" }}>
-              <Icon name="filter" /> Query Results
+              <Icon name="filter" />{" "}
+              Query Results
+              {/* <img src={metadata} className="metadata__icon1" /> */}
+              <Icon name="settings" className="metadata__icon1" onClick={this.props.toggleMetaPanel} />
             </h1>
             <div>
               <Table striped selectable className="results__table">
@@ -272,7 +279,7 @@ class ResultsList extends React.Component {
                   </Table.Row>
                 </Table.Header>
                 <Table.Body>
-                  {this.displayResults(currentQuery.results)}
+                  {this.displayResults(sortedResults)}
                 </Table.Body>
               </Table>
             </div>
@@ -298,7 +305,10 @@ class ResultsList extends React.Component {
 
 const mapStateToProps = state => ({
   currentQuery: state.query.currentQuery,
-  isLoading: state.query.isLoading
+  isLoading: state.query.isLoading,
+  windowDimensions: state.window.windowDimensions,
+  sidePanelOpen: state.panel.sidePanelOpen,
+  metaPanelOpen: state.panel.metaPanelOpen
 });
 
-export default connect(mapStateToProps, { setCurrentQuery })(ResultsList);
+export default connect(mapStateToProps, { setCurrentQuery, toggleMetaPanel, toggleSidePanel })(ResultsList);

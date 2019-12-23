@@ -1,6 +1,6 @@
 /* App */
 html, body, .app__main {
-    height: 100vh;
+    height: 100%;
     background-color: #d6d9d7 !important;
     font-family: "Montserrat", sans-serif !important;
     /* overflow: hidden !important; */
@@ -34,7 +34,7 @@ html, body, .app__main {
 }
 .grid__main > section {
     padding: 0 10px;
-    transition: all 1s;
+    transition: all 1s cubic-bezier(.65, 0, .35, 1);
 }
 .first__column {
     padding-bottom: 0 !important;
@@ -65,7 +65,6 @@ html, body, .app__main {
     cursor: pointer;
     transition: all .4s;
     z-index: 998;
-
 }
 /* @media (min-width: 768px) {
     .middle__column {
@@ -81,6 +80,9 @@ html, body, .app__main {
         padding-bottom: 0 !important;
     }
 } */
+.sidepanel__main > section:nth-child(1) #sidePanel__button, .sidepanel__main > section:nth-child(1) .max__queries__span {
+    display: none !important;
+}
 #metapanel__accordian div {
     transition: all 1s !important;
 }
@@ -93,44 +95,50 @@ html, body, .app__main {
     }
     .last__column {
         position: absolute;
-        width: calc(100vw - 50px);
-        right: calc(-100vw + 50px);
+        width: 100%;
+        min-width: 375px !important;
+        max-width: 400px !important;
+        right: calc(-100%);
         padding-bottom: 10px !important;
         background-color: #1F2333 !important;
+        overflow-y: scroll !important;
     }
     .last__column > #metapanel__accordian {
         /* background-color: #1F2333 !important; */
         /* color: #FFF !important; */
         border-bottom: none;
+        max-width: 355px !important;
+        margin-right: auto;
+        margin-left: auto;
     }
     .last__column > #metapanel__accordian .title {
         /* color: #FFF !important; */
         font-family: "Montserrat", sans-serif !important;
 
     }
-    .ui.steps .left__step, .ui.steps .right__step {
-        /* color: #FFF !important; */
-    }
     .last__column.open__column {
         right: 0;
         z-index: 999;
     }
-    .metadata__icon {
+    /* .metadata__icon {
         display: inline-block;
         left: -45px;
         top: 75px;
     }
     .metadata__icon:active {
-        /* width: 60px; */
         left: -55px;
-    }
+    } */
 }
 @media (max-width: 767px) {
     .first__column {
         position: absolute;
-        width: calc(100vw - 50px);
-        right: calc(-100vw + 50px);
+        height: 94% !important;
+        width: 100%;
+        right: 100%;
+        /* width: calc(100vw - 50px);
+        right: calc(-100vw + 50px); */
         padding: 0 !important;
+        z-index: 999 !important;
     }
     .query__icon {
         display: inline-block;
@@ -142,7 +150,6 @@ html, body, .app__main {
     }
     .first__column.open__column {
         right: 0 !important;
-        z-index: 999;
     }
     .middle__column {
         width: 100%;
@@ -151,9 +158,51 @@ html, body, .app__main {
     .last__column {
         /* width: 50%;
         right: -50%; */
+        height: 94% !important;
+        max-width: none !important;
+        min-width: auto !important;
+        /* background-color: #1f2333;
+        background-image: linear-gradient(180deg, #1f2333 90%, #99173c 100%); */
+
+        
+
+
+
+
+    }
+    .sidepanel__header {
+        flex-direction: row !important;
+        align-items: center;
+        justify-content: center;
     }
 }
-
+@media (max-width: 767px) and (max-height: 600px) and (orientation: landscape) {
+    .sidepanel__main {
+        flex-direction: row !important;
+        align-items: center;
+    }
+    .sidepanel__main > section {
+        width: 50%;
+    }
+    /* Moves create button to userpanel side */
+    .sidepanel__main > section:nth-child(1) #sidePanel__button, .sidepanel__main > section:nth-child(1) .max__queries__span {
+        margin-left: auto;
+        margin-right: auto;
+        text-align: center;
+        display: block !important;
+    }
+    .sidepanel__main > section:nth-child(2) #sidePanel__button, .sidepanel__main > section:nth-child(2) .max__queries__span {
+        display: none;
+    }
+    .sidepanel__main .ui.divider {
+        display: none;
+    }
+}
+@media (max-height: 550px) and (orientation: landscape) {
+    .last__column {
+        padding-bottom: 45px !important;
+    }
+}
 
 /* Signup */
 .signup__grid form {
@@ -179,11 +228,22 @@ html, body, .app__main {
     font-weight: 600;
 }
 /* Side Panel */
-
-
+.sidepanel__main {
+    display: flex;
+    flex-direction: column;
+}
+.sidepanel__header {
+    display: flex;
+    flex-direction: column;
+}
 #main__sidepanel__colors {
     /* background-color: hsl(248, 31%, 19%) !important; */
-    background-image: linear-gradient(to right, #1F2333, rgba(31, 35, 51, .95)) !important;
+    /* background-image: linear-gradient(to right, #1F2333, rgba(31, 35, 51, .95)) !important; */
+     background-color: #1f2333 !important;
+/*background-image: linear-gradient(180deg, #1f2333 90%, #99173c 100%); */
+
+
+
     /* color: #EFFFCD !important; */
     font-style: normal !important;
     border: none !important;
@@ -201,6 +261,7 @@ html, body, .app__main {
 /* current queries active item */
 .query__item {
     position: relative;
+    margin: 2% 0;
 }
 .query__item__overlay {
     left: -200% !important;
@@ -221,6 +282,8 @@ html, body, .app__main {
     font-size: 1.5rem;
 }
 .sidePanel__menu {
+    display: flex;
+    flex-direction: column;
     border: none !important;
     font-family: 'Open Sans', sans-serif !important;
     font-size: 1.1rem !important;
@@ -238,6 +301,7 @@ html, body, .app__main {
     background-color: #BB8E87 !important;
     border-bottom: solid rgb(112, 70, 69) 4px;
     color: #1F2333 !important;
+    margin-top: 5%;
 }
 #login__button {
     position: relative;
@@ -299,7 +363,7 @@ html, body, .app__main {
     color: #1F2333 !important;
     /* background: #7397AE; */
     margin-bottom: 0 !important;
-    padding: 1rem 0 !important;
+    padding: 1rem !important;
 }
 .results__table > tbody > tr > td, .results__table > thead > tr > th {
     color: #1F2333 !important;
@@ -349,6 +413,36 @@ html, body, .app__main {
 .oops__container > img {
     max-width: 500px !important;
 }
+.metadata__icon1 {
+    height: calc(64px - 2rem);
+    float: right;
+    cursor: pointer;
+    display: none !important;
+    /* padding-right: 3%; */
+}
+.metapanel__close {
+    display: none !important;
+    position: absolute;
+    top: 0;
+    left: 0px;
+    height: 50px !important;
+    width: 50px !important;
+    padding: 15px 10px 10px 10px;
+    background: #1F2333;
+    border-radius: 5px;
+    font-size: 2rem !important;
+    color: #FFF;
+    cursor: pointer;
+    z-index: 9999;
+}
+@media (max-width: 1299px) and (min-width: 768px) {
+    .metadata__icon1 {
+        display: inline-block !important;
+    }
+    .metapanel__close {
+        display: inline-block !important;
+    }
+}
 @media (max-width: 767px) {
     .ui.segment {
         border: none !important;
@@ -360,8 +454,9 @@ html, body, .app__main {
         margin: 0 !important;
     }
     .results__container > h1 {
-        height: 10vh;
-        min-height: 70px;
+        /* height: 10vh; */
+        /* min-height: 70px; */
+        font-size: 1.75rem;
         border-radius: 0 !important; 
         background: #1F2333;
         color: #FFF !important;
@@ -382,7 +477,22 @@ html, body, .app__main {
 .mobile__results__container {
     display: flex;
     flex-direction: column;
-    min-height: 90vh;
+    min-height: calc(100% - 45px);
+    margin-bottom: 45px;
+}
+.mobile__results__actions {
+    padding: .5rem;
+    background-color: #7a7a7a12;
+}
+.mobile__results__actions i, .mobile__results__actions {
+    will-change: transform;
+    transition: transform .3s cubic-bezier(.65, 0, .35, 1);
+}
+.mobile__results__actions i:active {
+    color: #99173C;
+}
+.mobile__results__actions .asc {
+    transform: rotate(-180deg);
 }
 .mobile__results__container > div {
     display: flex;
@@ -399,6 +509,7 @@ html, body, .app__main {
     display: flex;
     flex-direction: column;
     height: 100%;
+    padding-left: .5rem;
 }
 .mobile__results__primary small {
     font-size: 90%;
@@ -410,6 +521,7 @@ html, body, .app__main {
     display: flex;
     align-items: center;
     font-size: .9rem;
+    /* margin-right: .5rem; */
 }
 .stock__badge {
     height: 100%;
@@ -419,6 +531,7 @@ html, body, .app__main {
     align-items: center;
     border-radius: 5px;
     background-color: #99173C;
+    /* background-color: #BB8E87; */
     font-family: "Open Sans", sans-serif !important;
     font-weight: 600;
     color: #FFF;
@@ -437,6 +550,41 @@ html, body, .app__main {
 .grid__main {
     overflow-y: hidden;
 }
+.mobile__actions {
+    position: fixed;
+    bottom: 0;
+    /* height: 8%; */
+    height: 45px !important;
+    width: 100%;
+    display: flex;
+    border-radius: 10px 10px 0 0;
+    z-index: 9999;
+    font-size: 1rem !important;
+}
+.mobile__actions div {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 50%;
+    color: #FFF;
+    text-align: center;
+    cursor: pointer;
+    background-color: #1F2333;
+    /* box-shadow: 0px -10px 15px #99173c; */
+    transition: box-shadow .5s cubic-bezier(.65, 0, .35, 1);
+}
+.mobile__actions div:active {
+    background-color: rgb(49, 55, 77);
+    box-shadow: 0px -10px 20px #99173c;
+}
+.mobile__actions div:first-child {
+    border-right: solid #eedfff42 1px;
+}
+.mobile__actions div.open {
+    box-shadow: 0px -10px 20px 10px #99173c;
+
+}
+
 .mobile__result__details {
     position: fixed;
     height: 100%;
@@ -444,7 +592,8 @@ html, body, .app__main {
     background: #FAFAFA;
     left: 100vw;
     top: 0;
-    transition: left .4s ease-out;
+    z-index: 9999;
+    transition: left .5s cubic-bezier(.65, 0, .35, 1);
 }
 .mobile__result__details.active__detail {
     left: 0;
@@ -497,6 +646,7 @@ html, body, .app__main {
 .details__body__data {
     display: flex;
     flex-direction: column;
+    font-size: 1rem;
 }
 .details__body__header, .details__body__data > div {
     margin-bottom: 1rem;
@@ -512,10 +662,33 @@ html, body, .app__main {
     padding-right: 1rem;
     font-family: "Open Sans", sans-serif !important;
 }
+.details__body__footer {
+    display: flex;
+    justify-content: space-around;
+    width: 100%;
+}
+.details__body__footer > button {
+    position: relative;
+    background-color: #BB8E87 !important;
+    border-bottom: solid rgb(112, 70, 69) 4px !important;
+}
+.details__body__footer > button > a {
+    color: #1F2333 !important;
+    
+}
+/* .details__body__footer > a {
+    text-decoration: none !important;
+    color: #FFF;
+    background-color: #99173C;
+    padding: 3%;
+    border-radius: 7px;
+} */
 @media (max-height: 475px) {
     .mobile__result__details.active__detail {
         position: absolute;
-        height: 120vh;
+        /* height: 120vh; */
+        height: 100%;
+        width: 100%;
         overflow-y: scroll;
     }
     .mobile__results__container.active__detail {
@@ -600,6 +773,25 @@ html, body, .app__main {
     border-bottom: solid #4a4a4a 2px;
     margin-top: 1rem;
 }
+.large__query__details {
+    display: flex;
+    flex-direction: column;
+    padding: 2%;
+    max-width: 350px !important;
+    margin-left: auto;
+    margin-right: auto;
+}
+.large__details__row {
+    width: 100%;
+    padding: 5px 0;
+    border-bottom: solid #7a7a7a42 1px;
+}
+.large__details__row > span:first-child {
+
+}
+.large__details__row > span:last-child {
+    float: right;
+}
 .left__step {
     font-weight: 700;
     color: #1F2333 !important;
@@ -622,10 +814,27 @@ html, body, .app__main {
     position: relative;
     float: right;
     opacity: .6 !important;
-    margin-right: 45% !important;
+    /* margin-right: 45% !important; */
 }
 .confirm__modal .actions .ui.primary.button {
     background-color: red !important;
+}
+.mobile__metapanel {
+    display: flex;
+    flex-direction: column;
+    color: #FAFAFA;
+    
+}
+.mobile__query__details {
+    width: 100%;
+}
+.mobile__settings {
+    max-width: 350px;
+    padding: 2%;
+    margin: 40px auto 10px auto;
+}
+.mobile__settings label:before {
+    background-color: rgba(255, 255 ,255, .2) !important;
 }
 /* Create */
 .max__queries__span {

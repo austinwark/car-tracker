@@ -137,7 +137,7 @@ class Settings extends React.Component {
                 />
                 <Popup
                   key={0}
-                  position="top center"
+                  position="top right"
                   content={
                     currentUser.isAnonymous
                       ? "Create an account to enable daily email updates "
@@ -178,7 +178,7 @@ class Settings extends React.Component {
                       ? "Create an account to configure settings "
                       : "Send only unseen query results or all query results"
                   }
-                  position="top center"
+                  position="top right"
                   style={{ zIndex: 9999 }}
                   trigger={
                     <Icon
@@ -206,7 +206,7 @@ class Settings extends React.Component {
                       ? "Create an account to configure settings"
                       : "Search all Lia stores or just Lia Toyota of Colonie"
                   }
-                  position="top center"
+                  position="top right"
                   style={{ zIndex: 9999 }}
                   trigger={
                     <Icon
@@ -234,7 +234,7 @@ class Settings extends React.Component {
                 </Button>
                 <Popup
                   key={1}
-                  position="top center"
+                  position="top right"
                   content={
                     currentUser.isAnonymous
                       ? "Sends results to your saved email address, you must create an account and verify your email first!"
@@ -264,7 +264,8 @@ class Settings extends React.Component {
                 </Button>
                 <Popup
                   key={2}
-                  position="top center"
+                  position="top right"
+                  // basic
                   content="Permanently deletes query, and all automatic email updates"
                   style={{ zIndex: 9999 }}
                   trigger={
