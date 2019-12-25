@@ -165,8 +165,8 @@ class Register extends React.Component {
         style={{ marginTop: "10%" }}
       >
         <Grid.Column style={{ maxWidth: 450 }}>
-          <Header as="h1" icon color="blue" textAlign="center">
-            <Icon name="puzzle piece" color="blue" />
+          <Header as="h1" icon textAlign="center" className="signup__header">
+            <Icon name="puzzle piece" />
             Register for Car Tracker
           </Header>
           <Form onSubmit={this.handleSubmit} size="large">
@@ -222,7 +222,6 @@ class Register extends React.Component {
                 disabled={loading}
                 className={loading ? "button__3d" : "button__3d"}
                 id="register__button"
-                color="orange"
                 fluid
                 size="large"
               >

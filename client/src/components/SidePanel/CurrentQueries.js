@@ -18,6 +18,7 @@ class CurrentQueries extends React.Component {
 
     componentDidMount() {
         this.addNewQueryListener();
+        this.addChangedQueryListener();
     }
 
     componentWillUnmount() {
@@ -28,6 +29,18 @@ class CurrentQueries extends React.Component {
     removeListeners = () => {
         const { currentUser, queriesRef } = this.state;
         queriesRef.child(currentUser.uid).off();
+    }
+
+    addChangedQueryListener = () => {
+        const { currentUser ,queriesRef } = this.state;
+        queriesRef
+            .child(currentUser.uid)
+            .on("child_changed", snap => {
+                const changedQuery = snap.val();
+                if (changedQuery.id && changedQuery.name) {
+                    this.props.setCurrentQuery(changedQuery);
+                }
+            })
     }
 
     // is called on changeCurrentQuery -> ensuring props && state is loaded

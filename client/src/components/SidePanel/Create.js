@@ -1,5 +1,6 @@
 import React from "react";
 import axios from "axios";
+import { connect } from 'react-redux';
 import moment from "moment";
 import {
   Form,
@@ -38,6 +39,8 @@ const INITIAL_QUERY = {
 const INITIAL_VEHICLE = {
   model: "",
   price: "",
+  minYear: 0,
+  maxYear: moment().year() + 1,
   settings: {
     operator: "less"
   }
@@ -131,6 +134,7 @@ class Create extends React.Component {
 
   /* Updates local state with vehicle data */
   handleVehicleChange = (event, { name, value }) => {
+    console.log(name, value)
     this.setState(prevState => ({
       vehicle: {
         ...prevState.vehicle,
@@ -206,7 +210,7 @@ class Create extends React.Component {
     const { query, vehicle, customer, currentUser, queriesRef } = this.state;
     const { queryName } = query;
     // prettier-ignore
-    const { model, price } = vehicle, { operator } = vehicle.settings;
+    const { model, price, minYear, maxYear } = vehicle, { operator } = vehicle.settings;
     const isValid = this.isValid(query, vehicle, customer); // 1) Validates input
     if (!isValid) {
       this.setState({ error: "Something is not valid", loading: false });
@@ -218,6 +222,8 @@ class Create extends React.Component {
         name: queryName,
         model,
         price,
+        minYear,
+        maxYear,
         operator,
         customer,
         creationDate,
@@ -245,10 +251,10 @@ class Create extends React.Component {
   };
 
   getQueryResults = async query => {
-    const { model, price, operator, settings } = query;
+    const { model, price, minYear, maxYear, operator, settings } = query;
     const { allStores } = settings;
     const url = "/api/scrape";
-    const payload = { model, price, operator, allStores };
+    const payload = { model, price, minYear, maxYear, operator, allStores };
     const response = await axios.post(url, payload);
     const queryResults = response.data.arr;
     if (queryResults.length <= 0) {
@@ -385,7 +391,7 @@ class Create extends React.Component {
     return (
       <div>
         <Modal
-          dimmer="blurring"
+          // dimmer="blurring"
           open={modal}
           onClose={this.closeModal}
           className="mx-auto"
@@ -394,25 +400,21 @@ class Create extends React.Component {
           <Modal.Header id="create__header">
             <div
               onClick={() => this.setState({ lastIndex: index, index: 0 })}
-              className={`create__step ${index === 0 && "active"}`}
               >
               Query
             </div>
             <div
               onClick={() => this.setState({ lastIndex: index, index: 1 })}
-              className={`create__step ${index === 1 && "active"}`}
               >
               Vehicle
             </div>
             <div
               onClick={() => this.setState({ lastIndex: index, index: 2 })}
-              className={`create__step ${index === 2 && "active"}`}
             >
               Customer
             </div>
             <div
               onClick={() => this.setState({ lastIndex: index, index: 3 })}
-              className={`create__step ${index === 3 && "active"}`}
             >
               Finish
             </div>
@@ -571,6 +573,32 @@ class Create extends React.Component {
                       <p className={validation.price ? "not__valid" : "valid"}>
                         {validation.price || "valid"}
                       </p>
+                      <Form.Group className="create__years">
+                        <Form.Field
+                          inline
+                          control={Input}
+                          label="Min Year"
+                          name="minYear"
+                          placeholder="0"
+                          type="number"
+                          min="0"
+                          max={moment().year() + 1}
+                          value={vehicle.minYear}
+                          onChange={this.handleVehicleChange}
+                          />
+                        <Form.Field
+                          inline
+                          control={Input}
+                          label="Max Year"
+                          name="maxYear"
+                          placeholder={moment().year() + 1}
+                          type="number"
+                          min="0"
+                          max={moment().year() + 1}
+                          value={vehicle.maxYear}
+                          onChange={this.handleVehicleChange}
+                        />
+                      </Form.Group>
                       <div className="options__container">
                         <Form.Field>
                           <Checkbox
@@ -815,5 +843,9 @@ class Create extends React.Component {
     );
   }
 }
+
+// const mapStateToProps = state => ({
+//   windowDimensions: state.window.windowDimensions,
+// });
 
 export default Create;

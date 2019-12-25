@@ -62,7 +62,8 @@ async function getScrapeResults(userId, queries) {
         const model = queryDetails.model;
         const price = queryDetails.price;
         const operator = queryDetails.operator;
-        const data = await Scraper(model, price, operator, allStores);
+        const { minYear, maxYear } = queryDetails;
+        const data = await Scraper(model, price, minYear, maxYear, operator, allStores);
         // const results = data;
         console.log(data);
 

@@ -14,10 +14,23 @@ class ResultsList extends React.Component {
     this.state = {
       queriesRef: firebase.database().ref('queries'),
       currentUser: this.props.currentUser,
+      currentQuery: this.props.currentQuery,
+      sort: {
+        method: "price",
+        direction: "asc"
+      },
       sortDirection: "asc",
+      refreshLoading: false,
       resultsLoading: !this.props.currentQuery, // => when query is loaded, sets loading state to false
       activeResult: null
     };
+  }
+
+  componentDidUpdate(prevProps) {
+    if (JSON.stringify(prevProps.currentQuery) !== JSON.stringify(this.props.currentQuery)) {
+      console.log("results list updating");
+      this.setState({ currentQuery: this.props.currentQuery });
+    }
   }
 
   // componentDidUpdate(prevProps, prevState) {
@@ -31,11 +44,20 @@ class ResultsList extends React.Component {
   // }
 
   /* Iterates through passed in query results to format and display list of data. */
-  displayResults = results => {
-    if (results && results.length > 0) {
+  displayResults = () => {
+    const { currentQuery, sort } = this.state;
+    let results = this.sortResults(currentQuery.results, sort);
+    
+    // let results = currentQuery.results
+    //     ? ( sort.direction === "asc"
+    //         ? currentQuery.results.sort((a, b) => (a.price > b.price ? 1 : -1))
+    //         : currentQuery.results.sort((a, b) => (a.price < b.price ? 1 : -1)) 
+    //       )
+    //     : []
+    if (results.length > 0) {
       return results.map((result, i) => {
         return (
-          <Table.Row key={i}>
+          <Table.Row key={result.stock}>
             <Table.Cell>{result.stock}</Table.Cell>
             <Table.Cell>{result.year}</Table.Cell>
             <Table.Cell>{result.make}</Table.Cell>
@@ -97,10 +119,13 @@ class ResultsList extends React.Component {
     }
   };
 
-  displayMobileResults = results => {
-    if (results && results.length > 0) {
+  displayMobileResults = () => {
+    const { currentQuery, sort } = this.state;
+    let results = this.sortResults(currentQuery.results, sort);
+
+    if (results.length > 0) {
       return results.map((result, i) => (
-        <div>
+        <div key={result.stock}>
           <div className="mobile__results__primary">
             <span>{result.year} {result.make} {result.model} {result.trim}</span>
             <small>
@@ -122,6 +147,7 @@ class ResultsList extends React.Component {
   }
 
   showDetails = result => {
+    window.scrollTo(0, 0)
     this.setState({ activeResult: result });
   }
   closeDetails = () => {
@@ -145,11 +171,41 @@ class ResultsList extends React.Component {
         : this.setState({ sortDirection: "asc"})
     }
 
+    setSort = (method, currentDirection) => {
+      const newDirection = currentDirection === "asc"
+        ? "desc"
+        : "asc"
+      this.setState({ sort: { method, direction: newDirection }});
+    }
+
+    sortResults = (currentResults, sort) => {
+      let results;
+      if (currentResults)
+        if (sort.method === "price")
+          results = sort.direction === "asc"
+            ? currentResults.sort((a, b) => (a.price > b.price ? 1 : -1))
+            : currentResults.sort((a, b) => (a.price < b.price ? 1 : -1))
+        else if (sort.method === "year")
+          results = sort.direction === "asc"
+            ? currentResults.sort((a, b) => (a.year > b.year ? 1 : -1))
+            : currentResults.sort((a, b) => (a.year < b.year ? 1 : -1))
+        else
+          results = currentResults;
+      else
+        results = [];
+      return results;
+    }
+
+    /* Need to set up multiple ways to sort, or at least by price and year. Can have one object in state that is used to delegate sorting tasks,
+       e.g. sortMethod: { method: price, direction: "asc"}
+    */
+
     refreshResults = async (query, currentUser) => {
-      const { model, price, operator, settings } = query;
+      this.setState({ refreshLoading: true });
+      const { model, price, minYear, maxYear, operator, settings } = query;
       const { allStores } = settings;
       const url = "/api/scrape";
-      const payload = { model, price, operator, allStores };
+      const payload = { model, price, minYear, maxYear, operator, allStores };
       const response = await axios.post(url, payload);
       const queryResults = response.data.arr;
       if (queryResults.length <= 0) {
@@ -170,24 +226,15 @@ class ResultsList extends React.Component {
         .catch(err => {
           console.log(err)
         })
+      
+        this.setState({ refreshLoading: false });
     };
 
   render() {
-    const { currentQuery, currentUser, isLoading, sidePanelOpen, metaPanelOpen } = this.props;
-    const { resultsLoading, activeResult, sortDirection } = this.state;
+    const { currentUser, isLoading, sidePanelOpen, metaPanelOpen } = this.props;
+    const { resultsLoading, activeResult, sortDirection, refreshLoading, currentQuery, sort } = this.state;
 
     if (!isLoading && currentQuery) { // --if props are done loading and there is a current query
-      
-      // let sortedResults = currentQuery.results
-      //   ? currentQuery.results.sort((a, b) => (a.price > b.price ? 1 : -1))
-      //   : []
-      
-      let sortedResults = currentQuery.results
-        ? ( sortDirection === "asc"
-            ? currentQuery.results.sort((a, b) => (a.price > b.price ? 1 : -1))
-            : currentQuery.results.sort((a, b) => (a.price < b.price ? 1 : -1)) )
-        : []
-
       if (this.props.windowDimensions.width < 768) // --if mobile device size
         return (
           <React.Fragment>
@@ -195,12 +242,30 @@ class ResultsList extends React.Component {
               <Icon name="filter" />{" "}
               Query Results
             </h1>
-            <div className="mobile__results__actions">
-              <Icon name="arrow alternate circle down outline" size="large" onClick={this.toggleSortDirection} className={sortDirection} />
-              <Icon name="refresh" size="large" onClick={() => this.refreshResults(currentQuery, currentUser)} />
+            <div className="results__actions">
+              <div> 
+                <span className="refresh__badge" onClick={() => this.refreshResults(currentQuery, currentUser)} >
+                  Refresh{" "}
+                  <Icon name="refresh" size="large" />
+                </span>
+              </div>
+              <div>
+                <span className={`sort__badge ${sort.method === "price" ? "active" : "disabled"}`} onClick={() => this.setSort("price", sort.direction)}>
+                  Price{" "}
+                  <Icon name="arrow down" size="large" className={sort.direction}/>
+                </span>
+                <span className={`sort__badge ${sort.method === "year" ? "active" : "disabled"}`} onClick={() => this.setSort("year", sort.direction)}>
+                  Year{" "}
+                  <Icon name="arrow down" size="large" className={sort.direction} />
+                </span>
+              </div>
             </div>
-            <div className={`mobile__results__container ${activeResult && "active__detail"}`}>
-              {this.displayMobileResults(sortedResults)}
+            <div className={`mobile__results__container ${activeResult ? "active__detail" : ""}`}>
+              {/* {this.displayMobileResults()} */}
+              {!refreshLoading
+                ? this.displayMobileResults()
+                : this.displayResultsSkeleton(refreshLoading)
+              }
             </div>
             <div className="mobile__actions">
               <div onClick={this.props.toggleSidePanel} className={sidePanelOpen ? "open" : ""}>
@@ -210,7 +275,7 @@ class ResultsList extends React.Component {
                 <Icon name="settings" size="big" />
               </div>
             </div>
-            <div className={`mobile__result__details ${activeResult && "active__detail"}`}>
+            <div className={`mobile__result__details ${activeResult ? "active__detail" : ""}`}>
               <div className="details__header">
                 <div onClick={this.closeDetails}>
                   <Icon name="angle right" />
@@ -265,6 +330,24 @@ class ResultsList extends React.Component {
               {/* <img src={metadata} className="metadata__icon1" /> */}
               <Icon name="settings" className="metadata__icon1" onClick={this.props.toggleMetaPanel} />
             </h1>
+            <div className="results__actions">
+              <div> 
+                <span className="refresh__badge" onClick={() => this.refreshResults(currentQuery, currentUser)} >
+                  Refresh{" "}
+                  <Icon name="refresh" size="large" />
+                </span>
+              </div>
+              <div>
+                <span className={`sort__badge ${sort.method === "price" ? "active" : "disabled"}`} onClick={() => this.setSort("price", sort.direction)}>
+                  Price{" "}
+                  <Icon name="arrow down" size="large" className={sort.direction}/>
+                </span>
+                <span className={`sort__badge ${sort.method === "year" ? "active" : "disabled"}`} onClick={() => this.setSort("year", sort.direction)}>
+                  Year{" "}
+                  <Icon name="arrow down" size="large" className={sort.direction} />
+                </span>
+              </div>
+            </div>
             <div>
               <Table striped selectable className="results__table">
                 <Table.Header fullWidth>
@@ -279,9 +362,15 @@ class ResultsList extends React.Component {
                   </Table.Row>
                 </Table.Header>
                 <Table.Body>
-                  {this.displayResults(sortedResults)}
+                  {/* {this.displayResults()} */}
+                  {!refreshLoading && this.displayResults()}
+                  {/* {!refreshLoading
+                    ? this.displayResults()
+                    : this.displayResultsSkeleton(refreshLoading)
+                  } */}
                 </Table.Body>
               </Table>
+              {refreshLoading && this.displayResultsSkeleton(refreshLoading)}
             </div>
           </React.Fragment>
         );
@@ -290,6 +379,14 @@ class ResultsList extends React.Component {
       return (
         <div className="oops__container">
           <img src={oopsImage} className="no__results__image" />
+          <div className="mobile__actions">
+              <div onClick={this.props.toggleSidePanel} className={sidePanelOpen ? "open" : ""}>
+                <Icon name="magnify" size="big" />
+              </div>
+              <div onClick={this.props.toggleMetaPanel} className={metaPanelOpen ? "open" : ""}>
+                <Icon name="settings" size="big" />
+              </div>
+            </div>
         </div>
       );
 

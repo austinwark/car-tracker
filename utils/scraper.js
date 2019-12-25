@@ -11,7 +11,7 @@ const cheerio = require('cheerio')
 
 
 module.exports = function() {
-    this.Scraper = async function(model, price, operator, allStores) {
+    this.Scraper = async function(model, price, minYear, maxYear, operator, allStores) {
 
         model = model.charAt(0).toUpperCase() + model.substring(1)
     
@@ -71,7 +71,6 @@ module.exports = function() {
                     let carfax = $(el).children('a').first().attr('href');
                     carfaxLinks.push(carfax);
                 })
-                console.log(carfaxLinks)
     
                 let vehicleData = []
     
@@ -106,18 +105,21 @@ module.exports = function() {
                 //console.log('------------------')
                 //console.log(modelsMatch.length)
                 //console.log(model)
-    
+                
+                let yearsMatch = modelsMatch.filter((item) => {
+                    return item.year >= minYear && item.year <= maxYear;
+                })
+                
                 let pricesMatch = []
-    
-    
+                
                 if (operator == 'less') {
-                    pricesMatch = modelsMatch.filter((item) => item.price < price)
+                    pricesMatch = yearsMatch.filter((item) => item.price < price)
                 } else {
-                    pricesMatch = modelsMatch.filter((item) => item.price > price)
+                    pricesMatch = yearsMatch.filter((item) => item.price > price)
                 }
-    
-                    
-    
+                
+                
+                
                 //console.log(pricesMatch.length)
                 // console.log(operator)
                 //console.log("Prices match: " + pricesMatch)

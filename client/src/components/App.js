@@ -66,7 +66,7 @@ class App extends React.Component {
     return  (
               <div className="grid__main">
                   {currentNotification && <Notification currentNotification={currentNotification} />}
-                  <section className={`main__sidepanel__colors first__column ${sidePanelOpen ? "open__column" : ""}`}>
+                  <section className={`first__column ${sidePanelOpen ? "open__column" : ""}`}>
                       <SidePanel currentQuery={currentQuery} currentUser={currentUser} sidePanelOpen={sidePanelOpen} handleSideToggle={this.handleSideToggle} />
                   </section>
                   <section className="middle__column">

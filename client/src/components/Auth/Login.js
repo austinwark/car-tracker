@@ -79,8 +79,8 @@ class Login extends React.Component {
         style={{ marginTop: "10%" }}
       >
         <Grid.Column style={{ maxWidth: 450 }}>
-          <Header as="h1" icon color="orange" textAlign="center">
-            <Icon name="code branch" color="orange" />
+          <Header as="h1" icon textAlign="center" className="login__header">
+            <Icon name="code branch" />
             Login to Car Tracker
           </Header>
           <Form onSubmit={this.handleSubmit} size="large">
@@ -111,7 +111,6 @@ class Login extends React.Component {
                 disabled={loading}
                 className={loading ? "loading button__3d" : "button__3d"}
                 id="login__button"
-                color="orange"
                 fluid
                 size="large"
               >

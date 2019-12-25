@@ -6,8 +6,16 @@ import Settings from "./Settings";
 /* Side column containing query info and settings */
 class MetaPanel extends React.Component {
   state = {
-    activeIndex: 0
+    activeIndex: 0,
+    currentQuery: this.props.currentQuery
   };
+
+  componentDidUpdate(prevProps, prevState) {
+    if (JSON.stringify(prevProps.currentQuery) !== JSON.stringify(this.props.currentQuery)) {
+      console.log("Metapanel updating")
+      this.setState({ currentQuery: this.props.currentQuery })
+    }
+  }
 
   /* Controls accordian state */
   setActiveIndex = (event, titleProps) => {
@@ -17,47 +25,8 @@ class MetaPanel extends React.Component {
     this.setState({ activeIndex: newIndex });
   };
 
-  /* Uses passed in query data and displays formatted info */
-  // displayQueryDetails = query => {
-  //   const { name, model, operator, price, results, creationDate } = query;
-  //   return (
-  //     <React.Fragment>
-  //       {/* <h3 className="query__name__header">#{query.name}</h3> */}
-  //       <Step.Group widths={2} fluid unstackable>
-  //         <Step size="mini" content="Query Name" className="left__step" />
-  //         <Step content={name} className="right__step" />
-  //       </Step.Group>
-  //       <Step.Group widths={2} fluid unstackable>
-  //         <Step size="mini" content="Model" className="left__step" />
-  //         <Step
-  //           content={model.charAt(0).toUpperCase() + model.substring(1)}
-  //           className="right__step"
-  //         />
-  //       </Step.Group>
-  //       <Step.Group widths={2} fluid unstackable>
-  //         <Step size="mini" content="Operator" className="left__step" />
-  //         <Step content={operator + " than"} className="right__step" />
-  //       </Step.Group>
-  //       <Step.Group widths={2} fluid unstackable>
-  //         <Step size="mini" content="Price" className="left__step" />
-  //         <Step content={"$" + price} className="right__step" />
-  //       </Step.Group>
-  //       {results && (
-  //         <Step.Group widths={2} fluid unstackable>
-  //           <Step size="mini" content="Results" className="left__step" />
-  //           <Step content={results.length} className="right__step" />
-  //         </Step.Group>
-  //       )}
-  //       <Step.Group widths={2} fluid unstackable>
-  //         <Step size="mini" content="Created" className="left__step" />
-  //         <Step content={creationDate} className="right__step" />
-  //       </Step.Group>
-  //     </React.Fragment>
-  //   );
-  // };
-
   displayQueryDetails = (query, isMobile = false) => {
-    const { name, model, operator, price, results, creationDate, customer } = query;
+    const { name, model, operator, price, minYear, maxYear, results, creationDate, customer } = query;
     return (
       <div className="large__query__details">
         <div>
@@ -73,6 +42,12 @@ class MetaPanel extends React.Component {
             <span>Operator</span>
             <span>{operator} than</span>
           </div>
+          {!(minYear === 0 && maxYear === 2020) && (
+            <div className="large__details__row">
+              <span>Year</span>
+              <span>{minYear} - {maxYear}</span>
+            </div>
+          )}
         </div>
         <div>
           <div className="large__details__row">

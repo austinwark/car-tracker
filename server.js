@@ -13,9 +13,9 @@ app.use(bodyParser.urlencoded({ extended: true }));
 // for web scraping api call
 app.post('/api/scrape', async (req, res) => {
 	console.log("SERVER: ", req.body)
-    const { model, price, operator, allStores } = req.body;
+    const { model, price, minYear, maxYear, operator, allStores } = req.body;
     
-    const data = await Scraper(model, price, operator, allStores);
+    const data = await Scraper(model, price, minYear, maxYear, operator, allStores);
     if (data) {
         res.status(200).send({ arr: data });
     } else {
