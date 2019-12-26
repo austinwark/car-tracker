@@ -1,35 +1,26 @@
 import React from 'react';
+import { connect } from 'react-redux';
+import WebFont from 'webfontloader';
 import { Icon } from 'semantic-ui-react';
-import './App.css';
-import query from '../assets/query.svg';
 import SidePanel from './SidePanel/SidePanel';
 import ResultsPanel from './ResultsPanel/ResultsPanel';
 import MetaPanel from './MetaPanel/MetaPanel';
 import Notification from './MetaPanel/Notification';
 import { toggleMetaPanel, setWindowSize } from '../actions';
-import { connect } from 'react-redux';
-import WebFont from 'webfontloader';
-// ({ currentUser, currentQuery, isLoading, currentNotification })
+import './App.css';
+
 WebFont.load({
   google: {
-    families: ['Inconsolata:400,700', 'Asap:400,700', 'Montserrat:400,500,700', 'Open Sans:400,500,600', 'Roboto Slab:400,500,700', 'sans-serif', 'monospace']
+    families: ['Montserrat:400,500,700', 'Open Sans:400,500,600', 'sans-serif']
   }
 });
+
+/* Main container component - parent to all components */
 class App extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      sidePanelOpen: false,
-      metaPanelOpen: false,
-      windowDimensions: this.getWindowDimensions()
-    }
-    this.handleMetaDataToggle = this.handleMetaDataToggle.bind(this);
-    this.handleSideToggle = this.handleSideToggle.bind(this);
-}
-  /* Adds listener to watch for window resize */
+
+  /* Adds listener to watch for window resize and updates global state with dimensions */
   componentDidMount() {
     window.addEventListener("resize", this.handleResize);
-    // this.props.setWindowSize(this.getWindowDimensions());
     const dimensions = this.getWindowDimensions();
     this.props.setWindowSize(dimensions)
   }
@@ -47,19 +38,12 @@ class App extends React.Component {
     };
   };
 
-  /* Updates local state on window resize */
+  /* Updates global state on window resize */
   handleResize = () => {
     const dimensions = this.getWindowDimensions();
     this.props.setWindowSize(dimensions);
   };
-  
-  handleSideToggle() {
-    this.setState({ sidePanelOpen: !this.state.sidePanelOpen, metaPanelOpen: false})
-  }
-  handleMetaDataToggle() {
-    console.log('call')
-    this.setState({ metaPanelOpen: !this.state.metaPanelOpen, sidePanelOpen: false });
-  }
+
   render() {
 
     const { currentNotification, currentQuery, currentUser, isLoading, metaPanelOpen, sidePanelOpen } = this.props;     
@@ -67,7 +51,7 @@ class App extends React.Component {
               <div className="grid__main">
                   {currentNotification && <Notification currentNotification={currentNotification} />}
                   <section className={`first__column ${sidePanelOpen ? "open__column" : ""}`}>
-                      <SidePanel currentQuery={currentQuery} currentUser={currentUser} sidePanelOpen={sidePanelOpen} handleSideToggle={this.handleSideToggle} />
+                      <SidePanel currentQuery={currentQuery} currentUser={currentUser} sidePanelOpen={sidePanelOpen} />
                   </section>
                   <section className="middle__column">
                       <ResultsPanel currentUser={currentUser} />

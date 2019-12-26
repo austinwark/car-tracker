@@ -1,6 +1,5 @@
 import React from "react";
 import { Accordion, Icon, Step, Card } from "semantic-ui-react";
-import { connect } from 'react-redux';
 import Settings from "./Settings";
 
 /* Side column containing query info and settings */
@@ -10,9 +9,9 @@ class MetaPanel extends React.Component {
     currentQuery: this.props.currentQuery
   };
 
+  /* Shallow comparison of query info in updated props versus previous query info - only updates state with new info */
   componentDidUpdate(prevProps, prevState) {
     if (JSON.stringify(prevProps.currentQuery) !== JSON.stringify(this.props.currentQuery)) {
-      console.log("Metapanel updating")
       this.setState({ currentQuery: this.props.currentQuery })
     }
   }
@@ -25,6 +24,7 @@ class MetaPanel extends React.Component {
     this.setState({ activeIndex: newIndex });
   };
 
+  /* Uses passed in query details to display formatted list - uses flag indicating screen size to show certain results */
   displayQueryDetails = (query, isMobile = false) => {
     const { name, model, operator, price, minYear, maxYear, results, creationDate, customer } = query;
     return (
@@ -42,7 +42,7 @@ class MetaPanel extends React.Component {
             <span>Operator</span>
             <span>{operator} than</span>
           </div>
-          {!(minYear === 0 && maxYear === 2020) && (
+          {!(minYear === 0 && maxYear === 2020) && ( // only shows year field if user chose non-default values
             <div className="large__details__row">
               <span>Year</span>
               <span>{minYear} - {maxYear}</span>
@@ -63,30 +63,30 @@ class MetaPanel extends React.Component {
             <span>{creationDate}</span>
           </div>
         </div>
-        {isMobile && (
-          <>
-          <div>
-            {customer.customerName && 
-              <div className="large__details__row">
-                <span>Customer Name</span><span>{customer.customerName}</span>
-              </div>
-            }
-          </div>
-          <div>
-            {customer.customerPhone && 
-              <div className="large__details__row">
-                <span>Customer Phone</span><span>{customer.customerPhone}</span>
-              </div>
-            }
-          </div>
-          <div>
-            {customer.customerNotes && 
-              <div className="large__details__row">
-                <span>Customer Notes</span><span>{customer.customerNotes}</span>
-              </div>
-            }
-          </div>
-          </>
+        {isMobile && ( // if screen size is under 768px
+          <React.Fragment>
+            <div>
+              {customer.customerName && 
+                <div className="large__details__row">
+                  <span>Customer Name</span><span>{customer.customerName}</span>
+                </div>
+              }
+            </div>
+            <div>
+              {customer.customerPhone && 
+                <div className="large__details__row">
+                  <span>Customer Phone</span><span>{customer.customerPhone}</span>
+                </div>
+              }
+            </div>
+            <div>
+              {customer.customerNotes && 
+                <div className="large__details__row">
+                  <span>Customer Notes</span><span>{customer.customerNotes}</span>
+                </div>
+              }
+            </div>
+          </React.Fragment>
         )}
       </div>
     )
@@ -113,78 +113,67 @@ class MetaPanel extends React.Component {
   render() {
     const { activeIndex } = this.state;
     const { currentQuery, currentUser, isLoading } = this.props;
-    if (this.props.windowDimensions.width < 768)
       return (
-        <div className="mobile__metapanel">
-          <div className="mobile__query__details">
-            {currentQuery && this.displayQueryDetails(currentQuery, true)}
+        <React.Fragment>
+          <div className="mobile__metapanel">
+            <div className="mobile__query__details">
+              {currentQuery && this.displayQueryDetails(currentQuery, true)}
+            </div>
+            <div className="mobile__customer__details">
+            </div>
+            <div className="mobile__settings">
+              <Settings
+                  currentQuery={currentQuery}
+                  currentUser={currentUser}
+                  isLoading={isLoading}
+                />
+            </div>
           </div>
-          <div className="mobile__customer__details">
-            {/* {currentQuery && this.displayCustomerDetails(currentQuery)} */}
-            {/* {Object.values(customer).some(el => el) && (
-              
-            )} */}
-          </div>
-          <div className="mobile__settings">
-            <Settings
+          <Accordion styled attached="true" id="metapanel__accordian" className="large__metapanel">
+            <Accordion.Title
+              active={activeIndex === 0}
+              index={0}
+              onClick={this.setActiveIndex}
+            >
+              <Icon name="dropdown" />
+              <Icon name="dna" />
+              Query Details
+            </Accordion.Title>
+            <Accordion.Content active={activeIndex === 0}>
+              {currentQuery && this.displayQueryDetails(currentQuery)}
+            </Accordion.Content>
+            <Accordion.Title
+              active={activeIndex === 1}
+              index={1}
+              onClick={this.setActiveIndex}
+            >
+              <Icon name="dropdown" />
+              <Icon name="user" />
+              Customer Details
+            </Accordion.Title>
+            <Accordion.Content active={activeIndex === 1}>
+              {currentQuery && this.displayCustomerDetails(currentQuery)}
+            </Accordion.Content>
+            <Accordion.Title
+              active={activeIndex === 2}
+              index={2}
+              onClick={this.setActiveIndex}
+            >
+              <Icon name="dropdown" />
+              <Icon name="cogs" />
+              Query Settings
+            </Accordion.Title>
+            <Accordion.Content active={activeIndex === 2}>
+              <Settings
                 currentQuery={currentQuery}
                 currentUser={currentUser}
                 isLoading={isLoading}
               />
-          </div>
-        </div>
-      )
-    else
-      return (
-        <Accordion styled attached="true" id="metapanel__accordian">
-          <Accordion.Title
-            active={activeIndex === 0}
-            index={0}
-            onClick={this.setActiveIndex}
-          >
-            <Icon name="dropdown" />
-            <Icon name="dna" />
-            Query Details
-          </Accordion.Title>
-          <Accordion.Content active={activeIndex === 0}>
-            {currentQuery && this.displayQueryDetails(currentQuery)}
-          </Accordion.Content>
-          <Accordion.Title
-            active={activeIndex === 1}
-            index={1}
-            onClick={this.setActiveIndex}
-          >
-            <Icon name="dropdown" />
-            <Icon name="user" />
-            Customer Details
-          </Accordion.Title>
-          <Accordion.Content active={activeIndex === 1}>
-            {currentQuery && this.displayCustomerDetails(currentQuery)}
-          </Accordion.Content>
-          <Accordion.Title
-            active={activeIndex === 2}
-            index={2}
-            onClick={this.setActiveIndex}
-          >
-            <Icon name="dropdown" />
-            <Icon name="cogs" />
-            Query Settings
-          </Accordion.Title>
-          <Accordion.Content active={activeIndex === 2}>
-            <Settings
-              currentQuery={currentQuery}
-              currentUser={currentUser}
-              isLoading={isLoading}
-            />
-          </Accordion.Content>
-        </Accordion>
+            </Accordion.Content>
+          </Accordion>
+        </React.Fragment>
       );
-    // }
   }
 }
 
-const mapStateToProps = state => ({
-  windowDimensions: state.window.windowDimensions
-})
-
-export default connect(mapStateToProps, null)(MetaPanel);
+export default MetaPanel;

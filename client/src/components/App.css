@@ -360,7 +360,7 @@ html, body, .app__main {
     width: 100% !important;
     font-family: 'Open Sans', sans-serif;
 }
-.results__container > h1 {
+.results__container > div > h1 {
     color: #1F2333 !important;
     /* background: #7397AE; */
     margin-bottom: 0 !important;
@@ -444,6 +444,16 @@ html, body, .app__main {
         display: inline-block !important;
     }
 }
+@media (min-width: 768px) {
+    .mobile__results__main {
+        display: none !important;
+    }
+} 
+@media (max-width: 767px) {
+    .large__results__main {
+        display: none !important;
+    }
+}
 @media (max-width: 767px) {
     .ui.segment {
         border: none !important;
@@ -454,7 +464,7 @@ html, body, .app__main {
         max-height: 100vh !important;
         margin: 0 !important;
     }
-    .results__container > h1 {
+    .results__container > div > h1 {
         /* height: 10vh; */
         /* min-height: 70px; */
         font-size: 1.75rem;
@@ -825,6 +835,7 @@ html, body, .app__main {
 }
 
 /* Meta Panel */
+
 #metapanel__accordian {
     background: #fafafa !important;
     border-bottom: solid #4a4a4a 2px;
@@ -891,7 +902,15 @@ html, body, .app__main {
 .mobile__settings label:before {
     background-color: rgba(255, 255 ,255, .2) !important;
 }
+@media (min-width: 768px) {
+    .mobile__metapanel {
+        display: none !important;
+    }
+}
 @media (max-width: 767px) {
+    .large__metapanel {
+        display: none !important;
+    }
     .settings__button.secondary__button {
         background-color: #BB8E87 !important;
         border-bottom: solid rgb(112, 70, 69) 4px !important;
@@ -940,7 +959,7 @@ html, body, .app__main {
 .step__container {
     position: relative;
     width: 100%;
-    height: 500px;
+    min-height: 450px;
     overflow: hidden;
 }
 .step__container > div {
@@ -974,6 +993,12 @@ html, body, .app__main {
     margin: 0 0 .25rem 0 !important;
     display: inline-block !important;
 }
+.form__section .fields {
+    margin: 0 0 .25rem 0 !important;
+}
+.form__section .fields .field {
+    padding-left: 0 !important;
+}
  .form__section .input, .form__section div[name="model"] {
     width: 200px !important;
 }
@@ -1003,6 +1028,14 @@ html, body, .app__main {
 .field__info ol {
     list-style: circle !important;
     padding-left: 2rem !important;
+}
+@media (max-width: 767px) {
+    #create__modal {
+        margin-bottom: 45px !important;
+    }
+    .step__container {
+        min-height: 425px;
+    }
 }
 @media (max-width: 575px) {
     .field__info {
@@ -1106,6 +1139,7 @@ html, body, .app__main {
 .options__container .field .ui.radio.checkbox {
     position: relative;
     width: 200px !important;
+    margin-left: 15px;
     /* background-color: #FAFAFA; */
 }
 .options__container .field .ui.radio.checked.checkbox:after {
@@ -1115,7 +1149,7 @@ html, body, .app__main {
     content: "";
     position: absolute;
     top: -50%;
-    left: -10%;
+    left: -15px;
     height: 200%;
     width: 0;
     background-color: #026670;
@@ -1125,9 +1159,10 @@ html, body, .app__main {
     content: "";
     position: absolute;
     top: -50%;
-    left: -10%;
+    left: -15px;
     height: 200%;
-    width: 120%;
+    /* width: 120%; */
+    width: calc(100% + 30px);
     background-color: #77bac0c9;
     z-index: 1;
 }

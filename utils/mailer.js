@@ -1,21 +1,11 @@
 const nodemailer = require("nodemailer");
-const express = require('express');
 const Email = require('email-templates');
 
+/* Utility function used to send query results to user via email */
 module.exports = function() {
-    this.sendToMail = async function(results, userEmail) {
-        let testAccount = await nodemailer.createTestAccount();
-    
-        // let transporter = nodemailer.createTransport({
-        //     host: 'smtp.googlemail.com',
-        //     port: 465,
-        //     secure: true,
-        //     auth: {
-        //         user: "austinwark96",
-        //         pass: "lo4.gato123"
-        //     }
-        // });
 
+    this.sendToMail = async function(results, userEmail) {
+        
         let transporter = nodemailer.createTransport({
             host: "smtp.gmail.com",
             port: 465,

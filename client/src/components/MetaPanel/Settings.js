@@ -25,35 +25,26 @@ class Settings extends React.Component {
     deleteLoading: false,
     emailLoading: false,
     open: false,
-    autoEmails: this.props.currentQuery,
-    onlyNew: this.props.currentQuery,
-    allStores: this.props.currentQuery
+    autoEmails: true,
+    onlyNew: true,
+    allStores: false
+    // autoEmails: this.props.currentQuery,
+    // onlyNew: this.props.currentQuery,
+    // allStores: this.props.currentQuery
   };
 
-  // first renders autoEmails & onlyNew state as null while props are loading, then updates state with desired value when it loads
-  /* Helper function, used to protect against async load of currentQuery in props. The function starts with the values in state as null, as well 
-     as the currentQuery props. Then when currentQuery loads, it is no longer false and this function returns the real values to state */
-  static getDerivedStateFromProps(props, state) {
-    if (!props.currentQuery) {
-      return null;
-    } else if (
-      props.currentQuery !== state.autoEmails &&
-      props.currentQuery !== state.onlyNew &&
-      props.currentQuery !== state.allStores
+  /* Performs a shallow comparison of currentQuery in props, if not the same, updates local state with new values */
+  componentDidUpdate(prevProps, prevState) {
+    if (
+      JSON.stringify(prevProps.currentQuery) !==
+      JSON.stringify(this.props.currentQuery)
     ) {
-      return {
-        autoEmails: props.currentQuery.settings.autoEmails,
-        onlyNew: props.currentQuery.settings.onlyNew,
-        allStores: props.currentQuery.settings.allStores
-      };
-    } // else if (props.currentQuery !== state.autoEmails)
-    //   return { autoEmails: props.currentQuery.settings.autoEmails };
-    // else if (props.currentQuery !== state.onlyNew)
-    //   return { onlyNew: props.currentQuery.settings.onlyNew };
-    // else if (props.currentQuery !== state.allStores)
-    //   return { allStores: props.currentQuery.settings.allStores };
-
-    return null;
+      this.setState({
+        autoEmails: this.props.currentQuery.settings.autoEmails,
+        onlyNew: this.props.currentQuery.settings.onlyNew,
+        allStores: this.props.currentQuery.settings.allStores
+      });
+    }
   }
 
   /* Deletes the currently selected query from the database */
@@ -113,7 +104,8 @@ class Settings extends React.Component {
   };
 
   render() {
-    if (this.props.isLoading) { // returns loading skeleton if props are loading
+    if (this.props.isLoading) {
+      // returns loading skeleton if props are loading
       return <Skeleton />;
     } else if (!this.props.currentQuery) {
       return <p>Create a query to access settings</p>;
@@ -128,7 +120,6 @@ class Settings extends React.Component {
               <Grid.Column>
                 <label style={{ display: "block" }}>Automatic Emails</label>
                 <Checkbox
-                  // label="Automatic emails"
                   onChange={this.toggleQuerySettings}
                   checked={this.state.autoEmails}
                   toggle
@@ -265,7 +256,6 @@ class Settings extends React.Component {
                 <Popup
                   key={2}
                   position="top right"
-                  // basic
                   content="Permanently deletes query, and all automatic email updates"
                   style={{ zIndex: 9999 }}
                   trigger={

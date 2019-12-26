@@ -5,7 +5,7 @@ TODO's
 MOBILE RESULTS -> stock numbers change on metadata icon button click
 **/
 
-
+BUG =>> On query delete, "maximum of 5 queries" is not updated untill page refresh!
 
 **DONE** 1 -> FORM ERROR HANDLING
 2 -> CHECK DIFFERENCES FROM PREVIOUS QUERY TO NEW QUERY

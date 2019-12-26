@@ -1,157 +1,142 @@
-import React from 'react';
+import React from "react";
+import { connect } from "react-redux";
+import { Icon } from "semantic-ui-react";
+import { setCurrentQuery, toggleSidePanel } from "../../actions";
+const firebase = require("../../firebase");
 
-// import firebase from '../../firebase';
-import { connect } from 'react-redux';
-import { setCurrentQuery } from '../../actions';
-
-import { Menu, Icon } from 'semantic-ui-react';
-
-const firebase = require('../../firebase');
+/* List component that contains list of user's queries and is used to switch between them */
 class CurrentQueries extends React.Component {
+  state = {
+    currentUser: this.props.currentUser,
+    queriesRef: firebase.database().ref(`queries`),
+    activeQuery: "",
+    queries: []
+  };
 
-    state = {
-        currentUser: this.props.currentUser,
-        queriesRef: firebase.database().ref(`queries`),
-        activeQuery: '',
-        queries: []
+  /* Add listeners for new and updated queries in firebase */
+  componentDidMount() {
+    this.addNewQueryListener();
+    this.addChangedQueryListener();
+  }
+
+  /* Remove query listeners on component unmount */
+  componentWillUnmount() {
+    this.removeListeners();
+  }
+
+  /* Performs shallow comparison of current and incoming props and updates state if props have changed */
+  componentDidUpdate(prevProps) {
+    if (
+      JSON.stringify(this.props.currentQuery) !==
+      JSON.stringify(prevProps.currentQuery)
+    ) {
+      this.setState({ activeQuery: this.props.currentQuery.id });
     }
+  }
 
-    componentDidMount() {
-        this.addNewQueryListener();
-        this.addChangedQueryListener();
-    }
+  /* Removes all query listeners in firebase */
+  removeListeners = () => {
+    const { currentUser, queriesRef } = this.state;
+    queriesRef.child(currentUser.uid).off();
+  };
 
-    componentWillUnmount() {
-        this.removeListeners();
-        console.log("UNMOUNTING state queries", this.state.queries)
-    }
+  /* Listens for changes on queries in firebase (e.g. autoEmails is disabled) and updates global state */
+  addChangedQueryListener = () => {
+    const { currentUser, queriesRef } = this.state;
+    queriesRef.child(currentUser.uid).on("child_changed", snap => {
+      const changedQuery = snap.val();
+      if (changedQuery.id && changedQuery.name) {
+        this.props.setCurrentQuery(changedQuery);
+      }
+    });
+  };
 
-    removeListeners = () => {
-        const { currentUser, queriesRef } = this.state;
-        queriesRef.child(currentUser.uid).off();
-    }
+  /* Listens for a deleted query in firebase and updates local state, i.e. the list of queries is updated */
+  addRemovedQueryListener = () => {
+    const { currentUser, queriesRef } = this.state;
+    queriesRef.child(currentUser.uid).on("child_removed", snap => {
+      const { queries } = this.state;
+      const updatedQueries = queries.filter(quer => quer.id !== snap.val().id); // -> remove deleted query from local state
+      this.setState({ queries: updatedQueries });
+      updatedQueries.length > 0
+        ? this.changeCurrentQuery(updatedQueries[0])
+        : this.props.setCurrentQuery(null);
+    });
+  };
 
-    addChangedQueryListener = () => {
-        const { currentUser ,queriesRef } = this.state;
-        queriesRef
-            .child(currentUser.uid)
-            .on("child_changed", snap => {
-                const changedQuery = snap.val();
-                if (changedQuery.id && changedQuery.name) {
-                    this.props.setCurrentQuery(changedQuery);
-                }
-            })
-    }
+  /* Listens for new queries in firebase and updates local state. Also fills local state on first load with user's queries */
+  addNewQueryListener = () => {
+    const { currentUser, queriesRef } = this.state;
+    queriesRef.child(currentUser.uid).on("child_added", snap => {
+      const loadedQueries = this.state.queries;
+      loadedQueries.push(snap.val());
+      this.setState({ queries: loadedQueries }, () => {
+        loadedQueries.length == 1 && this.setFirstQuery(loadedQueries); // --> if this is the first time
+      });
+    });
+  };
 
-    // is called on changeCurrentQuery -> ensuring props && state is loaded
-    addRemovedQueryListener = () => {
-        const { currentUser, queriesRef } = this.state;
-        //console.log(this.props.currentQuery)
-        queriesRef
-            .child(currentUser.uid)
-            .on("child_removed", snap => {
-                const { queries } = this.state;
-                const updatedQueries = queries.filter(quer => quer.id !== snap.val().id); // -> remove deleted query from local state
-                console.log("UPDATEDDDDDD : ", updatedQueries)
-                this.setState({ queries: updatedQueries });
-                //console.log("STATE: ", this.state.queries)
-                updatedQueries.length > 0 ? this.changeCurrentQuery(updatedQueries[0]) : this.props.setCurrentQuery(null);
+  /* Maps through user's queries and displays list */
+  displayQueries = queries =>
+    queries.length > 0 &&
+    queries.map(query => {
+      return (
+        <div
+          key={query.id}
+          className={
+            query.id === this.state.activeQuery
+              ? "query__item active__item"
+              : "query__item"
+          }
+          onClick={() => this.changeCurrentQuery(query)}
+          style={{ cursor: "pointer", textDecoration: "none", color: "#FFF" }}
+        >
+          <div className="query__item__overlay"></div># {query.name}{" "}
+          <span id="results__count">
+            ({query.results ? query.results.length : 0})
+          </span>
+        </div>
+      );
+    });
 
-            })
-    }
+  /* Used to switch queries and update global and local state */
+  changeCurrentQuery = async nextQuery => {
+    this.setActiveQuery(nextQuery);
+    await this.props.setCurrentQuery(nextQuery);
+    if (this.props.sidePanelOpen) this.props.toggleSidePanel();
+  };
 
-    /* Listens for initial queries loaded in & new queries created -> then updates state */
-    addNewQueryListener = () => {
-        // const { currentUser, queriesRef, queries } = this.state;
-        // const loadedQueries = queries;
-        const { currentUser, queriesRef } = this.state;
+  /* used to show active query highlighting */
+  setActiveQuery = query => {
+    this.setState({ activeQuery: query.id });
+  };
 
-        // console.log("NEW QUERY LISTNER BEFORE PUSH", loadedQueries)
-        queriesRef
-            .child(currentUser.uid)
-            .on('child_added', snap => {
-                const loadedQueries = this.state.queries;
-                // console.log("NEW QUERY LISTNER BEFORE PUSH", JSON.stringify(loadedQueries))
-                loadedQueries.push(snap.val());
-                // console.log("NEW QUERY LISTNER AFTER PUSH", JSON.stringify(loadedQueries))
-                this.setState({ queries: loadedQueries }, () => {
-                    console.log("")
-                    loadedQueries.length == 1 && this.setFirstQuery(loadedQueries)  // --> if this is the first time
-                });
-            })
-    }
+  /* called on first query load */
+  setFirstQuery = queries => {
+    queries.length > 0
+      ? this.changeCurrentQuery(queries[0])
+      : this.props.setCurrentQuery(null);
+    this.addRemovedQueryListener();
+  };
 
-    // displayQueries = queries => (
-    //     // eslint-disable-next-line
-    //     queries.length > 0 && queries.map(query => {
-    //         return (
-    //             <Menu.Item
-    //                 key={query.id}
-    //                 // active={query.id === this.state.activeQuery}
-    //                 className={query.id === this.state.activeQuery ? "query__item active__item" : "query__item"}
-    //                 onClick={() => this.changeCurrentQuery(query)}
-    //                 style={{cursor: "pointer", textDecoration: "none", color: "#FFF"}}
-    //             >  
-    //                 <div className="query__item__overlay"></div>
-    //                 # { query.name} <span id="results__count">({query.results ? query.results.length : 0})</span>
-    //             </Menu.Item>
-    //         )
-    //     })
-    // )
-    displayQueries = queries => (
-        queries.length > 0 && queries.map(query => {
-            return (
-                <div
-                    key={query.id}
-                    className={query.id === this.state.activeQuery ? "query__item active__item" : "query__item"}
-                    onClick={() => this.changeCurrentQuery(query)}
-                    style={{ cursor: "pointer", textDecoration: "none", color: "#FFF" }}
-                >
-                    <div className="query__item__overlay"></div>
-                    # {query.name} <span id="results__count">({ query.results ? query.results.length : 0 })</span>
-                </div>
-            )
-        })
-    )
-
-    changeCurrentQuery = async nextQuery => {
-        console.log("CHANGE CURRENT QUERY: ", nextQuery)
-        this.setActiveQuery(nextQuery);
-        await this.props.setCurrentQuery(nextQuery);
-        if (this.props.sidePanelOpen)
-            this.props.handleSideToggle();
-        // this.addRemovedQueryListener();
-    }
-
-    setActiveQuery = query => {
-        console.log("SET ACTIVE QUERY: ", query)
-        this.setState({ activeQuery: query.id })
-    }
-
-    setFirstQuery = queries => {
-        console.log("SET FIRST QUERY: ", queries)
-        queries.length > 0 ? this.changeCurrentQuery(queries[0]) : this.props.setCurrentQuery(null);
-        this.addRemovedQueryListener();
-    }
-
-    render() {
-        return (
-            <React.Fragment>
-                <div className="sidePanel__menu main__sidepanel__colors">
-                    <h3 className="main__sidepanel__colors">
-                        <span><Icon name="exchange" />Queries</span>{" "}
-                    </h3>
-                    {this.state.queries.length > 0 && this.displayQueries(this.state.queries)}
-                </div>
-                {/* <Menu vertical secondary stackable pointing fluid borderless className="sidePanel__menu main__sidepanel__colors">
-                    <Menu.Item as="h3" className="main__sidepanel__colors">
-                        <span><Icon name='exchange' />Queries</span>{" "}
-                    </Menu.Item>
-                    {this.state.queries.length > 0 && this.displayQueries(this.state.queries)}
-                </Menu> */}
-            </React.Fragment>
-        )
-    }
+  render() {
+    return (
+      <React.Fragment>
+        <div className="sidePanel__menu main__sidepanel__colors">
+          <h3 className="main__sidepanel__colors">
+            <span>
+              <Icon name="exchange" />
+              Queries
+            </span>{" "}
+          </h3>
+          {this.state.queries.length > 0 &&
+            this.displayQueries(this.state.queries)}
+        </div>
+      </React.Fragment>
+    );
+  }
 }
 
-export default connect(null, { setCurrentQuery })(CurrentQueries);
+export default connect(null, { setCurrentQuery, toggleSidePanel })(
+  CurrentQueries
+);

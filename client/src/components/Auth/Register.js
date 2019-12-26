@@ -7,7 +7,7 @@ import {
   Button,
   Header,
   Message,
-  Icon,
+  Icon
 } from "semantic-ui-react";
 import "../App.css";
 const moment = require("moment");
@@ -87,8 +87,9 @@ class Register extends React.Component {
               displayName: this.state.username // 3) Updates saved user with username
             })
             .then(() => {
-              this.saveUser(createdUser).then(() => { // 4) Saves user to database and sends email verification
-                this.handleEmailVerification(); 
+              this.saveUser(createdUser).then(() => {
+                // 4) Saves user to database and sends email verification
+                this.handleEmailVerification();
               });
             })
             .catch(err => {
@@ -122,7 +123,7 @@ class Register extends React.Component {
   /* Sends new user an email verification using firebase API */
   handleEmailVerification = () => {
     const user = firebase.auth().currentUser;
-    user.sendEmailVerification()
+    user.sendEmailVerification();
   };
 
   /* Maps through errors and displays each */

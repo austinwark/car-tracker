@@ -11,9 +11,10 @@ import {
   Dropdown,
   Checkbox
 } from "semantic-ui-react";
+import { setCurrentQuery } from '../../actions';
 const firebase = require("../../firebase");
 
-/* Options to populate dropdown menu with */
+/* Options to populate dropdown menu */
 const modelOptions = [
   { text: "Avalon", value: "avalon", key: 0 },
   { text: "Camry", value: "camry", key: 1 },
@@ -54,10 +55,12 @@ const INITIAL_CUSTOMER = {
 const INITIAL_VALIDATION = {
   queryName: "",
   model: "",
-  price: ""
+  price: "",
+  minYear: "",
+  maxYear: ""
 };
 
-/* Multi-step form used to create a query */
+/* Multi-step form used to create & save a query */
 class Create extends React.Component {
   state = {
     currentUser: this.props.currentUser,
@@ -132,14 +135,21 @@ class Create extends React.Component {
     }));
   };
 
-  /* Updates local state with vehicle data */
+  /* Updates local state with vehicle data. Validates in real time */
   handleVehicleChange = (event, { name, value }) => {
-    console.log(name, value)
+    let err = "";
+    if (name === "price" && value > 100000)
+      err = "Price must not be greater than $100,000";
+    else if (name === "price" && value < 0)
+      err = "Price must not be less than $0";  
+    if (
+      (name === "minYear" && value < 0) || (name === "minYear" && value > moment().year() + 1)
+      || ((name === "maxYear" && value < 0) || (name === "maxYear" && value > moment().year() + 1))
+    ) err = `Model years must be between 0 and ${moment().year() + 1}`;
+
     this.setState(prevState => ({
-      vehicle: {
-        ...prevState.vehicle,
-        [name]: value
-      }
+      vehicle: { ...prevState.vehicle, [name]: value },
+      validation: { ...prevState.validation, [name]: err }
     }));
   };
 
@@ -159,7 +169,6 @@ class Create extends React.Component {
   handleCustomerChange = event => {
     const { name, value } = event.target;
     let err = "";
-    console.log(value.length)
     if (name === "customerName" && value.length >= 16)
       err = "Name must be less than 16 characters";
     if (name === "customerPhone" && value.length >= 15)
@@ -195,7 +204,7 @@ class Create extends React.Component {
   };
 
   isVehicleValid = (model, price, operator) => {
-    return (model && price && price >= 5000 && price <= 50000);
+    return (model && price && price >= 0 && price <= 100000);
   };
 
   // prettier-ignore
@@ -231,56 +240,50 @@ class Create extends React.Component {
         sentResults: [],
         settings: query.settings
       };
-      newQuery = await this.getQueryResults(newQuery); // 4) 
+      newQuery = await this.getQueryResults(newQuery); // 4) retrieves new query's results through web scraping
       queriesRef
         .child(currentUser.uid)
         .child(key)
-        .update(newQuery)
+        .update(newQuery) // 5) saves the new query w/ results in firebase
         .then(() => {
-          console.log("query added");
           this.closeModal();
           this.setState({ loading: false, error: null });
-          // window.location.reload(false);
+          this.props.setCurrentQuery(newQuery);
         })
         .catch(err => {
-          console.error(err);
           //this.resetFields();
           this.setState({ loading: false, error: err });
         });
     }
   };
 
+  /* Retrieves and returns query results through web scraping on the back end */
   getQueryResults = async query => {
     const { model, price, minYear, maxYear, operator, settings } = query;
     const { allStores } = settings;
     const url = "/api/scrape";
-    const payload = { model, price, minYear, maxYear, operator, allStores };
-    const response = await axios.post(url, payload);
+    const payload = { model, price, minYear, maxYear, operator, allStores }; 
+    const response = await axios.post(url, payload); // sends required vehicle info on request to server and saves the returned list of results
     const queryResults = response.data.arr;
-    if (queryResults.length <= 0) {
-      const newQuery = query;
-
-      newQuery.results = [];
-      return newQuery;
-    }
-
     const newQuery = query;
-    newQuery.results = queryResults;
+    newQuery.results = queryResults || []; // attaches results to passed in query as key / value pair
     return newQuery;
   };
 
+  /* controls the step "slideshow" on the multi step form */
   handleSlide = i => {
     this.setState({ lastIndex: this.state.index, index: Number(i) });
   };
 
+  /* returns a className to the "slide" containers -- used to determine correct animation for tranisitions */
   determineDirection(index, lastIndex, dataIndex) {
     let direction;
-    if (index === dataIndex) {
+    if (index === dataIndex) { // --if slide is the next one to show, used to transition in
       if (index === lastIndex) direction = "primary activeSlide";
       else if (index > lastIndex) direction = "forwardsIn activeSlide";
       else direction = "backIn activeSlide";
     } else {
-      if (dataIndex === lastIndex) {
+      if (dataIndex === lastIndex) { // --if slide was the last shown slide, used to tranisition out
         if (index > lastIndex) direction = "forwardsOut";
         else if (index < lastIndex) direction = "backOut";
       }
@@ -288,30 +291,7 @@ class Create extends React.Component {
     return direction;
   }
 
-  steps = [
-    {
-      key: "query",
-      icon: "search",
-      title: "Query Info",
-      description: "Query Info",
-      active: this.state.index === 0
-    },
-    {
-      key: "vehicle",
-      icon: "car",
-      title: "Vehicle Info",
-      description: "Desired Vehicle Info",
-      active: this.state.index === 1
-    },
-    {
-      key: "customer",
-      icon: "user",
-      title: "Customer Info",
-      description: "Customer's contact info",
-      active: this.state.index === 2
-    }
-  ];
-
+  /* Controls form progress bar width */
   getProgressWidth() {
     const { index } = this.state;
     if (index === 0) return "25%";
@@ -320,6 +300,7 @@ class Create extends React.Component {
     if (index === 3) return "100%";
   }
 
+  /* Validates query info upon the next button clicked */
   handleQuerySubmit(queryName) {
     let err = "";
     if (!queryName) err = "Query name is required";
@@ -331,13 +312,17 @@ class Create extends React.Component {
         queryName: err
       }
     }));
-    if (!err) this.handleSlide(1);
+    if (!err) this.handleSlide(1); // --if not error, proceed to next step
   }
+  
+  /* Validates vehicle info upon the next button being clicked */
   handleVehicleSubmit(model, price) {
     let modelErr = "",
       priceErr = "";
     if (!model) modelErr = "Model is required";
     if (!price) priceErr = "Price is required";
+    else if (price > 100000) priceErr = "Price must not be greater than $100,000";
+    else if (price < 0) priceErr = "Price must not be less than $0";
     this.setState(prevState => ({
       validation: {
         ...prevState.validation,
@@ -345,8 +330,10 @@ class Create extends React.Component {
         price: priceErr
       }
     }));
-    if (!modelErr && !priceErr) this.handleSlide(2);
+    if (!modelErr && !priceErr) this.handleSlide(2); // --if no error, proceed to next step
   }
+
+  /* Validates customer info upon the next button being clicked */
   handleCustomerSubmit(name, phone, notes) {
     let nameErr = "",
       phoneErr = "",
@@ -363,10 +350,11 @@ class Create extends React.Component {
         customerNotes: notesErr
       }
     }));
-    if (!nameErr && !phoneErr && !notesErr) this.handleSlide(3);
+    if (!nameErr && !phoneErr && !notesErr) this.handleSlide(3); // --if no error, proceed to last step
   }
 
-  handleDisplayhelp = e => {
+  /* Toggles visibility of help message on each form step, uses attribute on clicked icon to determine section to display */
+  toggleHelpMessage = e => {
     const sectionName = e.target.getAttribute("data-section");
     this.state.helpMessage === sectionName
       ? this.setState({ helpMessage: "" })
@@ -391,33 +379,16 @@ class Create extends React.Component {
     return (
       <div>
         <Modal
-          // dimmer="blurring"
           open={modal}
           onClose={this.closeModal}
           className="mx-auto"
           id="create__modal"
         >
           <Modal.Header id="create__header">
-            <div
-              onClick={() => this.setState({ lastIndex: index, index: 0 })}
-              >
-              Query
-            </div>
-            <div
-              onClick={() => this.setState({ lastIndex: index, index: 1 })}
-              >
-              Vehicle
-            </div>
-            <div
-              onClick={() => this.setState({ lastIndex: index, index: 2 })}
-            >
-              Customer
-            </div>
-            <div
-              onClick={() => this.setState({ lastIndex: index, index: 3 })}
-            >
-              Finish
-            </div>
+            <div>Query</div>
+            <div>Vehicle</div>
+            <div>Customer</div>
+            <div>Finish</div>
             <p
               className="create__progress"
               style={{ width: this.getProgressWidth() }}
@@ -433,7 +404,7 @@ class Create extends React.Component {
                       name="question circle outline"
                       size="big"
                       data-section="query"
-                      onClick={this.handleDisplayhelp}
+                      onClick={this.toggleHelpMessage}
                     />
                     <div className="form__section">
                       <Form.Field
@@ -538,7 +509,7 @@ class Create extends React.Component {
                       name="question circle outline"
                       size="big"
                       data-section="vehicle"
-                      onClick={this.handleDisplayhelp}
+                      onClick={this.toggleHelpMessage}
                     />
                     <div className="form__section">
                       <label
@@ -581,8 +552,6 @@ class Create extends React.Component {
                           name="minYear"
                           placeholder="0"
                           type="number"
-                          min="0"
-                          max={moment().year() + 1}
                           value={vehicle.minYear}
                           onChange={this.handleVehicleChange}
                           />
@@ -593,12 +562,13 @@ class Create extends React.Component {
                           name="maxYear"
                           placeholder={moment().year() + 1}
                           type="number"
-                          min="0"
-                          max={moment().year() + 1}
                           value={vehicle.maxYear}
                           onChange={this.handleVehicleChange}
                         />
                       </Form.Group>
+                      <p className={validation.minYear || validation.maxYear ? "not__valid" : "valid"}>
+                        {validation.minYear || validation.maxYear || "valid"}
+                      </p>
                       <div className="options__container">
                         <Form.Field>
                           <Checkbox
@@ -668,7 +638,7 @@ class Create extends React.Component {
                       name="question circle outline"
                       size="big"
                       data-section="customer"
-                      onClick={this.handleDisplayhelp}
+                      onClick={this.toggleHelpMessage}
                     />
                     <div className="form__section">
                       <Form.Field
@@ -834,7 +804,7 @@ class Create extends React.Component {
           onClick={this.openModal}
           disabled={this.state.numberOfQueries >= 5}
         />
-        {this.state.numberOfQueries >= 5 && (
+        {this.state.numberOfQueries >= 5 && ( // shows error message is max queries is reached
           <span className="max__queries__span">
             Maximum number of queries reached
           </span>
@@ -844,8 +814,4 @@ class Create extends React.Component {
   }
 }
 
-// const mapStateToProps = state => ({
-//   windowDimensions: state.window.windowDimensions,
-// });
-
-export default Create;
+export default connect(null, { setCurrentQuery })(Create);
