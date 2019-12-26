@@ -364,13 +364,10 @@ class Create extends React.Component {
   render() {
     const {
       modal,
-      enabled,
       query,
       vehicle,
       customer,
       loading,
-      error,
-      currentUser,
       index,
       lastIndex,
       validation,

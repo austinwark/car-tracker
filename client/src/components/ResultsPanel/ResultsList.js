@@ -88,10 +88,10 @@ class ResultsList extends React.Component {
                   </div>
                   <div className="vehicle__details__secondary">
                     <h5>Price: ${result.price}</h5>
-                    <a href={result.metadata.link} target="_blank">
+                    <a href={result.metadata.link} target="_blank" rel="noopener noreferrer">
                       See more
                     </a>
-                    <a href={result.metadata.carfaxLink} target="_blank">
+                    <a href={result.metadata.carfaxLink} target="_blank" rel="noopener noreferrer">
                       See Carfax
                     </a>
                   </div>
@@ -352,7 +352,7 @@ class ResultsList extends React.Component {
                     </div>
                     <div className="details__body__footer">
                       <Button className="button__3d">
-                        <a href={activeResult.metadata.link} target="_blank">
+                        <a href={activeResult.metadata.link} target="_blank" rel="noopener noreferrer">
                           See More
                         </a>
                       </Button>
@@ -360,6 +360,7 @@ class ResultsList extends React.Component {
                         <a
                           href={activeResult.metadata.carfaxLink}
                           target="_blank"
+                          rel="noopener noreferrer"
                         >
                           CarFax
                         </a>
@@ -444,7 +445,7 @@ class ResultsList extends React.Component {
       // --if props are done loading but there is no current query
       return (
         <div className="oops__container">
-          <img src={oopsImage} className="no__results__image" />
+          <img src={oopsImage} className="no__results__image" alt="oops no results" />
           <div className="mobile__actions">
             <div
               onClick={this.props.toggleSidePanel}

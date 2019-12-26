@@ -71,7 +71,7 @@ class CurrentQueries extends React.Component {
       const loadedQueries = this.state.queries;
       loadedQueries.push(snap.val());
       this.setState({ queries: loadedQueries }, () => {
-        loadedQueries.length == 1 && this.setFirstQuery(loadedQueries); // --> if this is the first time
+        loadedQueries.length === 1 && this.setFirstQuery(loadedQueries); // --> if this is the first time
       });
     });
   };

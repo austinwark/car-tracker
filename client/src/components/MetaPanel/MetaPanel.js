@@ -1,5 +1,5 @@
 import React from "react";
-import { Accordion, Icon, Step, Card } from "semantic-ui-react";
+import { Accordion, Icon, Card } from "semantic-ui-react";
 import Settings from "./Settings";
 
 /* Side column containing query info and settings */

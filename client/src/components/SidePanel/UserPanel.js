@@ -50,6 +50,8 @@ class UserPanel extends React.Component {
 
   /* Creates firebase listener, listening for changes to user account -- updates local state with email verification results */
   componentDidMount() {
+    console.log("KEY ", process.env.apiKey)
+    console.log("DOMAIN", process.env.authDomain)
     firebase.auth().onIdTokenChanged(user => {
       if (user) {
         user.reload().then(() => {
@@ -164,7 +166,7 @@ class UserPanel extends React.Component {
   /* Submits anonymous user's new account info and updates info in firebase auth and database */
   handleCreateSubmit = event => {
     event.preventDefault();
-    const { currentUser, queriesRef, newAccount } = this.state;
+    const { newAccount } = this.state;
     const { username, email, password } = newAccount;
     if (this.isCreateFormValid(newAccount)) { // 1) Validates new account info
       const credential = firebase.auth.EmailAuthProvider.credential( // 2) Creates credentials using firebase API
@@ -361,7 +363,7 @@ class UserPanel extends React.Component {
           closeModal={this.closeReauthenticateModal}
         />
         <div className="main__sidepanel__colors sidepanel__header">
-          <img src={query} className="main__icon" />
+          <img src={query} className="main__icon" alt="Magnifying glass icon" />
           <div>
             <Dropdown
               trigger={
