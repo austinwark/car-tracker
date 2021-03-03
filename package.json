@@ -14,7 +14,7 @@
     "nodemailer": "^6.3.1",
     "nodemailer-mailgun-transport": "^1.4.0",
     "nodemon": "^1.19.4",
-    "pug": "^2.0.4",
+    "pug": "^3.0.1",
     "redux": "^4.0.4",
     "uuid": "^3.3.3"
   },
