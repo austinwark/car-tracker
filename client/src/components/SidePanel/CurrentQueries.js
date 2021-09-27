@@ -27,9 +27,11 @@ class CurrentQueries extends React.Component {
   /* Performs shallow comparison of current and incoming props and updates state if props have changed */
   componentDidUpdate(prevProps) {
     if (
+      this.props.currentQuery &&
       JSON.stringify(this.props.currentQuery) !==
       JSON.stringify(prevProps.currentQuery)
     ) {
+      
       this.setState({ activeQuery: this.props.currentQuery.id });
     }
   }

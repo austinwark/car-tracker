@@ -36,6 +36,7 @@ class Settings extends React.Component {
   /* Performs a shallow comparison of currentQuery in props, if not the same, updates local state with new values */
   componentDidUpdate(prevProps, prevState) {
     if (
+      this.props.currentQuery &&
       JSON.stringify(prevProps.currentQuery) !==
       JSON.stringify(this.props.currentQuery)
     ) {

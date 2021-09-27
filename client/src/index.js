@@ -80,6 +80,7 @@ class Root extends React.Component {
             }
           });
         this.props.history.push("/"); // pushes user to app homepage on signin
+        this.props.history.push("/");
       } else {
         // --else if a user is not signed in, push to login page
         this.props.history.push("/login");

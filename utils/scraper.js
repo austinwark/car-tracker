@@ -17,7 +17,7 @@ module.exports = function() {
     let totalResults = []; // will contain final scraped results
 
     try {
-      for (let i = 1; i < 5; i++) {
+      for (let i = 1; i < 2; i++) {
         const siteUrl = allStores // 2) Uses query string to narrow initial results by model and dealership, loops through multiple pages using variable i
           ? `https://www.liatoyotaofcolonie.com/searchused.aspx?Make=Toyota&Model=${model}&pt=${i}`
           : `https://www.liatoyotaofcolonie.com/searchused.aspx?Dealership=Lia%20Toyota%20of%20Colonie&Make=Toyota&Model=${model}&pt=${i}`;
@@ -98,7 +98,6 @@ module.exports = function() {
               carfaxLink: carfaxLinks[i]
             }
           };
-
           return newVehicle;
         });
 
@@ -121,9 +120,10 @@ module.exports = function() {
         pricesMatch.map(item => { // 13) Pushes final results into array to be returned on response body
           totalResults.push(item);
         });
+
       }
     } catch (error) {
-      console.log("Page scraping done");
+      console.log(error);
     }
     return totalResults;
   };

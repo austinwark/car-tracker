@@ -50,8 +50,6 @@ class UserPanel extends React.Component {
 
   /* Creates firebase listener, listening for changes to user account -- updates local state with email verification results */
   componentDidMount() {
-    console.log("KEY ", process.env.apiKey)
-    console.log("DOMAIN", process.env.authDomain)
     firebase.auth().onIdTokenChanged(user => {
       if (user) {
         user.reload().then(() => {
@@ -259,7 +257,6 @@ class UserPanel extends React.Component {
 
   /* Helper function validates password length */
   isPasswordValid = ({ password, passwordConfirm }) => {
-    console.log(password, passwordConfirm);
     if (password.length < 6 || passwordConfirm.length < 6) {
       return false;
     } else if (password !== passwordConfirm) {
@@ -370,9 +367,10 @@ class UserPanel extends React.Component {
                 <span id="user__dropdown">
                   <span style={{ fontSize: "1.2rem", fontStyle: "bold" }}>
                     <Icon size="small" name="at" />
-                    {this.state.currentUser.displayName ||
-                      this.props.currentUser.displayName ||
-                      "Ghost"}{" "}
+                    {this.props.currentUser.isAnonymous
+                      ? "Ghost "
+                      : this.state.currentUser.displayName || this.props.currentUser.displayName
+                    }
                   </span>
                   {this.props.currentUser.email && <br></br>}
                   {this.state.currentUser.email}

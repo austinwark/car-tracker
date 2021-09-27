@@ -33,9 +33,10 @@ class Register extends React.Component {
       error = { message: "Fill in all fields" };
       this.setState({ errors: errors.concat(error) });
       return false;
-    } else if (this.isUsernameValid(this.state)) {
+    } else if (!this.isUsernameValid(this.state)) {
       error = { message: "Username must be less than 15 characters" };
       this.setState({ errors: errors.concat(error) });
+      return false;
     } else if (!this.isPasswordValid(this.state)) {
       error = { message: "Password must be greater than 6 characters" };
       this.setState({ errors: errors.concat(error) });
@@ -168,7 +169,7 @@ class Register extends React.Component {
         <Grid.Column style={{ maxWidth: 450 }}>
           <Header as="h1" icon textAlign="center" className="signup__header">
             <Icon name="puzzle piece" />
-            Register for Car Tracker
+            Register for the Tracker Appr
           </Header>
           <Form onSubmit={this.handleSubmit} size="large">
             <Segment stacked>

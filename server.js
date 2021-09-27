@@ -1,3 +1,4 @@
+// require("./utils/scraper")();
 require("./utils/scraper")();
 require("./utils/mailer")();
 const express = require("express");

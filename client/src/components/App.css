@@ -208,7 +208,7 @@ html, body, .app__main {
 /* Register */
 .register__message {
     font-style: italic;
-    font-weight: 800;
+    font-weight: 500;
     color: #2a2a2a8a;
     margin-bottom: 1rem !important;
 }
@@ -457,6 +457,9 @@ html, body, .app__main {
 }
 @media (min-width: 768px) {
     .mobile__results__main {
+        display: none !important;
+    }
+    .mobile__actions {
         display: none !important;
     }
 } 
